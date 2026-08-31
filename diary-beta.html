@@ -37,6 +37,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
 .cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.page.auto{aspect-ratio:auto;padding-bottom:18px}
+.page.auto .jSec:last-child{margin-bottom:0}
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
 .pager button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:30px;font-size:13px;color:var(--ink)}
 .pager button:disabled{opacity:.3}
@@ -169,7 +171,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 </div>
 
 <div class="pager" id="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
-<div class="page" id="journey" style="display:none;">
+<div class="page auto" id="journey" style="display:none;">
   <div class="dhead">🚶 나의 여정</div>
   <div class="dsub">가을 여행 · 리매님은 지금 1걸음째</div>
   <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
