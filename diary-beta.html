@@ -158,6 +158,7 @@ h1{font-size:18px;font-weight:700;margin:0}
   <button id="tabS">🧳 여행 일지</button>
 </div>
 
+<div class="pager" id="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
 <div class="page" id="journey" style="display:none;">
   <div class="dhead">🚶 나의 여정</div>
   <div class="dsub">가을 여행 · 리매님은 지금 1걸음째</div>
@@ -174,7 +175,6 @@ h1{font-size:18px;font-weight:700;margin:0}
   </div>
   <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>이번 주 적립 +3</span></div></div>
 </div>
-<div class="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
   <div class="dsub" id="dSub"></div>
@@ -447,6 +447,7 @@ function showTab(t){
   for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
     $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
   document.getElementById('palette').style.display = t==='tabD'?'block':'none';
+  document.getElementById('pager').style.display = t==='tabD'?'flex':'none';
 }
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
