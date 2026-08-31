@@ -14,8 +14,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .coverThumb{flex:none;width:104px;aspect-ratio:728/1024;border-radius:8px 12px 12px 8px;background:#ddd center/cover no-repeat;
  box-shadow:3px 4px 10px rgba(90,70,40,.28), inset 6px 0 8px -6px rgba(0,0,0,.25);cursor:pointer}
 .binfo{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
-.binfo .t1{font-weight:700;font-size:15px}
-.binfo .t2{font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5}
+.binfo .t1{font-weight:700;font-size:17.5px}
+.binfo .t2{font-size:13px;color:var(--sub);margin-top:5px;line-height:1.7}
 .bbtns{display:flex;gap:6px}
 .bbtns button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 0;font-size:12px;font-family:inherit;font-weight:700;color:var(--ink)}
 /* 탭 */
@@ -34,6 +34,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .card{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
 .card h3{margin:0 0 2px;font-size:12px}
 .card p{margin:0;font-size:11px;color:var(--sub);line-height:1.5}
+.clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
 .cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
 .pager button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:30px;font-size:13px;color:var(--ink)}
@@ -53,9 +55,10 @@ h1{font-size:18px;font-weight:700;margin:0}
 .stepbar .dot.on{background:#e3b750}
 .stepbar .dot:first-child{border-radius:4px 0 0 4px}.stepbar .dot:last-child{border-radius:0 4px 4px 0}
 .stepbar .mile{position:absolute;top:-7px;right:-9px;font-size:15px;z-index:2}
-.wgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.wgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .wcell{border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0;font-size:10px;color:var(--sub);background:rgba(255,253,247,.8)}
-.wcell b{display:block;font-size:13px}
+.wcell b{display:block;font-size:12px}
+.wcell svg{width:30px;height:24px;display:block;margin:1px auto 0}
 .wcell.ok{background:#fff6cf;border-color:#e3cc40}
 .wcell.now{border-style:dashed;border-color:var(--accent)}
 .jrow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--sub);margin-top:2px}
@@ -154,7 +157,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
-    <div><div class="t1">가을 여행 · 1권째 📖</div><div class="t2">9월 둘째 주 산책<br>진행 중 (2주차) · 표지를 누르면<br><b>전자책으로 넘겨보기</b></div></div>
+    <div><div class="t1">가을 여행 · 1권째 📖</div>
+<div class="t2">9월 둘째 주 산책 진행 중<br>이번 주 달성률 <b style="color:#c96f3d">2/4</b> · 산책일지 ⏳</div></div>
     <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button><button id="btnShelf">📚 책장</button></div>
   </div>
 </div>
@@ -171,22 +175,18 @@ h1{font-size:18px;font-weight:700;margin:0}
   <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
     <p style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55">"12주 뒤 나는 임장 20곳을 다녀온 사람이다"</p>
     <p style="margin:3px 0 0;font-size:10px;color:#8a8172">2026.9.7 출발 선언</p></div>
-  <div class="jSec"><h3>12주 여행길 · 1/12</h3>
-    <div class="stepbar" id="jBar"></div>
-    <div class="jrow"><span>출발</span><span>4주 🪑</span><span>8주 🌾</span><span>12주 🗼</span></div>
-  </div>
-  <div class="jSec"><h3>주차별 산책</h3><div class="wgrid" id="jGrid"></div></div>
-  <div class="jSec"><h3>이번 주</h3>
-    <div class="jrow"><span>달성률 <b style="color:#c96f3d">2/4</b> · 산책 일지 ⏳</span><span>🌤 하루 2 · 🃏 주 1</span></div>
-  </div>
-  <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>이번 주 적립 +3</span></div></div>
+  <div class="jSec"><h3 id="jwTitle"></h3>
+    <div class="week" id="jwGrid"></div>
+    <div class="jrow"><span>달성률 <b id="jwRate" style="color:#c96f3d"></b></span><span id="jwDiary"></span></div></div>
+  <div class="jSec"><h3>12주 여행길 · <span id="jSteps"></span></h3><div class="wgrid" id="jGrid"></div></div>
+  <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>🌤 하루 2 · 🃏 주 1</span></div></div>
 </div>
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
   <div class="dsub" id="dSub"></div>
   <div class="card"><h3>🌅 오늘 목표</h3><p id="dGoal"></p></div>
   <div class="card"><h3>🌙 달성 & 리뷰</h3><p id="dRev"></p></div>
-  <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><p id="dDiary"></p></div>
+  <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><p id="dDiary" class="clamp"></p><button class="morebtn" id="dMore" style="display:none">전문 보기 →</button></div>
   <div class="cheer" id="dCheer" style="display:none"></div>
   <div id="layer"></div>
 </div>
@@ -244,16 +244,20 @@ const STICKERS=[
  {k:'s-tag',n:'러기지 태그',p:3,cat:'가을 시즌',vb:'0 0 128 86',w:100,h:68},
 ];
 const DECL='12주 뒤 나는 임장 20곳을 다녀온 사람이다';
+const JWEEKS=[
+ {label:'1주차 · 9/7 ~ 9/13',days:['🌕','🌗','🌕','·','📔','🌕','·'],rate:'4/4',ok:true,diary:true},
+ {label:'2주차 · 9/14 ~ 9/20 (이번 주)',days:['🌗','','','','','',''],rate:'0.5/4',ok:null,diary:false,now:true},
+];
 const DAYS=[
  {d:'9월 7일 (월)',n:7,w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
  {d:'9월 8일 (화)',n:8,w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
  {d:'9월 9일 (수)',n:9,w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
  {d:'9월 11일 (금)',n:11,w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)',
-  diary:'강동구 임장에서 배운 3가지 — ① 역세권보다 학군 수요가 먼저 움직인다 ② 저녁 시간대 유동인구가 진짜 수요다 ③ 부동산 사장님과의 스몰토크가 최고의 임장 데이터.',
+  diary:'강동구 임장에서 배운 3가지를 정리해 본다. 첫째, 역세권보다 학군 수요가 먼저 움직인다. A단지는 역에서 10분 거리인데도 초등학교 배정 문제로 호가가 눌려 있었고, 반대로 역에서 15분인 B단지는 학군 프리미엄으로 매물이 잠겨 있었다. 둘째, 저녁 시간대 유동인구가 진짜 수요다. 낮에는 조용했던 상가 골목이 저녁 7시에 완전히 달라졌다. 임장은 최소 두 번, 다른 시간대에 가야 한다는 걸 몸으로 배웠다. 셋째, 부동산 사장님과의 스몰토크가 최고의 데이터다. 매물 장부보다 「요즘 누가 사러 오는지」 한마디가 더 많은 걸 알려줬다. 다음 주에는 전세가율을 직접 계산해서 이 단지들의 갭을 비교해 볼 예정이다.',
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},day:4};
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},day:4,jweek:1};
 try{const v=localStorage.getItem('bd7');if(v)state={...state,...JSON.parse(v)};}catch(e){}
 if(!state.placedD)state.placedD={};
 let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedD).flat().map(s=>s.id||0));
@@ -382,7 +386,7 @@ function bookPages(){
       <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
       <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
       <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
-      ${w.diary?`<div class="card"><h3>📔 산책 일지</h3><p>${w.diary}</p></div>`:''}
+      ${w.diary?`<div class="card"><h3>📔 산책 일지</h3><p class="clamp" style="-webkit-line-clamp:9">${w.diary}</p><p style="margin:3px 0 0;font-size:9.5px;color:#b0a488">…전문은 카페 [산책일지] 글에 · 인쇄본에선 연속 페이지로</p></div>`:''}
       ${w.cmt?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
@@ -425,19 +429,29 @@ $('del').onclick=()=>{state.placedD[state.day]=curPlaced().filter(x=>x.id!==sel)
 $('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
 function renderDay(){
   const w=DAYS[state.day];
-  $('wLabel').textContent=w.d+(w.today?' · 오늘':'');
-  $('wPrev').disabled=state.day===0; $('wNext').disabled=state.day===DAYS.length-1;
   $('dHead').textContent=w.d+' '+w.moon;
   $('dSub').textContent='가을 여행 · '+w.w;
   $('dGoal').textContent=w.goal;
   $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
   $('dDiaryCard').style.display=w.diary?'block':'none';
-  if(w.diary)$('dDiary').textContent=w.diary;
+  if(w.diary){$('dDiary').textContent=w.diary;
+    requestAnimationFrame(()=>{$('dMore').style.display=$('dDiary').scrollHeight>$('dDiary').clientHeight+4?'inline':'none';});
+    $('dMore').onclick=()=>{msheet.innerHTML='<h2>📔 산책 일지 전문</h2><p style="font-size:12.5px;line-height:1.75;white-space:pre-wrap">'+w.diary+'</p><button class="closeM">닫기</button>';modal.classList.add('on');msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};}
   $('dCheer').style.display=w.cmt?'block':'none';
   if(w.cmt)$('dCheer').textContent=w.cmt;
   sel=null; render();
 }
 function openCal(){
+  if(curTab()==='tabJ'){
+    msheet.innerHTML='<h2>🗓 주차 선택</h2><div class="gal">'+Array.from({length:12},(_,i)=>{
+      const en=i<JWEEKS.length;
+      return `<div class="gitem" ${en?`data-w="${i}"`:'style="opacity:.4"'}><b style="padding:12px 10px;font-size:12.5px">${i+1}주차${en?(JWEEKS[i].now?' · 이번 주':' · '+JWEEKS[i].rate):' · 예정'}</b></div>`;}).join('')
+      +'</div><button class="closeM">닫기</button>';
+    modal.classList.add('on');
+    msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+    msheet.querySelectorAll('[data-w]').forEach(el=>el.onclick=()=>{state.jweek=+el.dataset.w;save();renderJourney();renderPager();modal.classList.remove('on');});
+    return;
+  }
   const first=2; // 2026-09-01 = 화요일 (월=1 기준 인덱스)
   let cells='';
   for(let i=0;i<first-1;i++)cells+='<div class="cd" style="visibility:hidden"></div>';
@@ -454,26 +468,45 @@ function openCal(){
   msheet.querySelectorAll('.cd.has').forEach(el=>el.onclick=()=>{state.day=+el.dataset.i;save();renderDay();showTab('tabD');modal.classList.remove('on');});
 }
 $('wLabel').onclick=openCal;
-$('wPrev').onclick=()=>{state.day=Math.max(0,state.day-1);save();renderDay();};
-$('wNext').onclick=()=>{state.day=Math.min(DAYS.length-1,state.day+1);save();renderDay();};
+$('wPrev').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.max(0,state.jweek-1);renderJourney();} else {state.day=Math.max(0,state.day-1);renderDay();} save();renderPager();};
+$('wNext').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.min(JWEEKS.length-1,state.jweek+1);renderJourney();} else {state.day=Math.min(DAYS.length-1,state.day+1);renderDay();} save();renderPager();};
 function renderJourney(){
-  $('jBar').innerHTML=Array.from({length:12},(_,i)=>{
-    const mile={3:'🪑',7:'🌾',11:'🗼'}[i]||'';
-    return `<div class="dot ${i<1?'on':''}">${mile?`<span class="mile">${mile}</span>`:''}</div>`;}).join('');
+  const w=JWEEKS[state.jweek];
+  $('jwTitle').textContent=(state.jweek+1)+'주차 산책'+(w.now?' (이번 주)':'');
+  $('jwGrid').innerHTML=['월','화','수','목','금','토','일'].map((d,i)=>`<div class="day"><b>${d}</b><span>${w.days[i]===''?'&nbsp;':w.days[i]||'&nbsp;'}</span></div>`).join('');
+  $('jwRate').textContent=w.rate;
+  $('jwDiary').textContent=w.diary?'산책일지 📔 완료':'산책일지 ⏳ 미작성';
+  $('jSteps').textContent='1/12';
+  const MILE={3:'st-bench',7:'st-reed',11:'st-tower'};
   $('jGrid').innerHTML=Array.from({length:12},(_,i)=>{
     const cls=i===0?'ok':(i===1?'now':'');
-    const mark=i===0?'🌕':(i===1?'⏳':'·');
-    return `<div class="wcell ${cls}"><b>${mark}</b>${i+1}주</div>`;}).join('');
+    const mark=i===0?'🌕':(i===1?'진행':'&nbsp;');
+    const ic=MILE[i]?`<svg viewBox="0 0 76 62"><use href="#${MILE[i]}"/></svg>`:'';
+    return `<div class="wcell ${cls}"><b>${mark}</b>${i+1}주${ic}</div>`;}).join('');
   $('jCoin').textContent=state.coins;
 }
+function renderPager(){
+  const t=curTab();
+  if(t==='tabJ'){
+    const w=JWEEKS[state.jweek];
+    $('wLabel').textContent=w.label;
+    $('wPrev').disabled=state.jweek===0; $('wNext').disabled=state.jweek===JWEEKS.length-1;
+  } else {
+    const w=DAYS[state.day];
+    $('wLabel').textContent=w.d+(w.today?' · 오늘':'');
+    $('wPrev').disabled=state.day===0; $('wNext').disabled=state.day===DAYS.length-1;
+  }
+}
+function curTab(){ return ['tabJ','tabD','tabS'].find(id=>$(id).classList.contains('on'))||'tabD'; }
 function showTab(t){
   for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
     $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
   document.getElementById('palette').style.display = t==='tabD'?'block':'none';
   document.getElementById('pager').style.display = (t==='tabS')?'none':'flex';
+  renderPager();
 }
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
 $('tabS').onclick=()=>showTab('tabS');
-apply();renderDay();
+apply();renderDay();renderPager();
 </script>
