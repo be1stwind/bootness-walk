@@ -427,14 +427,17 @@ function computeFlow(w){
   const wrapN=t=>head+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
   const cut=(builder,txt,tail)=>{let lo=0,hi=txt.length,ans=0;
     while(lo<=hi){const m=(lo+hi)>>1; if(fits(builder(txt.slice(0,m))+tail)){ans=m;lo=m+1;}else hi=m-1;}
-    const sp=txt.lastIndexOf(' ',ans); return sp>ans*0.6?sp:ans;};
+    const sp=txt.lastIndexOf(' ',ans); const res=sp>ans*0.6?sp:ans;
+    return res>0?res:Math.min(txt.length,60);};   // 전진 보장 (무한 루프 방지)
   const T=w.diary; let flow='',parts=[],rest=T;
   if(fits(wrap0(T)+cheer)){ flow=T; rest=''; }
   else { const n=cut(wrap0,T,''); flow=T.slice(0,n); rest=T.slice(n).trim(); }
-  while(rest){
+  let _guard=0;
+  while(rest && ++_guard<80){
     if(fits(wrapN(rest)+(w.img?'':cheer))){ parts.push(rest); rest=''; break; }
     const n=cut(wrapN,rest,''); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
   }
+  if(rest){ parts.push(rest); }
   if(w.img) parts.push('\u0001IMG');
   M.remove();
   window.PAGEW=live.clientWidth||360;
