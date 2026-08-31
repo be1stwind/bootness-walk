@@ -96,6 +96,23 @@ h1{font-size:18px;font-weight:700;margin:0}
 .freeb{position:absolute;top:5px;right:5px;background:#dceefb;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#2a5a7a;z-index:2}
 .owned{position:absolute;top:5px;right:5px;background:#dff0d8;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#3c763d;z-index:2}
 .closeM{width:100%;margin-top:12px;border:0;background:#3a352b;color:#fff;border-radius:10px;padding:11px 0;font-size:13.5px;font-family:inherit}
+#book{position:fixed;inset:0;background:#241f16;display:none;flex-direction:column;z-index:35}
+#book.on{display:flex}
+.bkTop{display:flex;align-items:center;padding:12px 14px;color:#d8cdb8;font-size:13px}
+.bkTop b{font-weight:700}
+.bkClose{margin-left:auto;background:none;border:1px solid #5a5142;color:#d8cdb8;border-radius:8px;padding:5px 12px;font-size:13px}
+.bkStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px;overflow:hidden;touch-action:pan-y}
+.bkPage{width:min(92vw,calc(76vh*0.707));aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative}
+.bkPage img{width:100%;height:100%;object-fit:cover;display:block}
+.bkPage .inner{position:absolute;inset:0;padding:14px 13px}
+.bkNav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
+.bkNav button{width:44px;height:38px;border-radius:10px;border:1px solid #5a5142;background:#332c1f;color:#e8ddc6;font-size:15px}
+.bkNav button:disabled{opacity:.3}
+.bkNav span{color:#bdb096;font-size:12.5px;min-width:60px;text-align:center}
+.backCover{position:absolute;inset:0;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px}
+.backCover .lg{font-size:34px}
+.backCover b{font-size:15px}
+.backCover p{font-size:11.5px;color:#8a8172;line-height:1.7;margin:0}
 #coverFull{position:fixed;inset:0;background:rgba(20,16,10,.86);display:none;align-items:center;justify-content:center;z-index:30}
 #coverFull.on{display:flex}
 #coverFull img{max-height:88vh;max-width:92vw;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
@@ -125,7 +142,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
-    <div><div class="t1">가을 여행 · 1주차</div><div class="t2">9월 둘째 주 산책<br>달성률 3/4 · 일지 📔 완료</div></div>
+    <div><div class="t1">가을 여행 · 1권째 📖</div><div class="t2">9월 둘째 주 산책<br>진행 중 (2주차) · 표지를 누르면<br><b>전자책으로 넘겨보기</b></div></div>
     <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button></div>
   </div>
 </div>
@@ -182,6 +199,9 @@ h1{font-size:18px;font-weight:700;margin:0}
   </div>
 </div>
 <div id="modal"><div class="sheet2" id="msheet"></div></div>
+<div id="book"><div class="bkTop">📖 <b id="bkTitle">&nbsp;가을 여행 · 1권째</b><button class="bkClose" id="bkClose">닫기 ✕</button></div>
+<div class="bkStage" id="bkStage"></div>
+<div class="bkNav"><button id="bkPrev">◀</button><span id="bkInd"></span><button id="bkNext">▶</button></div></div>
 <div id="coverFull"><img id="coverFullImg"></div>
 <div class="toast" id="toast"></div>
 
@@ -312,7 +332,43 @@ function openStkShop(){
     state.coins-=s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
 }
 $('btnCover').onclick=openCoverGal;$('btnSkin').onclick=openSkinShop;
-$('coverThumb').onclick=()=>{$('coverFullImg').src=`covers/${state.cover}.png`;$('coverFull').classList.add('on');};
+let bkIdx=0;
+function bookPages(){
+  const sk=SKINS.find(k=>k.id===state.skin)||SKINS[0];
+  const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
+  const pages=[];
+  pages.push({t:'표지',html:`<img src="covers/${state.cover}.png">`});
+  WEEKS.forEach((w,i)=>{
+    const stk=(state.placedW[i]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
+      return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${d.w*p.sc}px;height:${d.h*p.sc}px;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
+    pages.push({t:(i+1)+'주차',html:`<div class="inner" style="${skinStyle}">
+      <div class="dhead">${w.head}</div><div class="dsub">${w.sub}</div>
+      <div class="week">${['월','화','수','목','금','토','일'].map((d,j)=>`<div class="day"><b>${d}</b><span>${w.days[j]||'&nbsp;'}</span></div>`).join('')}</div>
+      <div class="card"><h3>📔 산책 일지</h3><p>${w.diary||'—'}</p></div>
+      <div class="card"><h3>목표</h3><p>${w.goal}</p></div>
+      <div class="cheer">${w.cheer}</div>${stk}</div>`});
+  });
+  pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
+  pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 가을 여행</b>
+    <p>12주를 완주하면 이 책이 한 권으로 완성됩니다.<br>완성된 책은 내 책장에 영구 소장 —<br>원하면 실물 인쇄본으로도 만들어 드려요 📚</p>
+    <p style="color:#c9a86a">BOOTNESS TRAVEL · 2026 AUTUMN</p></div>`});
+  return pages;
+}
+function bkRender(){
+  const pgs=bookPages();
+  bkIdx=Math.max(0,Math.min(bkIdx,pgs.length-1));
+  $('bkStage').innerHTML=`<div class="bkPage">${pgs[bkIdx].html}</div>`;
+  $('bkInd').textContent=`${pgs[bkIdx].t} · ${bkIdx+1}/${pgs.length}`;
+  $('bkPrev').disabled=bkIdx===0; $('bkNext').disabled=bkIdx===pgs.length-1;
+}
+$('coverThumb').onclick=()=>{bkIdx=0;bkRender();$('book').classList.add('on');};
+$('bkClose').onclick=()=>$('book').classList.remove('on');
+$('bkPrev').onclick=()=>{bkIdx--;bkRender();};
+$('bkNext').onclick=()=>{bkIdx++;bkRender();};
+let swX=null;
+$('bkStage').addEventListener('pointerdown',e=>swX=e.clientX);
+$('bkStage').addEventListener('pointerup',e=>{if(swX===null)return;const d=e.clientX-swX;swX=null;
+  if(d<-40)$('bkNext').click(); else if(d>40)$('bkPrev').click();});
 $('coverFull').onclick=()=>$('coverFull').classList.remove('on');
 const mod=f=>{const s=curPlaced().find(x=>x.id===sel);if(s){f(s);render();save();}};
 $('bigger').onclick=()=>mod(s=>s.sc=Math.min(2,s.sc*1.15));
