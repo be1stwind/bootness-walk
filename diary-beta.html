@@ -25,21 +25,23 @@ h1{font-size:18px;font-weight:700;margin:0}
 /* A5 고정 비율 페이지 */
 .page{position:relative;width:100%;aspect-ratio:210/297;background:var(--paper);border-radius:6px;
  box-shadow:0 2px 10px rgba(90,70,40,.14);overflow:hidden;touch-action:pan-y;padding:14px 13px}
-.dhead{font-weight:700;font-size:14.5px}
-.dsub{font-size:11px;color:var(--sub);margin-bottom:8px}
+.dhead{font-weight:700;font-size:16px}
+.dsub{font-size:11.5px;color:var(--sub);margin-bottom:9px}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0 10px}
 .day{background:rgba(255,253,247,.85);border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0 3px}
 .day b{display:block;font-size:9px;color:var(--sub);font-weight:500}
 .day span{font-size:14px}
 .card{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
-.card h3{margin:0 0 2px;font-size:12px}
-.card p{margin:0;font-size:11px;color:var(--sub);line-height:1.5}
+.card h3{margin:0 0 3px;font-size:13px}
+.card p{margin:0;font-size:12.5px;color:#5a5142;line-height:1.62}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
-.cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.cheer{font-size:12px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
 .page{margin-bottom:28px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
 .page.auto .jSec:last-child{margin-bottom:0}
+.footStrip{background:#fff6cf;border:1px solid #e3cc40;border-radius:12px;padding:10px 12px;font-size:12px;color:#6b5d2a;text-align:center;margin-top:2px}
+.footStrip b{color:#c96f3d}
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
 .pager button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:30px;font-size:13px;color:var(--ink)}
 .pager button:disabled{opacity:.3}
@@ -157,6 +159,19 @@ h1{font-size:18px;font-weight:700;margin:0}
 <g id="st-bench"><g transform="translate(6,6)"><rect x="14" y="26" width="5" height="22" rx="2.5" fill="#a8825f"/><circle cx="16" cy="18" r="15" fill="#d97b52"/><circle cx="5" cy="27" r="8" fill="#e8a87c"/><circle cx="28" cy="26" r="8" fill="#e8a87c"/><rect x="38" y="27" width="26" height="3.5" rx="1.7" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><rect x="38" y="35" width="26" height="4" rx="2" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><path d="M42 39 L42 50 M60 39 L60 50" stroke="#9a917f" stroke-width="2.4" stroke-linecap="round"/></g></g>
 <g id="st-reed"><g transform="translate(14,2)"><path d="M8 54 q-3 -20 -8 -34 M20 54 q-1 -24 -3 -40 M32 54 q2 -22 6 -36 M44 54 q4 -18 9 -28" stroke="#b3a479" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="16" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-14 0 16)"/><ellipse cx="17" cy="10" rx="3.4" ry="8.5" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-5 17 10)"/><ellipse cx="38" cy="14" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(10 38 14)"/><ellipse cx="53" cy="22" rx="3.2" ry="7" fill="#efe3c8" stroke="#cbbd97" transform="rotate(18 53 22)"/></g></g>
 <g id="st-tower"><g transform="translate(12,2)"><path d="M2 52 Q26 30 50 52 Z" fill="#e8a87c" stroke="#d97b52" stroke-width="1.4"/><path d="M23 44 L24.6 20 L27.4 20 L29 44 Z" fill="#e7e1d3" stroke="#9a917f" stroke-width="1.2"/><rect x="20" y="14" width="12" height="6" rx="2.4" fill="#f0b072" stroke="#9a917f" stroke-width="1.2"/><line x1="26" y1="14" x2="26" y2="4" stroke="#9a917f" stroke-width="1.8" stroke-linecap="round"/><circle cx="26" cy="3" r="1.7" fill="#d97b52"/></g></g>
+
+<g id="d-ribbon"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><path d="M50 42 L22 24 Q14 20 14 30 L14 54 Q14 64 22 60 L50 42 L78 24 Q86 20 86 30 L86 54 Q86 64 78 60 Z" fill="#f7a8bc"/></g><path d="M50 42 L22 24 Q14 20 14 30 L14 54 Q14 64 22 60 Z" fill="#f7a8bc"/><path d="M50 42 L78 24 Q86 20 86 30 L86 54 Q86 64 78 60 Z" fill="#f7a8bc"/><circle cx="50" cy="42" r="8" fill="#e87d99" stroke="#fff" stroke-width="4"/><path d="M44 50 L36 72 M56 50 L64 72" stroke="#e87d99" stroke-width="7" stroke-linecap="round"/></g>
+<g id="d-sakura"><g fill="#fbc7d8" stroke="#fff" stroke-width="6" stroke-linejoin="round"><ellipse cx="50" cy="22" rx="12" ry="15"/><ellipse cx="74" cy="40" rx="12" ry="15" transform="rotate(72 74 40)"/><ellipse cx="65" cy="68" rx="12" ry="15" transform="rotate(144 65 68)"/><ellipse cx="35" cy="68" rx="12" ry="15" transform="rotate(216 35 68)"/><ellipse cx="26" cy="40" rx="12" ry="15" transform="rotate(288 26 40)"/></g><ellipse cx="50" cy="22" rx="12" ry="15" fill="#fbc7d8"/><ellipse cx="74" cy="40" rx="12" ry="15" fill="#fbc7d8" transform="rotate(72 74 40)"/><ellipse cx="65" cy="68" rx="12" ry="15" fill="#fbc7d8" transform="rotate(144 65 68)"/><ellipse cx="35" cy="68" rx="12" ry="15" fill="#fbc7d8" transform="rotate(216 35 68)"/><ellipse cx="26" cy="40" rx="12" ry="15" fill="#fbc7d8" transform="rotate(288 26 40)"/><circle cx="50" cy="46" r="8" fill="#f9e08e"/></g>
+<g id="d-rainbow"><g stroke="#fff" stroke-width="7"><path d="M14 70 A36 36 0 0 1 86 70" fill="none"/></g><path d="M14 70 A36 36 0 0 1 86 70" fill="none" stroke="#f2917e" stroke-width="8"/><path d="M23 70 A27 27 0 0 1 77 70" fill="none" stroke="#f9d276" stroke-width="8"/><path d="M32 70 A18 18 0 0 1 68 70" fill="none" stroke="#a9d7a0" stroke-width="8"/><ellipse cx="14" cy="72" rx="9" ry="6" fill="#fff"/><ellipse cx="86" cy="72" rx="9" ry="6" fill="#fff"/></g>
+<g id="d-cloud"><path d="M28 62 Q12 62 12 49 Q12 38 24 37 Q26 24 40 24 Q52 24 55 34 Q58 30 64 30 Q76 30 77 42 Q88 43 88 53 Q88 62 76 62 Z" fill="#eef3f6" stroke="#fff" stroke-width="7" stroke-linejoin="round"/><path d="M28 62 Q12 62 12 49 Q12 38 24 37 Q26 24 40 24 Q52 24 55 34 Q58 30 64 30 Q76 30 77 42 Q88 43 88 53 Q88 62 76 62 Z" fill="#eef3f6"/><circle cx="38" cy="47" r="2.6" fill="#9fb3c0"/><circle cx="54" cy="47" r="2.6" fill="#9fb3c0"/><path d="M42 54 Q46 57 50 54" stroke="#9fb3c0" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>
+<g id="d-clip"><g transform="rotate(-24 50 46)"><path d="M38 20 Q38 10 48 10 Q58 10 58 20 L58 66 Q58 78 46 78 Q34 78 34 66 L34 30" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M38 20 Q38 10 48 10 Q58 10 58 20 L58 66 Q58 78 46 78 Q34 78 34 66 L34 30" fill="none" stroke="#8fb8d8" stroke-width="5" stroke-linecap="round"/></g></g>
+<g id="d-letter"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><rect x="16" y="26" width="68" height="46" rx="6" fill="#fdf3df"/></g><rect x="16" y="26" width="68" height="46" rx="6" fill="#fdf3df" stroke="#dcc194" stroke-width="2.5"/><path d="M18 30 L50 52 L82 30" fill="none" stroke="#dcc194" stroke-width="2.5" stroke-linejoin="round"/><circle cx="50" cy="60" r="6" fill="#e87d99"/></g>
+<g id="d-cherry"><g stroke="#fff" stroke-width="7"><circle cx="36" cy="60" r="14" fill="#e05f6d"/><circle cx="64" cy="64" r="13" fill="#e87683"/></g><circle cx="36" cy="60" r="14" fill="#e05f6d"/><circle cx="64" cy="64" r="13" fill="#e87683"/><path d="M38 47 Q46 24 58 18 M63 52 Q62 32 58 18" fill="none" stroke="#7ba05f" stroke-width="4" stroke-linecap="round"/><path d="M58 18 Q68 14 74 18 Q66 22 58 18" fill="#9cc07a"/><ellipse cx="31" cy="55" rx="4" ry="2.5" fill="#fff" opacity=".6" transform="rotate(-30 31 55)"/></g>
+<g id="d-bear"><g stroke="#fff" stroke-width="7"><circle cx="28" cy="26" r="12" fill="#d9ab7d"/><circle cx="72" cy="26" r="12" fill="#d9ab7d"/><circle cx="50" cy="52" r="30" fill="#d9ab7d"/></g><circle cx="28" cy="26" r="12" fill="#d9ab7d"/><circle cx="72" cy="26" r="12" fill="#d9ab7d"/><circle cx="28" cy="27" r="6" fill="#f2d8bb"/><circle cx="72" cy="27" r="6" fill="#f2d8bb"/><circle cx="50" cy="52" r="30" fill="#d9ab7d"/><ellipse cx="50" cy="62" rx="12" ry="9" fill="#f2d8bb"/><circle cx="40" cy="46" r="3" fill="#5c4327"/><circle cx="60" cy="46" r="3" fill="#5c4327"/><path d="M50 56 Q50 60 46 60 M50 56 Q50 60 54 60" stroke="#5c4327" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="55" rx="4.5" ry="3.5" fill="#5c4327"/><circle cx="33" cy="56" r="4" fill="#eda9a0" opacity=".7"/><circle cx="67" cy="56" r="4" fill="#eda9a0" opacity=".7"/></g>
+<g id="d-tulip"><g stroke="#fff" stroke-width="6" stroke-linejoin="round"><path d="M35 22 Q35 12 42 16 L50 22 L58 16 Q65 12 65 22 L65 36 Q65 50 50 50 Q35 50 35 36 Z" fill="#f2938c"/></g><path d="M35 22 Q35 12 42 16 L50 22 L58 16 Q65 12 65 22 L65 36 Q65 50 50 50 Q35 50 35 36 Z" fill="#f2938c"/><path d="M50 50 L50 78" stroke="#8fbc75" stroke-width="4" stroke-linecap="round"/><path d="M50 66 Q38 62 34 52 M50 70 Q62 66 66 56" fill="none" stroke="#8fbc75" stroke-width="4" stroke-linecap="round"/></g>
+<g id="d-dday"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><rect x="14" y="28" width="72" height="38" rx="10" fill="#8d7be0"/></g><rect x="14" y="28" width="72" height="38" rx="10" fill="#8d7be0"/><text x="50" y="53" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="IBM Plex Sans KR">D-DAY</text><circle cx="22" cy="26" r="4" fill="#f9d276"/><circle cx="78" cy="68" r="4" fill="#f9d276"/></g>
+<g id="d-tape2"><g transform="rotate(6 50 46)"><rect x="8" y="30" width="84" height="32" fill="#f6c8d8" opacity=".85" stroke="#fff" stroke-width="7"/><rect x="8" y="30" width="84" height="32" fill="#f6c8d8" opacity=".85"/><path d="M8 30 L2 38 L8 46 L2 54 L8 62 M92 30 L98 38 L92 46 L98 54 L92 62" fill="#f6c8d8" opacity=".85"/><circle cx="26" cy="46" r="3" fill="#fff" opacity=".8"/><circle cx="50" cy="46" r="3" fill="#fff" opacity=".8"/><circle cx="74" cy="46" r="3" fill="#fff" opacity=".8"/></g></g>
+<g id="d-smile"><g stroke="#fff" stroke-width="7"><circle cx="50" cy="46" r="34" fill="#ffd84d"/></g><circle cx="50" cy="46" r="34" fill="#ffd84d"/><path d="M36 40 Q39 36 42 40 M58 40 Q61 36 64 40" stroke="#8a6d1f" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M36 54 Q50 66 64 54" stroke="#8a6d1f" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="30" cy="50" r="5" fill="#f9a86e" opacity=".65"/><circle cx="70" cy="50" r="5" fill="#f9a86e" opacity=".65"/></g>
 </defs></svg>
 
 <div class="wrap">
@@ -201,18 +216,21 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="page" id="stampbook" style="display:none">
   <div class="dhead">🧳 여행 일지</div>
   <div class="dsub">이정표에 도착할 때마다 그곳의 스탬프가 찍힙니다</div>
-  <div class="seasonTitle">🍂 가을 여행 (2026)</div>
+  <div class="jSec"><h3>🍂 가을 여행 스탬프 (2026)</h3>
   <div class="stampGrid">
     <div class="slot got"><svg viewBox="0 0 76 62"><use href="#st-bench"/></svg><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
     <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-reed"/></svg><b>억새밭</b><i>8걸음에 획득</i></div>
     <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
-  <div class="seasonTitle" style="margin-top:12px">💎 여행 중 발견한 보물</div>
-  <div class="jSec" style="margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 시청권 <b>+1개월</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
+  <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
+  <div class="jSec" style="background:#fdf3df"><h3>💎 여행 중 발견한 보물</h3>
+  <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 시청권 <b>+1개월</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
   <p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">4걸음 보상 · 매주 시청 링크가 카카오톡으로 와요</p></div>
-  <div class="jSec" style="opacity:.55"><div class="jrow"><span>🎓 정기특강 참여권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
-  <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️ — 스탬프와 보물은 영구 보관!</div>
+  <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;opacity:.55"><div class="jrow"><span>🎓 정기특강 참여권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
+  <p style="margin:7px 2px 0;font-size:9.5px;color:#a08a5f">보물은 기한 안에 쓰는 혜택이에요 — 잊기 전에 사용하세요!</p></div>
+  <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️</div>
 </div>
+<div class="footStrip">🍂 다음 이정표 <svg viewBox="0 0 76 62" style="width:26px;height:20px;vertical-align:-4px"><use href="#st-bench"/></svg> 단풍나무 벤치까지 <b>3걸음</b> · 가을 여행 12주 중 2주차</div>
 </div>
 
 <button id="fab">🩹</button>
@@ -240,7 +258,18 @@ const STICKERS=[
  {k:'b-check',n:'체크',p:0,cat:'기본',vb:'0 0 100 92',w:70,h:64},
  {k:'b-done',n:'완료 도장',p:2,cat:'기본',vb:'0 0 100 92',w:78,h:72},
  {k:'b-spark',n:'반짝',p:2,cat:'기본',vb:'0 0 100 92',w:72,h:66},
- {k:'b-tape',n:'마스킹테이프',p:3,cat:'기본',vb:'0 0 100 92',w:96,h:64},
+ {k:'b-tape',n:'테이프 민트',p:3,cat:'기본',vb:'0 0 100 92',w:96,h:64},
+ {k:'d-tape2',n:'테이프 핑크',p:3,cat:'기본',vb:'0 0 100 92',w:96,h:64},
+ {k:'d-cloud',n:'구름',p:0,cat:'기본',vb:'0 0 100 92',w:82,h:66},
+ {k:'d-smile',n:'스마일',p:0,cat:'기본',vb:'0 0 100 92',w:70,h:66},
+ {k:'d-ribbon',n:'리본',p:2,cat:'기본',vb:'0 0 100 92',w:82,h:66},
+ {k:'d-rainbow',n:'무지개',p:2,cat:'기본',vb:'0 0 100 92',w:84,h:62},
+ {k:'d-clip',n:'클립',p:1,cat:'기본',vb:'0 0 100 92',w:64,h:72},
+ {k:'d-letter',n:'편지',p:2,cat:'기본',vb:'0 0 100 92',w:84,h:70},
+ {k:'d-cherry',n:'체리',p:2,cat:'기본',vb:'0 0 100 92',w:76,h:70},
+ {k:'d-bear',n:'곰돌이',p:3,cat:'기본',vb:'0 0 100 92',w:76,h:72},
+ {k:'d-tulip',n:'튤립',p:2,cat:'기본',vb:'0 0 100 92',w:66,h:74},
+ {k:'d-dday',n:'D-DAY',p:2,cat:'기본',vb:'0 0 100 92',w:88,h:62},
  {k:'s-leaf',n:'단풍잎',p:0,cat:'가을 시즌',vb:'0 0 120 100',w:96,h:80},
  {k:'s-moon',n:'보름달 스탬프',p:0,cat:'가을 시즌',vb:'0 0 116 90',w:92,h:72},
  {k:'s-acorn',n:'도토리',p:2,cat:'가을 시즌',vb:'0 0 100 100',w:78,h:78},
@@ -262,19 +291,37 @@ const DAYS=[
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},pos:0,jweek:1};
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1};
 try{const v=localStorage.getItem('bd9');if(v)state={...state,...JSON.parse(v)};}catch(e){}
 if(!state.placedD)state.placedD={};
-function diaryParts(w){
-  if(!w.diary) return [];
-  const t=w.diary, parts=[]; let buf='';
-  for(const sent of t.split(/(?<=다\.|요\.|것\.|\.)\s+/)){
-    if((buf+sent).length>430){parts.push(buf.trim());buf=sent+' ';}
-    else buf+=sent+' ';
+function computeFlow(w){
+  if(!w.diary) return {flow:null,parts:[]};
+  if(w._pg) return w._pg;
+  const live=document.getElementById('diary');
+  const M=document.createElement('div');
+  M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+live.clientWidth+'px';
+  const pg=document.createElement('div'); pg.className='page'; pg.style.margin='0'; M.appendChild(pg);
+  document.body.appendChild(M);
+  const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
+  const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
+  const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||''}</p></div>`;
+  const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
+  const wrap0=t=>head+cards+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
+  const wrapN=t=>`<div class="dhead">📔 산책 일지 (계속)</div><div class="dsub">${w.d}</div><p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${t}</p>`;
+  const cut=(builder,txt,tail)=>{let lo=0,hi=txt.length,ans=0;
+    while(lo<=hi){const m=(lo+hi)>>1; if(fits(builder(txt.slice(0,m))+tail)){ans=m;lo=m+1;}else hi=m-1;}
+    const sp=txt.lastIndexOf(' ',ans); return sp>ans*0.6?sp:ans;};
+  const T=w.diary; let flow='',parts=[],rest=T;
+  if(fits(wrap0(T)+cheer)){ flow=T; rest=''; }
+  else { const n=cut(wrap0,T,''); flow=T.slice(0,n); rest=T.slice(n).trim(); }
+  while(rest){
+    if(fits(wrapN(rest)+cheer)){ parts.push(rest); rest=''; break; }
+    const n=cut(wrapN,rest,''); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
   }
-  if(buf.trim())parts.push(buf.trim());
-  return parts;
+  M.remove();
+  return w._pg={flow,parts};
 }
+function diaryParts(w){ return computeFlow(w).parts; }
 const SEQ=[];
 DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});
 function posOfDay(i){return SEQ.findIndex(q=>q.i===i&&q.sub===0);}
@@ -406,15 +453,17 @@ function bookPages(){
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
       return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${d.w*p.sc}px;height:${d.h*p.sc}px;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
     if(q.sub===0){
+      const fl=computeFlow(w);
       pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
         <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
         <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
-        ${(w.cmt&&!parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><p>${fl.flow}${fl.parts.length?' ⟶':''}</p></div>`:''}
+        ${(w.cmt&&!fl.parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">📔 산책 일지${q.sub>1?' (계속)':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
-        <p style="font-size:11.5px;line-height:1.8;margin:6px 2px">${parts[q.sub-1]}${q.sub<parts.length?' <span style="color:#b0a488">(계속)</span>':''}</p>${stk}</div>`});
+        <p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${parts[q.sub-1]}${q.sub<parts.length?' <span style="color:#b0a488">(계속)</span>':''}</p>${stk}</div>`});
     }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
@@ -462,13 +511,16 @@ function renderDay(){
   if(q.sub===0){
     $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
     $('dGoal').textContent=w.goal; $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
-    $('dDiaryCard').style.display='none';
-    $('dCheer').style.display=(w.cmt&&!parts.length)?'block':'none'; if(w.cmt&&!parts.length)$('dCheer').textContent=w.cmt;
+    const fl=computeFlow(w);
+    $('dDiaryCard').style.display=fl.flow?'block':'none';
+    if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
+      $('dDiary').textContent=fl.flow+(fl.parts.length?' ⟶':'');$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
+    $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none'; if(w.cmt&&!fl.parts.length)$('dCheer').textContent=w.cmt;
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
     $('dDiaryCard').style.display='block';
-    $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' (계속)':'');
+    $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' ⟶':'');
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?' (계속)':'');
     const last=q.sub===parts.length;
