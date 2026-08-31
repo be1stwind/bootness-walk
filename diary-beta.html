@@ -38,7 +38,13 @@ h1{font-size:18px;font-weight:700;margin:0}
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
 .pager button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:30px;font-size:13px;color:var(--ink)}
 .pager button:disabled{opacity:.3}
-.pager span{font-size:12.5px;font-weight:700;color:var(--sub)}
+.pager span{font-size:12.5px;font-weight:700;color:var(--sub);cursor:pointer;border-bottom:1px dashed #c9bfa6;padding-bottom:1px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .ch{font-size:10px;color:var(--sub);text-align:center;padding:2px 0}
+.cal .cd{aspect-ratio:1;border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#c8bfa8;background:rgba(255,253,247,.6)}
+.cal .cd.has{color:var(--ink);background:#fff6cf;border-color:#e3cc40;cursor:pointer;font-weight:700}
+.cal .cd.has small{font-size:11px;line-height:1}
+.cal .cd.today{outline:2px solid var(--accent);outline-offset:-1px}
 /* 여정 탭 */
 .jSec{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px}
 .jSec h3{margin:0 0 6px;font-size:12px}
@@ -239,13 +245,13 @@ const STICKERS=[
 ];
 const DECL='12주 뒤 나는 임장 20곳을 다녀온 사람이다';
 const DAYS=[
- {d:'9월 7일 (월)',w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
- {d:'9월 8일 (화)',w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
- {d:'9월 9일 (수)',w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
- {d:'9월 11일 (금)',w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)',
+ {d:'9월 7일 (월)',n:7,w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
+ {d:'9월 8일 (화)',n:8,w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
+ {d:'9월 9일 (수)',n:9,w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
+ {d:'9월 11일 (금)',n:11,w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)',
   diary:'강동구 임장에서 배운 3가지 — ① 역세권보다 학군 수요가 먼저 움직인다 ② 저녁 시간대 유동인구가 진짜 수요다 ③ 부동산 사장님과의 스몰토크가 최고의 임장 데이터.',
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
- {d:'9월 14일 (월)',w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
+ {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
 let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},day:4};
 try{const v=localStorage.getItem('bd7');if(v)state={...state,...JSON.parse(v)};}catch(e){}
@@ -431,6 +437,23 @@ function renderDay(){
   if(w.cmt)$('dCheer').textContent=w.cmt;
   sel=null; render();
 }
+function openCal(){
+  const first=2; // 2026-09-01 = 화요일 (월=1 기준 인덱스)
+  let cells='';
+  for(let i=0;i<first-1;i++)cells+='<div class="cd" style="visibility:hidden"></div>';
+  for(let d=1;d<=30;d++){
+    const idx=DAYS.findIndex(x=>x.n===d);
+    const has=idx>=0;
+    cells+=`<div class="cd ${has?'has':''} ${has&&DAYS[idx].today?'today':''}" ${has?`data-i="${idx}"`:''}>${has?`<small>${DAYS[idx].moon}</small>`:''}${d}</div>`;
+  }
+  msheet.innerHTML='<h2>🗓 2026년 9월 <span style="font-weight:400;font-size:11px;color:#8a8172">— 기록이 있는 날을 눌러 이동</span></h2>'
+    +'<div class="cal">'+['월','화','수','목','금','토','일'].map(c=>`<div class="ch">${c}</div>`).join('')+cells+'</div>'
+    +'<button class="closeM">닫기</button>';
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelectorAll('.cd.has').forEach(el=>el.onclick=()=>{state.day=+el.dataset.i;save();renderDay();showTab('tabD');modal.classList.remove('on');});
+}
+$('wLabel').onclick=openCal;
 $('wPrev').onclick=()=>{state.day=Math.max(0,state.day-1);save();renderDay();};
 $('wNext').onclick=()=>{state.day=Math.min(DAYS.length-1,state.day+1);save();renderDay();};
 function renderJourney(){
@@ -447,7 +470,7 @@ function showTab(t){
   for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
     $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
   document.getElementById('palette').style.display = t==='tabD'?'block':'none';
-  document.getElementById('pager').style.display = t==='tabD'?'flex':'none';
+  document.getElementById('pager').style.display = (t==='tabS')?'none':'flex';
 }
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
