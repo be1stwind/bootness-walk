@@ -37,6 +37,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
 .cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.page{margin-bottom:28px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
 .page.auto .jSec:last-child{margin-bottom:0}
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
@@ -115,8 +116,9 @@ h1{font-size:18px;font-weight:700;margin:0}
 .bkStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px;overflow:hidden;touch-action:pan-y}
 .bkStage{perspective:1400px}
 .bkPage{width:min(92vw,calc(76vh*0.707));aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
-.bkPage.outL{transform:rotateY(-78deg);transform-origin:left center}
-.bkPage.outR{transform:rotateY(78deg);transform-origin:right center}
+.bkPage{transition:transform .28s ease,opacity .28s ease}
+.bkPage.outL{transform:translateX(-9%);opacity:0}
+.bkPage.outR{transform:translateX(9%);opacity:0}
 .coverTitle{position:absolute;left:8%;right:8%;bottom:7%;background:rgba(253,248,236,.92);border:1.5px solid #e3cc40;border-radius:10px;text-align:center;padding:9px 6px}
 .coverTitle b{font-size:14.5px;display:block}
 .coverTitle i{font-style:normal;font-size:9.5px;color:#8a7c4f;letter-spacing:.12em}
@@ -259,15 +261,29 @@ const DAYS=[
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},day:4,jweek:1};
-try{const v=localStorage.getItem('bd7');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},pos:0,jweek:1};
+try{const v=localStorage.getItem('bd9');if(v)state={...state,...JSON.parse(v)};}catch(e){}
 if(!state.placedD)state.placedD={};
+function diaryParts(w){
+  if(!w.diary) return [];
+  const t=w.diary, parts=[]; let buf='';
+  for(const sent of t.split(/(?<=다\.|요\.|것\.|\.)\s+/)){
+    if((buf+sent).length>430){parts.push(buf.trim());buf=sent+' ';}
+    else buf+=sent+' ';
+  }
+  if(buf.trim())parts.push(buf.trim());
+  return parts;
+}
+const SEQ=[];
+DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});
+function posOfDay(i){return SEQ.findIndex(q=>q.i===i&&q.sub===0);}
 let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedD).flat().map(s=>s.id||0));
-function curPlaced(){return state.placedD[state.day]=(state.placedD[state.day]||[]);}
+function curKey(){const q=SEQ[state.pos]||SEQ[0];return q.i+'.'+q.sub;}
+function curPlaced(){return state.placedD[curKey()]=(state.placedD[curKey()]||[]);}
 const $=id=>document.getElementById(id);
 const diary=$('diary'),layer=$('layer');
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
-function save(){try{localStorage.setItem('bd7',JSON.stringify(state));}catch(e){}}
+function save(){try{localStorage.setItem('bd9',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
@@ -381,15 +397,21 @@ function bookPages(){
   const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
   const pages=[];
   pages.push({t:'표지',html:`<img src="covers/${state.cover}.png"><div class="coverTitle"><b>리매님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
-  DAYS.forEach((w,i)=>{
-    const stk=(state.placedD[i]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
+  SEQ.forEach(q=>{
+    const w=DAYS[q.i]; const parts=diaryParts(w);
+    const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
       return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${d.w*p.sc}px;height:${d.h*p.sc}px;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
-    pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
-      <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
-      <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
-      <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
-      ${w.diary?`<div class="card"><h3>📔 산책 일지</h3><p class="clamp" style="-webkit-line-clamp:9">${w.diary}</p><p style="margin:3px 0 0;font-size:9.5px;color:#b0a488">…전문은 카페 [산책일지] 글에 · 인쇄본에선 연속 페이지로</p></div>`:''}
-      ${w.cmt?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+    if(q.sub===0){
+      pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
+        <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
+        <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
+        <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
+        ${w.cmt?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+    } else {
+      pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
+        <div class="dhead">📔 산책 일지${q.sub>1?' (계속)':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
+        <p style="font-size:11.5px;line-height:1.8;margin:6px 2px">${parts[q.sub-1]}${q.sub<parts.length?' <span style="color:#b0a488">(계속)</span>':''}</p>${stk}</div>`});
+    }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
   pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 가을 여행</b>
@@ -427,20 +449,26 @@ $('bigger').onclick=()=>mod(s=>s.sc=Math.min(2,s.sc*1.15));
 $('smaller').onclick=()=>mod(s=>s.sc=Math.max(.4,s.sc/1.15));
 $('rotL').onclick=()=>mod(s=>s.r-=15);
 $('rotR').onclick=()=>mod(s=>s.r+=15);
-$('del').onclick=()=>{state.placedD[state.day]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
+$('del').onclick=()=>{state.placedD[curKey()]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
 $('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
 function renderDay(){
-  const w=DAYS[state.day];
+  const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
   $('dHead').textContent=w.d+' '+w.moon;
-  $('dSub').textContent='가을 여행 · '+w.w;
-  $('dGoal').textContent=w.goal;
-  $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
-  $('dDiaryCard').style.display=w.diary?'block':'none';
-  if(w.diary){$('dDiary').textContent=w.diary;
-    requestAnimationFrame(()=>{$('dMore').style.display=$('dDiary').scrollHeight>$('dDiary').clientHeight+4?'inline':'none';});
-    $('dMore').onclick=()=>{msheet.innerHTML='<h2>📔 산책 일지 전문</h2><p style="font-size:12.5px;line-height:1.75;white-space:pre-wrap">'+w.diary+'</p><button class="closeM">닫기</button>';modal.classList.add('on');msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};}
-  $('dCheer').style.display=w.cmt?'block':'none';
-  if(w.cmt)$('dCheer').textContent=w.cmt;
+  $('dSub').textContent='가을 여행 · '+w.w+(parts.length?` · ${q.sub+1}/${parts.length+1}페이지`:'');
+  if(q.sub===0){
+    $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
+    $('dGoal').textContent=w.goal; $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
+    $('dDiaryCard').style.display=parts.length?'block':'none';
+    if(parts.length){$('dDiary').textContent='「'+parts[0].slice(0,46)+'…」';$('dMore').style.display='inline';$('dMore').textContent='다음 페이지에 전문 →';$('dMore').onclick=()=>{state.pos++;save();renderDay();renderPager();};}
+    $('dCheer').style.display=w.cmt?'block':'none'; if(w.cmt)$('dCheer').textContent=w.cmt;
+  } else {
+    $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
+    $('dCheer').style.display='none';
+    $('dDiaryCard').style.display='block';
+    $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' (계속)':'');
+    $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
+    document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?' (계속)':'');
+  }
   sel=null; render();
 }
 function openCal(){
@@ -467,11 +495,11 @@ function openCal(){
     +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
-  msheet.querySelectorAll('.cd.has').forEach(el=>el.onclick=()=>{state.day=+el.dataset.i;save();renderDay();showTab('tabD');modal.classList.remove('on');});
+  msheet.querySelectorAll('.cd.has').forEach(el=>el.onclick=()=>{state.pos=posOfDay(+el.dataset.i);save();renderDay();showTab('tabD');modal.classList.remove('on');});
 }
 $('wLabel').onclick=openCal;
-$('wPrev').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.max(0,state.jweek-1);renderJourney();} else {state.day=Math.max(0,state.day-1);renderDay();} save();renderPager();};
-$('wNext').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.min(JWEEKS.length-1,state.jweek+1);renderJourney();} else {state.day=Math.min(DAYS.length-1,state.day+1);renderDay();} save();renderPager();};
+$('wPrev').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.max(0,state.jweek-1);renderJourney();} else {state.pos=Math.max(0,state.pos-1);renderDay();} save();renderPager();};
+$('wNext').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.min(JWEEKS.length-1,state.jweek+1);renderJourney();} else {state.pos=Math.min(SEQ.length-1,state.pos+1);renderDay();} save();renderPager();};
 function renderJourney(){
   const w=JWEEKS[state.jweek];
   $('jwTitle').textContent=(state.jweek+1)+'주차 산책'+(w.now?' (이번 주)':'');
@@ -494,9 +522,9 @@ function renderPager(){
     $('wLabel').textContent=w.label;
     $('wPrev').disabled=state.jweek===0; $('wNext').disabled=state.jweek===JWEEKS.length-1;
   } else {
-    const w=DAYS[state.day];
-    $('wLabel').textContent=w.d+(w.today?' · 오늘':'');
-    $('wPrev').disabled=state.day===0; $('wNext').disabled=state.day===DAYS.length-1;
+    const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
+    $('wLabel').textContent=w.d+(parts.length?` · ${q.sub+1}/${parts.length+1}`:'')+(w.today?' · 오늘':'');
+    $('wPrev').disabled=state.pos===0; $('wNext').disabled=state.pos===SEQ.length-1;
   }
 }
 function curTab(){ return ['tabJ','tabD','tabS'].find(id=>$(id).classList.contains('on'))||'tabD'; }
@@ -510,5 +538,5 @@ function showTab(t){
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
 $('tabS').onclick=()=>showTab('tabS');
-apply();renderDay();renderPager();
+state.pos=Math.min(state.pos,SEQ.length-1);apply();renderDay();renderPager();
 </script>
