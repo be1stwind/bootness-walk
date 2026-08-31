@@ -5,189 +5,285 @@
 :root{--paper:#f6efe2;--ink:#3a352b;--sub:#8a8172;--card:#fffdf7;--line:#e6dcc6;--accent:#c96f3d;--yellow:#ffe400}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#efe6d2;color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:15px}
-.wrap{max-width:560px;margin:0 auto;padding:14px 12px 120px}
-header{display:flex;align-items:baseline;gap:8px;margin:6px 4px 10px}
-h1{font-size:20px;font-weight:700;margin:0}
+.wrap{max-width:520px;margin:0 auto;padding:12px 12px 132px}
+header{display:flex;align-items:center;gap:8px;margin:2px 2px 10px}
+h1{font-size:18px;font-weight:700;margin:0}
 .coin{margin-left:auto;background:var(--yellow);border-radius:20px;padding:3px 12px;font-weight:700;font-size:13px;color:#4d431a}
-.hint{font-size:12px;color:var(--sub);margin:0 4px 10px;line-height:1.6}
-#diary{position:relative;background:var(--paper);border-radius:14px;padding:18px 16px 22px;
- background-image:radial-gradient(#e7dcc2 1px,transparent 1px);background-size:20px 20px;
- box-shadow:0 2px 10px rgba(90,70,40,.12);overflow:hidden;touch-action:none}
-.dhead{font-weight:700;font-size:16px}
-.dsub{font-size:12px;color:var(--sub);margin-bottom:12px}
-.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 14px}
-.day{background:var(--card);border:1px solid var(--line);border-radius:10px;text-align:center;padding:7px 0 5px}
-.day b{display:block;font-size:10.5px;color:var(--sub);font-weight:500}
-.day span{font-size:17px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:9px}
-.card h3{margin:0 0 3px;font-size:13.5px}
-.card p{margin:0;font-size:12.5px;color:var(--sub);line-height:1.55}
-.cheer{font-size:12.5px;background:#fff8dc;border:1px solid #eee0a8;border-radius:10px;padding:9px 12px;color:#6b5d2a}
-/* 스티커 레이어 */
+/* 책장 헤더: 세로 표지 썸네일 + 정보 */
+.bookrow{display:flex;gap:12px;margin-bottom:12px;align-items:stretch}
+.coverThumb{flex:none;width:104px;aspect-ratio:728/1024;border-radius:8px 12px 12px 8px;background:#ddd center/cover no-repeat;
+ box-shadow:3px 4px 10px rgba(90,70,40,.28), inset 6px 0 8px -6px rgba(0,0,0,.25);cursor:pointer}
+.binfo{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
+.binfo .t1{font-weight:700;font-size:15px}
+.binfo .t2{font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5}
+.bbtns{display:flex;gap:6px}
+.bbtns button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 0;font-size:12px;font-family:inherit;font-weight:700;color:var(--ink)}
+/* 탭 */
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;border:1px solid var(--line);background:#efe8d6;border-radius:10px 10px 0 0;padding:9px 0;font-size:13px;font-family:inherit;font-weight:700;color:var(--sub)}
+.tabs button.on{background:var(--card);color:var(--ink);border-bottom-color:var(--card)}
+/* A5 고정 비율 페이지 */
+.page{position:relative;width:100%;aspect-ratio:210/297;background:var(--paper);border-radius:6px;
+ box-shadow:0 2px 10px rgba(90,70,40,.14);overflow:hidden;touch-action:none;padding:14px 13px}
+.dhead{font-weight:700;font-size:14.5px}
+.dsub{font-size:11px;color:var(--sub);margin-bottom:8px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0 10px}
+.day{background:rgba(255,253,247,.85);border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0 3px}
+.day b{display:block;font-size:9px;color:var(--sub);font-weight:500}
+.day span{font-size:14px}
+.card{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
+.card h3{margin:0 0 2px;font-size:12px}
+.card p{margin:0;font-size:11px;color:var(--sub);line-height:1.5}
+.cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+/* 스탬프북 */
+.stampIntro{font-size:11.5px;color:var(--sub);margin-bottom:10px;line-height:1.55}
+.stampGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{background:rgba(255,253,247,.9);border:1.5px dashed #d8cbaa;border-radius:12px;text-align:center;padding:10px 4px 8px}
+.slot.got{border-style:solid;border-color:#e3cc40;background:#fffdf2}
+.slot svg{width:74px;height:64px}
+.slot.lock svg{filter:grayscale(1);opacity:.35}
+.slot b{display:block;font-size:11px;margin-top:2px}
+.slot i{display:block;font-style:normal;font-size:9.5px;color:var(--sub)}
+.seasonTitle{font-weight:700;font-size:13px;margin:2px 0 8px}
+.pastSeason{margin-top:14px;font-size:11px;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px}
+/* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
-.stk.sel{outline:2px dashed var(--accent);outline-offset:4px;border-radius:8px}
-/* 팔레트 */
+.stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
 #palette{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--line);
  box-shadow:0 -4px 14px rgba(90,70,40,.12);padding:8px 10px calc(10px + env(safe-area-inset-bottom))}
+.plabel{font-size:10.5px;color:var(--sub);margin:0 2px 4px}
 .prow{display:flex;gap:8px;overflow-x:auto;padding:2px}
-.pitem{flex:none;width:64px;height:64px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
- display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pitem{flex:none;width:60px;height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
+ display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
 .pitem:active{transform:scale(.93)}
+.pitem.shop{background:#fff3bf;font-size:11px;font-weight:700;flex-direction:column;color:#6b5d2a}
 .pbar{display:flex;gap:6px;margin-top:7px}
-.pbar button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 0;font-size:12.5px;
- font-family:inherit;color:var(--ink);font-weight:500}
+.pbar button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 0;font-size:12px;font-family:inherit;color:var(--ink);font-weight:500}
 .pbar button:disabled{opacity:.35}
 .pbar .danger{color:#b0432f}
-.coverCard{height:190px;border-radius:14px;background:#ddd center/cover no-repeat;box-shadow:0 2px 10px rgba(90,70,40,.18);margin-bottom:10px;position:relative}
-.coverCard span{position:absolute;right:10px;bottom:8px;background:rgba(255,255,255,.85);border-radius:8px;font-size:11px;padding:3px 8px;color:#5a5142}
-.topbtns{display:flex;gap:8px;margin:0 0 10px}
-.topbtns button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 0;font-size:13px;font-family:inherit;font-weight:700;color:var(--ink)}
+/* 모달 */
 #modal{position:fixed;inset:0;background:rgba(40,34,24,.5);display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
-.sheet2{background:#fffdf7;border-radius:18px 18px 0 0;width:100%;max-height:72vh;overflow-y:auto;padding:16px 14px calc(20px + env(safe-area-inset-bottom))}
+.sheet2{background:#fffdf7;border-radius:18px 18px 0 0;width:100%;max-height:74vh;overflow-y:auto;padding:16px 14px calc(20px + env(safe-area-inset-bottom))}
 .sheet2 h2{font-size:15px;margin:0 0 10px}
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.gitem{border:2px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer}
+.gal3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gitem{border:2px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#fff}
 .gitem.selq{border-color:var(--accent)}
-.gitem img{width:100%;height:130px;object-fit:cover;display:block}
-.gitem .skpv{height:86px}
-.gitem b{display:block;font-size:12px;padding:6px 8px}
-.price{position:absolute;top:6px;right:6px;background:var(--yellow);border-radius:10px;font-size:11px;font-weight:700;padding:2px 8px;color:#4d431a}
-.owned{position:absolute;top:6px;right:6px;background:#dff0d8;border-radius:10px;font-size:11px;font-weight:700;padding:2px 8px;color:#3c763d}
+.gitem img{width:100%;aspect-ratio:728/1024;object-fit:cover;display:block}
+.gitem .skpv{height:80px}
+.gitem .stpv{height:64px;display:flex;align-items:center;justify-content:center;background:var(--paper)}
+.gitem b{display:block;font-size:11px;padding:5px 7px}
+.price{position:absolute;top:5px;right:5px;background:var(--yellow);border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#4d431a;z-index:2}
+.freeb{position:absolute;top:5px;right:5px;background:#dceefb;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#2a5a7a;z-index:2}
+.owned{position:absolute;top:5px;right:5px;background:#dff0d8;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#3c763d;z-index:2}
 .closeM{width:100%;margin-top:12px;border:0;background:#3a352b;color:#fff;border-radius:10px;padding:11px 0;font-size:13.5px;font-family:inherit}
+#coverFull{position:fixed;inset:0;background:rgba(20,16,10,.86);display:none;align-items:center;justify-content:center;z-index:30}
+#coverFull.on{display:flex}
+#coverFull img{max-height:88vh;max-width:92vw;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
 .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#3a352b;color:#fff;font-size:12.5px;
- padding:7px 16px;border-radius:20px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+ padding:7px 16px;border-radius:20px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:40}
 </style>
-<svg width="0" height="0" style="position:absolute">
-<defs>
+<svg width="0" height="0" style="position:absolute"><defs>
 <g id="s-leaf"><g transform="translate(10,4)"><path d="M60 0 L69 24 L94 18 L79 39 L100 53 L74 56 L77 82 L60 64 L43 82 L46 56 L20 53 L41 39 L26 18 L51 24 Z" fill="#d97b52" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M60 0 L69 24 L94 18 L79 39 L100 53 L74 56 L77 82 L60 64 L43 82 L46 56 L20 53 L41 39 L26 18 L51 24 Z" fill="#d97b52"/><path d="M60 12 L60 62" stroke="#a8512e" stroke-width="2.6" stroke-linecap="round"/><path d="M60 64 L60 92" stroke="#a8512e" stroke-width="4" stroke-linecap="round"/></g></g>
 <g id="s-acorn"><g transform="translate(22,6)"><path d="M4 34 Q4 4 28 4 Q52 4 52 34 Z" fill="#8a6d4b" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M6 34 Q6 76 28 82 Q50 76 50 34 Z" fill="#c99b5f" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M6 34 Q6 76 28 82 Q50 76 50 34 Z" fill="#c99b5f"/><path d="M4 34 Q4 4 28 4 Q52 4 52 34 Z" fill="#8a6d4b"/><path d="M28 4 Q28 -6 36 -9" stroke="#6e5539" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="21" cy="52" r="2.8" fill="#7a5836"/><circle cx="35" cy="52" r="2.8" fill="#7a5836"/><path d="M23 62 Q28 66 33 62" stroke="#7a5836" stroke-width="2.3" fill="none" stroke-linecap="round"/></g></g>
 <g id="s-cup"><g transform="translate(12,10)"><path d="M62 14 Q80 14 80 27 Q80 40 60 38" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/><path d="M0 6 H64 V48 Q64 66 32 66 Q0 66 0 48 Z" fill="#fdf6ea" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M62 14 Q80 14 80 27 Q80 40 60 38" fill="none" stroke="#d97b52" stroke-width="6" stroke-linecap="round"/><path d="M0 6 H64 V48 Q64 66 32 66 Q0 66 0 48 Z" fill="#fdf6ea" stroke="#d97b52" stroke-width="3.5"/><path d="M0 20 H64" stroke="#e3cc40" stroke-width="8"/><text x="32" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#c96f3d" font-family="IBM Plex Sans KR">한 걸음</text><path d="M16 -2 Q12 -9 17 -15 M32 -2 Q28 -11 33 -18" stroke="#b9c2c9" stroke-width="3" fill="none" stroke-linecap="round"/></g></g>
 <g id="s-ticket"><g transform="translate(4,22)"><rect x="0" y="0" width="132" height="52" rx="4" fill="#ffe9a8" stroke="#fff" stroke-width="8"/><rect x="0" y="0" width="132" height="52" rx="4" fill="#ffe9a8"/><rect x="0" y="0" width="132" height="12" fill="#e3cc40"/><line x1="98" y1="0" x2="98" y2="52" stroke="#fff" stroke-width="2.6" stroke-dasharray="4 5"/><circle cx="98" cy="0" r="5" fill="#f6efe2"/><circle cx="98" cy="52" r="5" fill="#f6efe2"/><text x="7" y="9.5" font-size="7.5" font-weight="700" fill="#4d431a" font-family="IBM Plex Sans KR">BOOTNESS TRAVEL</text><text x="7" y="30" font-size="12" font-weight="700" fill="#3a352b" font-family="IBM Plex Sans KR">가을 여행</text><text x="7" y="43" font-size="7.5" fill="#8a7c4f" font-family="IBM Plex Sans KR">12 WEEKS · 출발→완주</text><text x="115" y="33" text-anchor="middle" font-size="13">🍂</text></g></g>
 <g id="s-tag"><g transform="translate(24,8)"><path d="M10 0 H74 Q82 0 82 8 V60 Q82 68 74 68 H10 L26 34 Z" fill="#e8a87c" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M10 0 H74 Q82 0 82 8 V60 Q82 68 74 68 H10 L26 34 Z" fill="#e8a87c"/><circle cx="70" cy="34" r="4.5" fill="#fdf6ea"/><path d="M70 34 Q92 22 96 8" stroke="#9a917f" stroke-width="2.6" fill="none" stroke-linecap="round"/><text x="44" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#5c3d22" font-family="IBM Plex Sans KR">걸음</text><text x="44" y="50" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="IBM Plex Sans KR">12</text></g></g>
 <g id="s-moon"><g transform="translate(16,10)"><circle cx="42" cy="38" r="38" fill="#ffe9a8" stroke="#fff" stroke-width="8"/><circle cx="42" cy="38" r="38" fill="#ffe9a8"/><circle cx="42" cy="38" r="38" fill="none" stroke="#e3cc40" stroke-width="3.5"/><circle cx="30" cy="26" r="4.5" fill="#f0d878" opacity=".8"/><circle cx="55" cy="50" r="6" fill="#f0d878" opacity=".7"/><text x="42" y="35" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7a6420" font-family="IBM Plex Sans KR">오늘도</text><text x="42" y="50" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7a6420" font-family="IBM Plex Sans KR">한 걸음</text></g></g>
-</defs>
-</svg>
+<g id="b-star"><path d="M50 6 L61 36 L93 37 L67 56 L77 87 L50 68 L23 87 L33 56 L7 37 L39 36 Z" fill="#ffd84d" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M50 6 L61 36 L93 37 L67 56 L77 87 L50 68 L23 87 L33 56 L7 37 L39 36 Z" fill="#ffd84d"/></g>
+<g id="b-heart"><path d="M50 84 C20 62 8 42 16 26 C24 12 44 12 50 28 C56 12 76 12 84 26 C92 42 80 62 50 84 Z" fill="#f79ab0" stroke="#fff" stroke-width="8" stroke-linejoin="round"/><path d="M50 84 C20 62 8 42 16 26 C24 12 44 12 50 28 C56 12 76 12 84 26 C92 42 80 62 50 84 Z" fill="#f79ab0"/></g>
+<g id="b-check"><circle cx="50" cy="46" r="38" fill="#9fd39a" stroke="#fff" stroke-width="8"/><circle cx="50" cy="46" r="38" fill="#9fd39a"/><path d="M33 47 L45 60 L69 33" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="b-done"><circle cx="50" cy="46" r="38" fill="none" stroke="#fff" stroke-width="12"/><circle cx="50" cy="46" r="38" fill="none" stroke="#d95a45" stroke-width="5"/><text x="50" y="53" text-anchor="middle" font-size="20" font-weight="700" fill="#d95a45" font-family="IBM Plex Sans KR" transform="rotate(-12 50 46)">완료!</text></g>
+<g id="b-spark"><g stroke="#fff" stroke-width="8" stroke-linejoin="round"><path d="M50 8 L57 38 L88 46 L57 54 L50 84 L43 54 L12 46 L43 38 Z" fill="#ffcf6e"/></g><path d="M50 8 L57 38 L88 46 L57 54 L50 84 L43 54 L12 46 L43 38 Z" fill="#ffcf6e"/><circle cx="78" cy="20" r="5" fill="#ffcf6e"/><circle cx="22" cy="72" r="4" fill="#ffcf6e"/></g>
+<g id="b-tape"><g transform="rotate(-8 50 46)"><rect x="8" y="30" width="84" height="32" fill="#bfd9c8" opacity=".85" stroke="#fff" stroke-width="7"/><rect x="8" y="30" width="84" height="32" fill="#bfd9c8" opacity=".85"/><path d="M8 30 L2 38 L8 46 L2 54 L8 62 M92 30 L98 38 L92 46 L98 54 L92 62" fill="#bfd9c8" opacity=".85"/></g></g>
+<g id="st-bench"><g transform="translate(6,6)"><rect x="14" y="26" width="5" height="22" rx="2.5" fill="#a8825f"/><circle cx="16" cy="18" r="15" fill="#d97b52"/><circle cx="5" cy="27" r="8" fill="#e8a87c"/><circle cx="28" cy="26" r="8" fill="#e8a87c"/><rect x="38" y="27" width="26" height="3.5" rx="1.7" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><rect x="38" y="35" width="26" height="4" rx="2" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><path d="M42 39 L42 50 M60 39 L60 50" stroke="#9a917f" stroke-width="2.4" stroke-linecap="round"/></g></g>
+<g id="st-reed"><g transform="translate(14,2)"><path d="M8 54 q-3 -20 -8 -34 M20 54 q-1 -24 -3 -40 M32 54 q2 -22 6 -36 M44 54 q4 -18 9 -28" stroke="#b3a479" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="16" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-14 0 16)"/><ellipse cx="17" cy="10" rx="3.4" ry="8.5" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-5 17 10)"/><ellipse cx="38" cy="14" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(10 38 14)"/><ellipse cx="53" cy="22" rx="3.2" ry="7" fill="#efe3c8" stroke="#cbbd97" transform="rotate(18 53 22)"/></g></g>
+<g id="st-tower"><g transform="translate(12,2)"><path d="M2 52 Q26 30 50 52 Z" fill="#e8a87c" stroke="#d97b52" stroke-width="1.4"/><path d="M23 44 L24.6 20 L27.4 20 L29 44 Z" fill="#e7e1d3" stroke="#9a917f" stroke-width="1.2"/><rect x="20" y="14" width="12" height="6" rx="2.4" fill="#f0b072" stroke="#9a917f" stroke-width="1.2"/><line x1="26" y1="14" x2="26" y2="4" stroke="#9a917f" stroke-width="1.8" stroke-linecap="round"/><circle cx="26" cy="3" r="1.7" fill="#d97b52"/></g></g>
+</defs></svg>
+
 <div class="wrap">
 <header><h1>📔 여행자님의 다이어리</h1><span class="coin">🪙 12</span></header>
-<div class="coverCard" id="coverCard"><span>내 표지</span></div>
-<div class="topbtns"><button id="btnCover">🖼 표지 바꾸기</button><button id="btnSkin">📄 속지 상점</button></div>
-<p class="hint">아래 팔레트에서 스티커를 누르면 다이어리에 붙습니다. 드래그로 이동, 선택 후 버튼으로 크기·회전·삭제. 저장하면 다음에 와도 그대로예요.</p>
-<div id="diary">
+<div class="bookrow">
+  <div class="coverThumb" id="coverThumb"></div>
+  <div class="binfo">
+    <div><div class="t1">가을 여행 · 1주차</div><div class="t2">9월 둘째 주 산책<br>달성률 3/4 · 일지 📔 완료</div></div>
+    <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button></div>
+  </div>
+</div>
+<div class="tabs">
+  <button id="tabD" class="on">📔 산책 다이어리</button>
+  <button id="tabS">🧳 여행 일지</button>
+</div>
+
+<div class="page" id="diary">
   <div class="dhead">9월 둘째 주 산책 🍂</div>
-  <div class="dsub">가을 여행 · 1주차 · 달성률 3/4</div>
+  <div class="dsub">가을 여행 · 1주차</div>
   <div class="week">
     <div class="day"><b>월</b><span>🌕</span></div><div class="day"><b>화</b><span>🌗</span></div>
     <div class="day"><b>수</b><span>🌕</span></div><div class="day"><b>목</b><span>·</span></div>
     <div class="day"><b>금</b><span>📔</span></div><div class="day"><b>토</b><span>·</span></div>
     <div class="day"><b>일</b><span>·</span></div>
   </div>
-  <div class="card"><h3>📔 이번 주 여행 일지</h3><p>강동구 임장에서 배운 3가지 — 역세권보다 학군 수요가 먼저 움직인다는 걸 눈으로 확인했다…</p></div>
+  <div class="card"><h3>📔 이번 주 산책 일지</h3><p>강동구 임장에서 배운 3가지 — 역세권보다 학군 수요가 먼저 움직인다는 걸 눈으로 확인했다…</p></div>
   <div class="card"><h3>이번 주 목표</h3><p>임장 2곳 · 종잣돈 30만원 적립 · 경매 책 3장</p></div>
-  <div class="cheer">💬 바람의색상: 목요일 쉬어간 건 하루 카드가 지켜드렸어요. 이번 주 보름달 1개 남았습니다!</div>
+  <div class="cheer">💬 바람의색상: 목요일은 하루 카드가 지켜드렸어요. 보름달 1개 남았습니다!</div>
   <div id="layer"></div>
 </div>
+
+<div class="page" id="stampbook" style="display:none">
+  <div class="dhead">🧳 여행 일지</div>
+  <div class="dsub">이정표에 도착할 때마다 그곳의 스탬프가 찍힙니다</div>
+  <div class="seasonTitle">🍂 가을 여행 (2026)</div>
+  <div class="stampGrid">
+    <div class="slot got"><svg viewBox="0 0 76 62"><use href="#st-bench"/></svg><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
+    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-reed"/></svg><b>억새밭</b><i>8걸음에 획득</i></div>
+    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
+  </div>
+  <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️ — 모은 스탬프는 영구 보관!</div>
 </div>
+</div>
+
 <div id="palette">
+  <p class="plabel">내 스티커</p>
   <div class="prow" id="prow"></div>
   <div class="pbar">
     <button id="bigger" disabled>크게</button><button id="smaller" disabled>작게</button>
-    <button id="rotL" disabled>↺ 회전</button><button id="rotR" disabled>↻ 회전</button>
+    <button id="rotL" disabled>↺</button><button id="rotR" disabled>↻</button>
     <button id="del" class="danger" disabled>삭제</button><button id="save">💾 저장</button>
   </div>
 </div>
 <div id="modal"><div class="sheet2" id="msheet"></div></div>
+<div id="coverFull"><img id="coverFullImg"></div>
 <div class="toast" id="toast"></div>
-<script>
 
-const COVERS=[
- {id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'}];
+<script>
+const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'}];
 const SKINS=[
- {id:'basic',n:'기본 줄노트',p:0, bg:'#fdf8ee', im:'repeating-linear-gradient(transparent 0 25px, #e6dcc6 25px 26px)', sz:'auto'},
- {id:'dot',n:'도트',p:3, bg:'#fbf6e9', im:'radial-gradient(#ddd2b6 1.3px, transparent 1.3px)', sz:'18px 18px'},
- {id:'grid',n:'모눈',p:3, bg:'#fcf7ea', im:'linear-gradient(#e7ddc4 1px,transparent 1px),linear-gradient(90deg,#e7ddc4 1px,transparent 1px)', sz:'22px 22px'},
- {id:'kraft',n:'크라프트',p:5, bg:'#e9d9bc', im:'radial-gradient(#dcc9a5 1.5px, transparent 1.5px)', sz:'26px 26px'},
- {id:'leaf',n:'가을 낙엽 (시즌)',p:8, bg:'#fdf6e8', im:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cellipse cx='20' cy='22' rx='8' ry='4' fill='%23e8a87c' opacity='.45' transform='rotate(-24 20 22)'/%3E%3Cellipse cx='66' cy='64' rx='7' ry='3.5' fill='%23d97b52' opacity='.4' transform='rotate(28 66 64)'/%3E%3C/svg%3E\")", sz:'90px 90px'},
+ {id:'basic',n:'기본 줄노트',p:0, bg:'#fdf8ee', im:'repeating-linear-gradient(transparent 0 24px, #e6dcc6 24px 25px)', sz:'auto'},
+ {id:'dot',n:'도트',p:3, bg:'#fbf6e9', im:'radial-gradient(#ddd2b6 1.3px, transparent 1.3px)', sz:'17px 17px'},
+ {id:'grid',n:'모눈',p:3, bg:'#fcf7ea', im:'linear-gradient(#e7ddc4 1px,transparent 1px),linear-gradient(90deg,#e7ddc4 1px,transparent 1px)', sz:'20px 20px'},
+ {id:'kraft',n:'크라프트',p:5, bg:'#e9d9bc', im:'radial-gradient(#dcc9a5 1.5px, transparent 1.5px)', sz:'24px 24px'},
+ {id:'leaf',n:'가을 낙엽 (시즌)',p:8, bg:'#fdf6e8', im:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84'%3E%3Cellipse cx='18' cy='20' rx='8' ry='4' fill='%23e8a87c' opacity='.45' transform='rotate(-24 18 20)'/%3E%3Cellipse cx='62' cy='60' rx='7' ry='3.5' fill='%23d97b52' opacity='.4' transform='rotate(28 62 60)'/%3E%3C/svg%3E\")", sz:'84px 84px'},
 ];
-let state={cover:'c1',skin:'basic',coins:12,owned:['basic']};
-try{const v=localStorage.getItem('bd_state'); if(v) state={...state,...JSON.parse(v)};}catch(e){}
-function saveState(){try{localStorage.setItem('bd_state',JSON.stringify(state));}catch(e){}}
-function applyState(){
-  document.getElementById('coverCard').style.backgroundImage=`url(covers/${state.cover}.png)`;
+const STICKERS=[
+ {k:'b-star',n:'별',p:0,cat:'기본',vb:'0 0 100 92',w:76,h:70},
+ {k:'b-heart',n:'하트',p:0,cat:'기본',vb:'0 0 100 92',w:74,h:68},
+ {k:'b-check',n:'체크',p:0,cat:'기본',vb:'0 0 100 92',w:70,h:64},
+ {k:'b-done',n:'완료 도장',p:2,cat:'기본',vb:'0 0 100 92',w:78,h:72},
+ {k:'b-spark',n:'반짝',p:2,cat:'기본',vb:'0 0 100 92',w:72,h:66},
+ {k:'b-tape',n:'마스킹테이프',p:3,cat:'기본',vb:'0 0 100 92',w:96,h:64},
+ {k:'s-leaf',n:'단풍잎',p:0,cat:'가을 시즌',vb:'0 0 120 100',w:96,h:80},
+ {k:'s-moon',n:'보름달 스탬프',p:0,cat:'가을 시즌',vb:'0 0 116 90',w:92,h:72},
+ {k:'s-acorn',n:'도토리',p:2,cat:'가을 시즌',vb:'0 0 100 100',w:78,h:78},
+ {k:'s-cup',n:'따뜻한 한 잔',p:2,cat:'가을 시즌',vb:'0 0 104 90',w:84,h:72},
+ {k:'s-ticket',n:'여행 티켓',p:3,cat:'가을 시즌',vb:'0 0 140 100',w:112,h:80},
+ {k:'s-tag',n:'러기지 태그',p:3,cat:'가을 시즌',vb:'0 0 128 86',w:100,h:68},
+];
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placed:[]};
+try{const v=localStorage.getItem('bd4');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+let sel=null,drag=null,uid=1+Math.max(0,...state.placed.map(s=>s.id||0));
+const $=id=>document.getElementById(id);
+const diary=$('diary'),layer=$('layer');
+function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
+function save(){try{localStorage.setItem('bd4',JSON.stringify(state));}catch(e){}}
+function stDef(k){return STICKERS.find(s=>s.k===k);}
+function apply(){
+  $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
   const sk=SKINS.find(s=>s.id===state.skin)||SKINS[0];
-  diary.style.background=sk.bg; diary.style.backgroundImage=sk.im; diary.style.backgroundSize=sk.sz;
+  for(const pg of [diary,$('stampbook')]){pg.style.background=sk.bg;pg.style.backgroundImage=sk.im;pg.style.backgroundSize=sk.sz;}
   document.querySelector('.coin').textContent='🪙 '+state.coins;
+  buildPalette();
 }
-const modal=document.getElementById('modal'), msheet=document.getElementById('msheet');
-function openCoverGal(){
-  msheet.innerHTML='<h2>🖼 표지 고르기</h2><div class="gal">'+COVERS.map(c=>
-    `<div class="gitem ${state.cover===c.id?'selq':''}" data-c="${c.id}"><img src="covers/${c.id}.png"><b>${c.n}</b></div>`).join('')+
-    '</div><button class="closeM">닫기</button>';
-  modal.classList.add('on'); wire();
-}
-function openSkinShop(){
-  msheet.innerHTML='<h2>📄 속지 상점 <span style="font-weight:400;font-size:12px;color:#8a8172">— 코인으로 잠금 해제</span></h2><div class="gal">'+SKINS.map(k=>{
-    const own=state.owned.includes(k.id);
-    const badge= own?'<span class="owned">보유</span>':(k.p?`<span class="price">🪙 ${k.p}</span>`:'<span class="owned">무료</span>');
-    return `<div class="gitem ${state.skin===k.id?'selq':''}" data-s="${k.id}">
-      <div class="skpv" style="background:${k.bg};background-image:${k.im.replace(/"/g,'&quot;')};background-size:${k.sz}"></div>${badge}<b>${k.n}</b></div>`;
-  }).join('')+'</div><button class="closeM">닫기</button>';
-  modal.classList.add('on'); wire();
-}
-function wire(){
-  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
-  msheet.querySelectorAll('[data-c]').forEach(el=>el.onclick=()=>{state.cover=el.dataset.c;saveState();applyState();modal.classList.remove('on');toast('표지를 바꿨어요');});
-  msheet.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{
-    const k=SKINS.find(x=>x.id===el.dataset.s);
-    if(state.owned.includes(k.id)){ state.skin=k.id; saveState(); applyState(); modal.classList.remove('on'); toast('속지를 갈았어요'); return; }
-    if(state.coins<k.p){ toast('코인이 부족해요 — 산책으로 모아보세요!'); return; }
-    if(!confirm(`「${k.n}」 속지를 🪙${k.p}에 살까요?`)) return;
-    state.coins-=k.p; state.owned.push(k.id); state.skin=k.id; saveState(); applyState(); modal.classList.remove('on');
-    toast(`구매 완료! 남은 코인 ${state.coins}`);
-  });
-}
-document.getElementById('btnCover').onclick=openCoverGal;
-document.getElementById('btnSkin').onclick=openSkinShop;
-const DEFS=[["s-leaf",120,100],["s-acorn",100,100],["s-cup",104,90],["s-ticket",140,100],["s-tag",128,86],["s-moon",116,90]];
-const layer=document.getElementById('layer'), diary=document.getElementById('diary');
-let placed=[], sel=null, drag=null, uid=1;
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1500);}
 function render(){
   layer.innerHTML='';
-  for(const s of placed){
+  for(const s of state.placed){
+    const d=stDef(s.k); if(!d) continue;
     const el=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    const d=DEFS.find(x=>x[0]===s.k);
-    el.setAttribute('viewBox',`0 0 ${d[1]} ${d[2]}`);
-    el.classList.add('stk'); if(s.id===sel) el.classList.add('sel');
-    el.style.left=s.x+'px'; el.style.top=s.y+'px';
-    el.style.width=(d[1]*s.sc)+'px'; el.style.height=(d[2]*s.sc)+'px';
+    el.setAttribute('viewBox',d.vb); el.classList.add('stk'); if(s.id===sel)el.classList.add('sel');
+    el.style.left=s.x+'%'; el.style.top=s.y+'%';
+    el.style.width=(d.w*s.sc)+'px'; el.style.height=(d.h*s.sc)+'px';
     el.style.transform=`rotate(${s.r}deg)`;
     el.innerHTML=`<use href="#${s.k}"/>`;
-    el.addEventListener('pointerdown',ev=>{ev.preventDefault();sel=s.id;drag={s,dx:ev.clientX-s.x,dy:ev.clientY-s.y};el.setPointerCapture(ev.pointerId);render();});
+    el.addEventListener('pointerdown',ev=>{ev.preventDefault();sel=s.id;
+      const r=diary.getBoundingClientRect();
+      drag={s,dx:ev.clientX-r.left-s.x/100*r.width,dy:ev.clientY-r.top-s.y/100*r.height};
+      el.setPointerCapture(ev.pointerId);render();});
     layer.appendChild(el);
   }
-  const on=!!placed.find(s=>s.id===sel);
-  for(const id of['bigger','smaller','rotL','rotR','del']) document.getElementById(id).disabled=!on;
+  const on=!!state.placed.find(s=>s.id===sel);
+  for(const id of['bigger','smaller','rotL','rotR','del'])$(id).disabled=!on;
 }
-diary.addEventListener('pointermove',ev=>{ if(!drag)return; drag.s.x=ev.clientX-drag.dx; drag.s.y=ev.clientY-drag.dy; render(); });
-diary.addEventListener('pointerup',()=>drag=null);
-diary.addEventListener('pointerdown',ev=>{ if(ev.target===diary||ev.target.closest('.card,.week,.cheer,.dhead,.dsub')){sel=null;render();} });
-const prow=document.getElementById('prow');
-for(const [k,w,h] of DEFS){
-  const b=document.createElement('div'); b.className='pitem';
-  b.innerHTML=`<svg viewBox="0 0 ${w} ${h}" width="52" height="48"><use href="#${k}"/></svg>`;
-  b.onclick=()=>{ const r=diary.getBoundingClientRect();
-    placed.push({id:uid++,k,x:r.width/2-w/2+ (Math.random()*40-20), y:120+Math.random()*60, sc:1, r:0});
-    sel=uid-1; render(); toast('스티커를 붙였어요! 드래그로 옮겨보세요'); };
-  prow.appendChild(b);
+diary.addEventListener('pointermove',ev=>{if(!drag)return;const r=diary.getBoundingClientRect();
+  drag.s.x=Math.max(-8,Math.min(96,(ev.clientX-r.left-drag.dx)/r.width*100));
+  drag.s.y=Math.max(-4,Math.min(96,(ev.clientY-r.top-drag.dy)/r.height*100));render();});
+diary.addEventListener('pointerup',()=>{drag=null;save();});
+diary.addEventListener('pointerdown',ev=>{if(ev.target.closest('.card,.week,.cheer,.dhead,.dsub')||ev.target===diary){sel=null;render();}});
+function buildPalette(){
+  const row=$('prow');row.innerHTML='';
+  for(const k of state.ownedStk){const d=stDef(k);if(!d)continue;
+    const b=document.createElement('div');b.className='pitem';
+    b.innerHTML=`<svg viewBox="${d.vb}" width="48" height="44"><use href="#${d.k}"/></svg>`;
+    b.onclick=()=>{state.placed.push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
+      sel=uid-1;$('tabD').click();render();save();toast('붙였어요! 드래그로 옮겨보세요');};
+    row.appendChild(b);}
+  const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
+  shop.onclick=openStkShop;row.appendChild(shop);
 }
-const mod=f=>{const s=placed.find(x=>x.id===sel); if(s){f(s);render();}};
-document.getElementById('bigger').onclick=()=>mod(s=>s.sc=Math.min(2.2,s.sc*1.15));
-document.getElementById('smaller').onclick=()=>mod(s=>s.sc=Math.max(.45,s.sc/1.15));
-document.getElementById('rotL').onclick=()=>mod(s=>s.r-=15);
-document.getElementById('rotR').onclick=()=>mod(s=>s.r+=15);
-document.getElementById('del').onclick=()=>{placed=placed.filter(x=>x.id!==sel);sel=null;render();};
-document.getElementById('save').onclick=()=>{ try{localStorage.setItem('bd_stk',JSON.stringify(placed));toast('저장 완료 — 다음에 와도 그대로예요');}catch(e){toast('저장 불가 환경이에요');} };
-try{ const v=localStorage.getItem('bd_stk'); if(v){placed=JSON.parse(v);uid=Math.max(1,...placed.map(s=>s.id+1));} }catch(e){}
-render(); applyState();
+const modal=$('modal'),msheet=$('msheet');
+function badge(own,p){return own?'<span class="owned">보유</span>':(p?`<span class="price">🪙${p}</span>`:'<span class="freeb">무료</span>');}
+function openCoverGal(){
+  msheet.innerHTML='<h2>🖼 표지 고르기 <span style="font-weight:400;font-size:11px;color:#8a8172">— 눌러서 적용, 썸네일 탭하면 크게 보기</span></h2><div class="gal">'
+   +COVERS.map(c=>`<div class="gitem ${state.cover===c.id?'selq':''}" data-c="${c.id}"><img src="covers/${c.id}.png"><b>${c.n}</b></div>`).join('')
+   +'</div><button class="closeM">닫기</button>';
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelectorAll('[data-c]').forEach(el=>el.onclick=()=>{state.cover=el.dataset.c;save();apply();modal.classList.remove('on');toast('표지를 바꿨어요');});
+}
+function openSkinShop(){
+  msheet.innerHTML='<h2>📄 속지 상점</h2><div class="gal">'+SKINS.map(k=>{
+    const own=state.ownedSkins.includes(k.id);
+    return `<div class="gitem ${state.skin===k.id?'selq':''}" data-s="${k.id}">
+      <div class="skpv" style="background:${k.bg};background-image:${k.im.replace(/"/g,'&quot;')};background-size:${k.sz}"></div>${badge(own,k.p)}<b>${k.n}</b></div>`;}).join('')
+   +'</div><button class="closeM">닫기</button>';
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelectorAll('[data-s]').forEach(el=>el.onclick=()=>{
+    const k=SKINS.find(x=>x.id===el.dataset.s);
+    if(state.ownedSkins.includes(k.id)){state.skin=k.id;save();apply();modal.classList.remove('on');toast('속지를 갈았어요');return;}
+    if(k.p===0){state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');return;}
+    if(state.coins<k.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
+    if(!confirm(`「${k.n}」 속지를 🪙${k.p}에 살까요?`))return;
+    state.coins-=k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
+}
+function openStkShop(){
+  const cats=['기본','가을 시즌'];
+  msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':'')+c+'</p><div class="gal3">'
+   +STICKERS.filter(s=>s.cat===c).map(s=>{
+     const own=state.ownedStk.includes(s.k);
+     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="52" height="46"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
+   +'<button class="closeM">닫기</button>';
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelectorAll('[data-k]').forEach(el=>el.onclick=()=>{
+    const s=STICKERS.find(x=>x.k===el.dataset.k);
+    if(state.ownedStk.includes(s.k)){toast('이미 보유 중 — 아래 팔레트에서 쓰세요');return;}
+    if(s.p===0){state.ownedStk.push(s.k);save();apply();toast('무료로 받았어요!');openStkShop();return;}
+    if(state.coins<s.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
+    if(!confirm(`「${s.n}」 스티커를 🪙${s.p}에 살까요?`))return;
+    state.coins-=s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
+}
+$('btnCover').onclick=openCoverGal;$('btnSkin').onclick=openSkinShop;
+$('coverThumb').onclick=()=>{$('coverFullImg').src=`covers/${state.cover}.png`;$('coverFull').classList.add('on');};
+$('coverFull').onclick=()=>$('coverFull').classList.remove('on');
+$('tabD').onclick=()=>{$('tabD').classList.add('on');$('tabS').classList.remove('on');diary.style.display='block';$('stampbook').style.display='none';};
+$('tabS').onclick=()=>{$('tabS').classList.add('on');$('tabD').classList.remove('on');diary.style.display='none';$('stampbook').style.display='block';};
+const mod=f=>{const s=state.placed.find(x=>x.id===sel);if(s){f(s);render();save();}};
+$('bigger').onclick=()=>mod(s=>s.sc=Math.min(2,s.sc*1.15));
+$('smaller').onclick=()=>mod(s=>s.sc=Math.max(.4,s.sc/1.15));
+$('rotL').onclick=()=>mod(s=>s.r-=15);
+$('rotR').onclick=()=>mod(s=>s.r+=15);
+$('del').onclick=()=>{state.placed=state.placed.filter(x=>x.id!==sel);sel=null;render();save();};
+$('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
+apply();render();
 </script>
