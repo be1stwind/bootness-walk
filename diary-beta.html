@@ -418,7 +418,7 @@ function computeFlow(w){
   M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+(live.clientWidth||360)+'px';
   const pg=document.createElement('div'); pg.className='page'; pg.style.margin='0'; M.appendChild(pg);
   document.body.appendChild(M);
-  const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight-2;};
+  const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
   const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
   const _ad=(state.addenda||{})[w.n]||'';
   const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
