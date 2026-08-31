@@ -33,10 +33,10 @@ h1{font-size:18px;font-weight:700;margin:0}
 .day span{font-size:14px}
 .card{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
 .card h3{margin:0 0 3px;font-size:13px}
-.card p{margin:0;font-size:12.5px;color:#5a5142;line-height:1.62}
+.card p{margin:0;font-size:14.5px;color:#5a5142;line-height:1.8;white-space:pre-line}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
-.cheer{font-size:12px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.cheer{font-size:13px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
 .page{margin-bottom:10px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
 .page.auto .jSec:last-child{margin-bottom:0}
@@ -74,6 +74,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .slot.got{border-style:solid;border-color:#e3cc40;background:#fffdf2}
 .slot svg{width:74px;height:64px}
 .slot.lock svg{filter:grayscale(1);opacity:.35}
+.slot.lock img{filter:grayscale(1);opacity:.4}
 .slot b{display:block;font-size:11px;margin-top:2px}
 .slot i{display:block;font-style:normal;font-size:9.5px;color:var(--sub)}
 .seasonTitle{font-weight:700;font-size:13px;margin:2px 0 8px}
@@ -97,6 +98,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 #gate .gok p{font-size:13px;line-height:1.8;color:var(--ink);margin:0 0 4px}
 
 .addTxt{color:#8a7250;font-size:.92em}
+.slot img{width:100%;aspect-ratio:930/758;object-fit:cover;border-radius:7px;display:block;margin-bottom:4px}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -231,7 +233,7 @@ h1{font-size:18px;font-weight:700;margin:0}
    <div class="glogo">🌱</div>
    <h2>가입하기</h2>
    <p class="gsub">카페 닉네임으로 내 걸음과 연결돼요</p>
-   <label>카페 닉네임</label>
+   <label>부트니스 카페 닉네임</label>
    <input id="jNick" placeholder="예: 바람의색상" autocomplete="off">
    <label>아이디 (영문 소문자·숫자 3~12자)</label>
    <input id="jId" placeholder="아이디" autocomplete="off">
@@ -240,7 +242,7 @@ h1{font-size:18px;font-weight:700;margin:0}
    <label>비밀번호 확인</label>
    <input id="jPin2" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
    <p class="gnote">🔒 비밀번호는 <b>숫자 6자리</b>예요. 은행·포털 등 다른 곳에서 쓰는 숫자는 피해주세요.</p>
-   <label style="display:flex;gap:8px;align-items:flex-start;margin:12px 2px 0;font-size:11.5px;color:var(--ink);line-height:1.6;cursor:pointer"><input type="checkbox" id="jConsent" style="margin-top:2px;accent-color:var(--accent)"> 카페에 쓴 내 산책일지의 <b>글과 사진</b>이 내 다이어리·책에 담기는 것에 동의해요 (필수)</label>
+   <label style="display:flex;gap:9px;align-items:flex-start;margin:12px 0 0;font-size:12px;font-weight:500;color:var(--ink);line-height:1.65;cursor:pointer;background:#fbf5e3;border-radius:9px;padding:10px 11px"><input type="checkbox" id="jConsent" style="width:16px;height:16px;margin:2px 0 0;accent-color:var(--accent);flex:none"><span>카페에 쓴 내 산책일지의 <b>글과 사진</b>이<br>내 다이어리·책에 담기는 것에 동의해요 <span style="color:var(--accent);font-weight:700">(필수)</span></span></label>
    <button class="gbtn" id="gJoinBtn">가입 신청</button>
    <button class="glink gghost" id="gToLogin">← 로그인으로 돌아가기</button>
   </div>
@@ -297,9 +299,9 @@ h1{font-size:18px;font-weight:700;margin:0}
   <div class="dsub">이정표에 도착할 때마다 그곳의 스탬프가 찍힙니다</div>
   <div class="jSec"><h3>🍂 가을 여행 스탬프 (2026)</h3>
   <div class="stampGrid">
-    <div class="slot got"><svg viewBox="0 0 76 62"><use href="#st-bench"/></svg><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
-    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-reed"/></svg><b>억새밭</b><i>8걸음에 획득</i></div>
-    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
+    <div class="slot got"><img src="stamps/bench.jpg" alt=""><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
+    <div class="slot lock"><img src="stamps/reed.jpg" alt=""><b>억새밭</b><i>8걸음에 획득</i></div>
+    <div class="slot lock"><img src="stamps/tower.jpg" alt=""><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
   <div class="jSec"><h3>💎 여행 중 발견한 보물</h3>
@@ -322,7 +324,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="toast" id="toast"></div>
 
 <script>
-const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'}];
+const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'},{id:'c5',n:'수채 은행나무길',e:'jpg'},{id:'c6',n:'가을 별밤',e:'jpg'},{id:'c7',n:'한지 단풍',e:'jpg'},{id:'c8',n:'파스텔 낙엽',e:'jpg'}];
+const cvUrl=id=>{const c=COVERS.find(x=>x.id===id)||COVERS[0];return 'covers/'+c.id+'.'+(c.e||'png');};
 const SKINS=[
  {id:'basic',n:'기본 줄노트',p:0, bg:'#fdf8ee', im:'repeating-linear-gradient(transparent 0 24px, #e6dcc6 24px 25px)', sz:'auto'},
  {id:'dot',n:'도트',p:3, bg:'#fbf6e9', im:'radial-gradient(#ddd2b6 1.3px, transparent 1.3px)', sz:'17px 17px'},
@@ -419,7 +422,7 @@ function computeFlow(w){
   const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
   const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
   const wrap0=t=>head+cards+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
-  const wrapN=t=>`<div class="dhead">📔 산책 일지 (계속)</div><div class="dsub">${w.d}</div><p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${t}</p>`;
+  const wrapN=t=>`<div class="dhead">📔 산책 일지 (계속)</div><div class="dsub">${w.d}</div><p style="font-size:14.5px;line-height:1.85;margin:6px 2px;color:#5a5142;white-space:pre-line">${t}</p>`;
   const cut=(builder,txt,tail)=>{let lo=0,hi=txt.length,ans=0;
     while(lo<=hi){const m=(lo+hi)>>1; if(fits(builder(txt.slice(0,m))+tail)){ans=m;lo=m+1;}else hi=m-1;}
     const sp=txt.lastIndexOf(' ',ans); return sp>ans*0.6?sp:ans;};
@@ -512,7 +515,7 @@ function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTime
 function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
-  $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
+  $('coverThumb').style.backgroundImage=`url(${cvUrl(state.cover)})`;
   const sk=SKINS.find(s=>s.id===state.skin)||SKINS[0];
   for(const pg of [diary,$('stampbook')]){pg.style.background=sk.bg;pg.style.backgroundImage=sk.im;pg.style.backgroundSize=sk.sz;}
   document.querySelector('.coin').textContent='🪙 '+state.coins;
@@ -560,7 +563,7 @@ const modal=$('modal'),msheet=$('msheet');
 function badge(own,p){return own?'<span class="owned">보유</span>':(p?`<span class="price">🪙${p}</span>`:'<span class="freeb">무료</span>');}
 function openCoverGal(){
   msheet.innerHTML='<h2>🖼 표지 고르기 <span style="font-weight:400;font-size:11px;color:#8a8172">— 눌러서 적용, 썸네일 탭하면 크게 보기</span></h2><div class="gal">'
-   +COVERS.map(c=>`<div class="gitem ${state.cover===c.id?'selq':''}" data-c="${c.id}"><img src="covers/${c.id}.png"><b>${c.n}</b></div>`).join('')
+   +COVERS.map(c=>`<div class="gitem ${state.cover===c.id?'selq':''}" data-c="${c.id}"><img src="${cvUrl(c.id)}"><b>${c.n}</b></div>`).join('')
    +'</div><button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
@@ -625,7 +628,7 @@ function bookPages(){
   const sk=SKINS.find(k=>k.id===state.skin)||SKINS[0];
   const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
   const pages=[];
-  pages.push({t:'표지',html:`<img src="covers/${state.cover}.png"><div class="coverTitle"><b>리매님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
+  pages.push({t:'표지',html:`<img src="${cvUrl(state.cover)}"><div class="coverTitle"><b>리매님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
   SEQ.forEach(q=>{
     const w=DAYS[q.i]; const parts=diaryParts(w);
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
