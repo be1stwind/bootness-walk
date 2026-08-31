@@ -270,6 +270,7 @@ const STICKERS=[
  {k:'d-bear',n:'곰돌이',p:3,cat:'기본',vb:'0 0 100 92',w:76,h:72},
  {k:'d-tulip',n:'튤립',p:2,cat:'기본',vb:'0 0 100 92',w:66,h:74},
  {k:'d-dday',n:'D-DAY',p:2,cat:'기본',vb:'0 0 100 92',w:88,h:62},
+ {k:'d-sakura',n:'벚꽃',p:2,cat:'기본',vb:'0 0 100 92',w:74,h:70},
  {k:'s-leaf',n:'단풍잎',p:0,cat:'가을 시즌',vb:'0 0 120 100',w:96,h:80},
  {k:'s-moon',n:'보름달 스탬프',p:0,cat:'가을 시즌',vb:'0 0 116 90',w:92,h:72},
  {k:'s-acorn',n:'도토리',p:2,cat:'가을 시즌',vb:'0 0 100 100',w:78,h:78},
@@ -292,7 +293,7 @@ const DAYS=[
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
 let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1};
-try{const v=localStorage.getItem('bd9');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){}
 if(!state.placedD)state.placedD={};
 function computeFlow(w){
   if(!w.diary) return {flow:null,parts:[]};
@@ -331,7 +332,7 @@ function curPlaced(){return state.placedD[curKey()]=(state.placedD[curKey()]||[]
 const $=id=>document.getElementById(id);
 const diary=$('diary'),layer=$('layer');
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
-function save(){try{localStorage.setItem('bd9',JSON.stringify(state));}catch(e){}}
+function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
