@@ -407,7 +407,7 @@ function computeFlow(w){
   if(w._pg) return w._pg;
   const live=document.getElementById('diary');
   const M=document.createElement('div');
-  M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+live.clientWidth+'px';
+  M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+(live.clientWidth||360)+'px';
   const pg=document.createElement('div'); pg.className='page'; pg.style.margin='0'; M.appendChild(pg);
   document.body.appendChild(M);
   const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
@@ -431,7 +431,15 @@ function computeFlow(w){
 }
 function diaryParts(w){ return computeFlow(w).parts; }
 const SEQ=[];
-DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});
+function buildSEQ(){SEQ.length=0;DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});}
+buildSEQ();
+// 웹폰트 적용 전 측정은 글자를 작게 재서 페이지가 넘친다 → 폰트 로딩 후 전체 재계산
+function reflowAll(){const cur=SEQ[state.pos]||{i:0,sub:0};DAYS.forEach(w=>{delete w._pg;});buildSEQ();
+  let np=SEQ.findIndex(q=>q.i===cur.i&&q.sub===cur.sub); if(np<0)np=SEQ.findIndex(q=>q.i===cur.i&&q.sub===0);
+  state.pos=np<0?0:np;
+  if(typeof renderDay==='function'){renderDay();renderPager();}}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>setTimeout(reflowAll,60));
+let _rsz;window.addEventListener('resize',()=>{clearTimeout(_rsz);_rsz=setTimeout(reflowAll,250);});
 function posOfDay(i){return SEQ.findIndex(q=>q.i===i&&q.sub===0);}
 let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedD).flat().map(s=>s.id||0));
 function curKey(){const q=SEQ[state.pos]||SEQ[0];return q.i+'.'+q.sub;}
