@@ -5,7 +5,7 @@
 :root{--paper:#f6efe2;--ink:#3a352b;--sub:#8a8172;--card:#fffdf7;--line:#e6dcc6;--accent:#c96f3d;--yellow:#ffe400}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#efe6d2;color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:15px}
-.wrap{max-width:520px;margin:0 auto;padding:12px 12px 132px}
+.wrap{max-width:520px;margin:0 auto;padding:12px 12px 96px}
 header{display:flex;align-items:center;gap:8px;margin:2px 2px 10px}
 h1{font-size:18px;font-weight:700;margin:0}
 .coin{margin-left:auto;background:var(--yellow);border-radius:20px;padding:3px 12px;font-weight:700;font-size:13px;color:#4d431a}
@@ -24,7 +24,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .tabs button.on{background:var(--card);color:var(--ink);border-bottom-color:var(--card)}
 /* A5 고정 비율 페이지 */
 .page{position:relative;width:100%;aspect-ratio:210/297;background:var(--paper);border-radius:6px;
- box-shadow:0 2px 10px rgba(90,70,40,.14);overflow:hidden;touch-action:none;padding:14px 13px}
+ box-shadow:0 2px 10px rgba(90,70,40,.14);overflow:hidden;touch-action:pan-y;padding:14px 13px}
 .dhead{font-weight:700;font-size:14.5px}
 .dsub{font-size:11px;color:var(--sub);margin-bottom:8px}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0 10px}
@@ -79,18 +79,21 @@ h1{font-size:18px;font-weight:700;margin:0}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
-#palette{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--line);
- box-shadow:0 -4px 14px rgba(90,70,40,.12);padding:8px 10px calc(10px + env(safe-area-inset-bottom))}
-.plabel{font-size:10.5px;color:var(--sub);margin:0 2px 4px}
-.prow{display:flex;gap:8px;overflow-x:auto;padding:2px}
-.pitem{flex:none;width:60px;height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
+#fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;
+ background:var(--yellow);border:0;font-size:23px;box-shadow:0 4px 14px rgba(90,70,40,.35);z-index:15;display:none}
+#stkPanel{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--line);z-index:16;
+ box-shadow:0 -4px 14px rgba(90,70,40,.15);padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:none}
+#stkPanel .plabel{font-size:10.5px;color:var(--sub);margin:0 2px 6px;display:flex}
+#stkPanel .pclose{margin-left:auto;border:0;background:none;font-size:12px;color:var(--sub);font-family:inherit}
+#stkPanel .prow{display:flex;flex-wrap:wrap;gap:8px;max-height:148px;overflow-y:auto}
+.pitem{width:60px;height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
 .pitem:active{transform:scale(.93)}
 .pitem.shop{background:#fff3bf;font-size:11px;font-weight:700;flex-direction:column;color:#6b5d2a}
-.pbar{display:flex;gap:6px;margin-top:7px}
-.pbar button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 0;font-size:12px;font-family:inherit;color:var(--ink);font-weight:500}
-.pbar button:disabled{opacity:.35}
-.pbar .danger{color:#b0432f}
+#ctrlBar{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:16;display:none;
+ background:#3a352b;border-radius:14px;padding:8px;gap:6px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#ctrlBar button{flex:1;border:0;background:#4d463a;border-radius:9px;padding:9px 0;font-size:12px;font-family:inherit;color:#f2ead8;font-weight:600}
+#ctrlBar .danger{color:#ffb3a3}
 /* 모달 */
 #modal{position:fixed;inset:0;background:rgba(40,34,24,.5);display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
@@ -204,19 +207,17 @@ h1{font-size:18px;font-weight:700;margin:0}
     <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-reed"/></svg><b>억새밭</b><i>8걸음에 획득</i></div>
     <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
-  <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️ — 모은 스탬프는 영구 보관!</div>
+  <div class="seasonTitle" style="margin-top:12px">💎 여행 중 발견한 보물</div>
+  <div class="jSec" style="margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 시청권 <b>+1개월</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
+  <p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">4걸음 보상 · 매주 시청 링크가 카카오톡으로 와요</p></div>
+  <div class="jSec" style="opacity:.55"><div class="jrow"><span>🎓 정기특강 참여권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
+  <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️ — 스탬프와 보물은 영구 보관!</div>
 </div>
 </div>
 
-<div id="palette">
-  <p class="plabel">내 스티커</p>
-  <div class="prow" id="prow"></div>
-  <div class="pbar">
-    <button id="bigger" disabled>크게</button><button id="smaller" disabled>작게</button>
-    <button id="rotL" disabled>↺</button><button id="rotR" disabled>↻</button>
-    <button id="del" class="danger" disabled>삭제</button><button id="save">💾 저장</button>
-  </div>
-</div>
+<button id="fab">🩹</button>
+<div id="stkPanel"><p class="plabel">내 스티커 — 골라서 붙이세요 <button class="pclose" id="pClose">닫기 ✕</button></p><div class="prow" id="prow"></div></div>
+<div id="ctrlBar"><button id="bigger">크게</button><button id="smaller">작게</button><button id="rotL">↺</button><button id="rotR">↻</button><button id="del" class="danger">삭제</button><button id="doneSel">완료</button></div>
 <div id="modal"><div class="sheet2" id="msheet"></div></div>
 <div id="book"><div class="bkTop">📖 <b id="bkTitle">&nbsp;가을 여행 · 1권째</b><button class="bkClose" id="bkClose">닫기 ✕</button></div>
 <div class="bkStage" id="bkStage"></div>
@@ -309,7 +310,8 @@ function render(){
     layer.appendChild(el);
   }
   const on=!!curPlaced().find(s=>s.id===sel);
-  for(const id of['bigger','smaller','rotL','rotR','del'])$(id).disabled=!on;
+  $('ctrlBar').style.display=on?'flex':'none';
+  if(on)$('fab').style.display='none'; else if(curTab()==='tabD')$('fab').style.display='block';
 }
 diary.addEventListener('pointermove',ev=>{if(!drag)return;const r=diary.getBoundingClientRect();
   drag.s.x=Math.max(-8,Math.min(96,(ev.clientX-r.left-drag.dx)/r.width*100));
@@ -322,11 +324,13 @@ function buildPalette(){
     const b=document.createElement('div');b.className='pitem';
     b.innerHTML=`<svg viewBox="${d.vb}" width="48" height="44"><use href="#${d.k}"/></svg>`;
     b.onclick=()=>{curPlaced().push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
-      sel=uid-1;showTab('tabD');render();save();toast('붙였어요! 드래그로 옮겨보세요');};
+      sel=uid-1;$('stkPanel').style.display='none';render();save();toast('드래그로 원하는 자리에 놓으세요');};
     row.appendChild(b);}
   const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
-  shop.onclick=openStkShop;row.appendChild(shop);
+  shop.onclick=()=>{$('stkPanel').style.display='none';openStkShop();};row.appendChild(shop);
 }
+$('fab').onclick=()=>{buildPalette();$('stkPanel').style.display='block';};
+$('pClose').onclick=()=>$('stkPanel').style.display='none';
 const modal=$('modal'),msheet=$('msheet');
 function badge(own,p){return own?'<span class="owned">보유</span>':(p?`<span class="price">🪙${p}</span>`:'<span class="freeb">무료</span>');}
 function openCoverGal(){
@@ -406,7 +410,7 @@ function bookPages(){
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
         <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
         <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
-        ${w.cmt?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+        ${(w.cmt&&!parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">📔 산책 일지${q.sub>1?' (계속)':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
@@ -450,7 +454,7 @@ $('smaller').onclick=()=>mod(s=>s.sc=Math.max(.4,s.sc/1.15));
 $('rotL').onclick=()=>mod(s=>s.r-=15);
 $('rotR').onclick=()=>mod(s=>s.r+=15);
 $('del').onclick=()=>{state.placedD[curKey()]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
-$('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
+$('doneSel').onclick=()=>{sel=null;render();save();toast('저장했어요');};
 function renderDay(){
   const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
   $('dHead').textContent=w.d+' '+w.moon;
@@ -458,9 +462,8 @@ function renderDay(){
   if(q.sub===0){
     $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
     $('dGoal').textContent=w.goal; $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
-    $('dDiaryCard').style.display=parts.length?'block':'none';
-    if(parts.length){$('dDiary').textContent='「'+parts[0].slice(0,46)+'…」';$('dMore').style.display='inline';$('dMore').textContent='다음 페이지에 전문 →';$('dMore').onclick=()=>{state.pos++;save();renderDay();renderPager();};}
-    $('dCheer').style.display=w.cmt?'block':'none'; if(w.cmt)$('dCheer').textContent=w.cmt;
+    $('dDiaryCard').style.display='none';
+    $('dCheer').style.display=(w.cmt&&!parts.length)?'block':'none'; if(w.cmt&&!parts.length)$('dCheer').textContent=w.cmt;
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
@@ -468,6 +471,8 @@ function renderDay(){
     $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' (계속)':'');
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?' (계속)':'');
+    const last=q.sub===parts.length;
+    $('dCheer').style.display=(last&&w.cmt)?'block':'none'; if(last&&w.cmt)$('dCheer').textContent=w.cmt;
   }
   sel=null; render();
 }
@@ -531,7 +536,8 @@ function curTab(){ return ['tabJ','tabD','tabS'].find(id=>$(id).classList.contai
 function showTab(t){
   for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
     $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
-  document.getElementById('palette').style.display = t==='tabD'?'block':'none';
+  $('fab').style.display = t==='tabD'?'block':'none';
+  $('stkPanel').style.display='none'; $('ctrlBar').style.display='none'; sel=null;
   document.getElementById('pager').style.display = (t==='tabS')?'none':'flex';
   renderPager();
 }
