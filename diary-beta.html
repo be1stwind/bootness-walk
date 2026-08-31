@@ -78,6 +78,24 @@ h1{font-size:18px;font-weight:700;margin:0}
 .slot i{display:block;font-style:normal;font-size:9.5px;color:var(--sub)}
 .seasonTitle{font-weight:700;font-size:13px;margin:2px 0 8px}
 .pastSeason{margin-top:14px;font-size:11px;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px}
+/* 로그인 게이트 (시안) */
+#gate{position:fixed;inset:0;z-index:60;background:#efe6d2;display:flex;align-items:center;justify-content:center;padding:20px}
+#gate .gcard{width:100%;max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 22px 20px;box-shadow:0 10px 30px rgba(90,70,40,.14)}
+#gate .glogo{text-align:center;font-size:34px;margin-bottom:4px}
+#gate h2{margin:0 0 2px;text-align:center;font-size:19px;letter-spacing:-.3px}
+#gate .gsub{text-align:center;font-size:12px;color:var(--sub);margin:0 0 18px;line-height:1.7}
+#gate label{display:block;font-size:11.5px;font-weight:700;color:var(--sub);margin:12px 2px 5px}
+#gate input{width:100%;box-sizing:border-box;border:1.5px solid var(--line);background:#fffdf7;border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit;color:var(--ink);outline:none}
+#gate input:focus{border-color:var(--accent)}
+#gate input.pin{text-align:center;font-size:22px;letter-spacing:12px;font-variant-numeric:tabular-nums}
+#gate .gbtn{width:100%;margin-top:18px;border:0;background:var(--accent);color:#fff;border-radius:11px;padding:13px 0;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+#gate .glink{display:block;text-align:center;margin-top:13px;border:0;background:none;font-family:inherit;font-size:12.5px;color:var(--accent);font-weight:700;cursor:pointer}
+#gate .gghost{color:var(--sub);font-weight:500}
+#gate .gnote{margin:14px 2px 0;font-size:10.5px;color:#a08a5f;line-height:1.7;background:#fbf5e3;border-radius:8px;padding:8px 10px}
+#gate .gok{text-align:center;padding:10px 0 4px}
+#gate .gok .big{font-size:40px;margin-bottom:8px}
+#gate .gok p{font-size:13px;line-height:1.8;color:var(--ink);margin:0 0 4px}
+
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -193,6 +211,46 @@ h1{font-size:18px;font-weight:700;margin:0}
 </defs></svg>
 
 <div class="wrap">
+<div id="gate">
+ <div class="gcard">
+  <div id="gLogin">
+   <div class="glogo">🚶</div>
+   <h2>함께 걷는 다이어리</h2>
+   <p class="gsub">부트니스 「함께 걷는 일주일」<br>나의 걸음이 기록되는 곳</p>
+   <label>아이디</label>
+   <input id="gId" placeholder="아이디" autocomplete="off">
+   <label>비밀번호 (숫자 6자리)</label>
+   <input id="gPin" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
+   <button class="gbtn" id="gLoginBtn">내 다이어리 열기</button>
+   <button class="glink" id="gToJoin">처음이신가요? 가입하기</button>
+   <button class="glink gghost" id="gDemo">가입 없이 둘러보기 →</button>
+  </div>
+  <div id="gJoin" style="display:none">
+   <div class="glogo">🌱</div>
+   <h2>가입하기</h2>
+   <p class="gsub">카페 닉네임으로 내 걸음과 연결돼요</p>
+   <label>카페 닉네임</label>
+   <input id="jNick" placeholder="예: 바람의색상" autocomplete="off">
+   <label>아이디 (영문 소문자·숫자 3~12자)</label>
+   <input id="jId" placeholder="아이디" autocomplete="off">
+   <label>비밀번호 (숫자 6자리)</label>
+   <input id="jPin" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
+   <label>비밀번호 확인</label>
+   <input id="jPin2" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
+   <p class="gnote">🔒 비밀번호는 <b>숫자 6자리</b>예요. 은행·포털 등 다른 곳에서 쓰는 숫자는 피해주세요.</p>
+   <button class="gbtn" id="gJoinBtn">가입 신청</button>
+   <button class="glink gghost" id="gToLogin">← 로그인으로 돌아가기</button>
+  </div>
+  <div id="gDone" style="display:none">
+   <div class="gok">
+    <div class="big">🎉</div>
+    <p><b>가입 신청 완료!</b></p>
+    <p style="color:var(--sub);font-size:12px">다음 아침 정산에서 카페 활동과 대조해<br>연결이 끝나면 바로 로그인하실 수 있어요.<br>(보통 다음날 오전 9시 전)</p>
+   </div>
+   <button class="gbtn" id="gDoneBtn">로그인 화면으로</button>
+  </div>
+ </div>
+</div>
 <header><h1>📔 리매님의 다이어리</h1><span class="coin">🪙 12</span></header>
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
@@ -380,6 +438,23 @@ function curKey(){const q=SEQ[state.pos]||SEQ[0];return q.i+'.'+q.sub;}
 function curPlaced(){return state.placedD[curKey()]=(state.placedD[curKey()]||[]);}
 const $=id=>document.getElementById(id);
 const diary=$('diary'),layer=$('layer');
+const gv=(id)=>document.getElementById(id);
+function gShow(v){['gLogin','gJoin','gDone'].forEach(x=>gv(x).style.display=x===v?'':'none');}
+['gPin','jPin','jPin2'].forEach(id=>{gv(id).addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);});});
+gv('gToJoin').onclick=()=>gShow('gJoin');
+gv('gToLogin').onclick=()=>gShow('gLogin');
+gv('gDemo').onclick=()=>{gv('gate').style.display='none';toast('둘러보기 모드 — 리매님의 데모 다이어리예요');};
+gv('gLoginBtn').onclick=()=>{
+  if(!gv('gId').value.trim()||gv('gPin').value.length<6){toast('아이디와 숫자 6자리를 입력해주세요');return;}
+  toast('9월 7일 챌린지 오픈과 함께 열려요! 지금은 둘러보기로 구경하세요 🙂');};
+gv('gJoinBtn').onclick=()=>{
+  const nick=gv('jNick').value.trim(), id=gv('jId').value.trim();
+  if(!nick){toast('카페 닉네임을 입력해주세요');return;}
+  if(!/^[a-z0-9_]{3,12}$/.test(id)){toast('아이디는 영문 소문자·숫자 3~12자예요');return;}
+  if(gv('jPin').value.length<6){toast('비밀번호는 숫자 6자리예요');return;}
+  if(gv('jPin').value!==gv('jPin2').value){toast('비밀번호 확인이 달라요');return;}
+  gShow('gDone');};
+gv('gDoneBtn').onclick=()=>gShow('gLogin');
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
 function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
