@@ -102,7 +102,13 @@ h1{font-size:18px;font-weight:700;margin:0}
 .bkTop b{font-weight:700}
 .bkClose{margin-left:auto;background:none;border:1px solid #5a5142;color:#d8cdb8;border-radius:8px;padding:5px 12px;font-size:13px}
 .bkStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px;overflow:hidden;touch-action:pan-y}
-.bkPage{width:min(92vw,calc(76vh*0.707));aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative}
+.bkStage{perspective:1400px}
+.bkPage{width:min(92vw,calc(76vh*0.707));aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
+.bkPage.outL{transform:rotateY(-78deg);transform-origin:left center}
+.bkPage.outR{transform:rotateY(78deg);transform-origin:right center}
+.coverTitle{position:absolute;left:8%;right:8%;bottom:7%;background:rgba(253,248,236,.92);border:1.5px solid #e3cc40;border-radius:10px;text-align:center;padding:9px 6px}
+.coverTitle b{font-size:14.5px;display:block}
+.coverTitle i{font-style:normal;font-size:9.5px;color:#8a7c4f;letter-spacing:.12em}
 .bkPage img{width:100%;height:100%;object-fit:cover;display:block}
 .bkPage .inner{position:absolute;inset:0;padding:14px 13px}
 .bkNav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
@@ -143,7 +149,7 @@ h1{font-size:18px;font-weight:700;margin:0}
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
     <div><div class="t1">가을 여행 · 1권째 📖</div><div class="t2">9월 둘째 주 산책<br>진행 중 (2주차) · 표지를 누르면<br><b>전자책으로 넘겨보기</b></div></div>
-    <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button></div>
+    <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button><button id="btnShelf">📚 책장</button></div>
   </div>
 </div>
 <div class="tabs">
@@ -155,6 +161,9 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="page" id="journey" style="display:none;">
   <div class="dhead">🚶 나의 여정</div>
   <div class="dsub">가을 여행 · 리매님은 지금 1걸음째</div>
+  <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
+    <p style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55">"12주 뒤 나는 임장 20곳을 다녀온 사람이다"</p>
+    <p style="margin:3px 0 0;font-size:10px;color:#8a8172">2026.9.7 출발 선언</p></div>
   <div class="jSec"><h3>12주 여행길 · 1/12</h3>
     <div class="stepbar" id="jBar"></div>
     <div class="jrow"><span>출발</span><span>4주 🪑</span><span>8주 🌾</span><span>12주 🗼</span></div>
@@ -169,10 +178,10 @@ h1{font-size:18px;font-weight:700;margin:0}
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
   <div class="dsub" id="dSub"></div>
-  <div class="week" id="dWeek"></div>
-  <div class="card"><h3 id="dDiaryT">📔 산책 일지</h3><p id="dDiary"></p></div>
-  <div class="card"><h3>이번 주 목표</h3><p id="dGoal"></p></div>
-  <div class="cheer" id="dCheer"></div>
+  <div class="card"><h3>🌅 오늘 목표</h3><p id="dGoal"></p></div>
+  <div class="card"><h3>🌙 달성 & 리뷰</h3><p id="dRev"></p></div>
+  <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><p id="dDiary"></p></div>
+  <div class="cheer" id="dCheer" style="display:none"></div>
   <div id="layer"></div>
 </div>
 
@@ -228,23 +237,25 @@ const STICKERS=[
  {k:'s-ticket',n:'여행 티켓',p:3,cat:'가을 시즌',vb:'0 0 140 100',w:112,h:80},
  {k:'s-tag',n:'러기지 태그',p:3,cat:'가을 시즌',vb:'0 0 128 86',w:100,h:68},
 ];
-const WEEKS=[
- {label:'1주차 · 9/7 ~ 9/13',head:'9월 둘째 주 산책 🍂',sub:'가을 여행 · 1주차 · 성공 ✅',
-  days:['🌕','🌗','🌕','·','📔','🌕','·'],diary:'강동구 임장에서 배운 3가지 — 역세권보다 학군 수요가 먼저 움직인다는 걸 눈으로 확인했다…',
-  goal:'임장 2곳 · 종잣돈 30만원 적립 · 경매 책 3장',cheer:'💬 바람의색상: 목요일은 하루 카드가 지켜드렸어요. 멋진 첫 주!'},
- {label:'2주차 · 9/14 ~ 9/20 (이번 주)',head:'9월 셋째 주 산책 🍂',sub:'가을 여행 · 2주차 · 진행 중',
-  days:['🌕','🌕','·','','','',''],diary:null,
-  goal:'경매 물건 3건 분석 · 임장 1곳',cheer:'💬 바람의색상: 수요일 목표는 어디까지 가셨나요? 🌙'},
+const DECL='12주 뒤 나는 임장 20곳을 다녀온 사람이다';
+const DAYS=[
+ {d:'9월 7일 (월)',w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
+ {d:'9월 8일 (화)',w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
+ {d:'9월 9일 (수)',w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
+ {d:'9월 11일 (금)',w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)',
+  diary:'강동구 임장에서 배운 3가지 — ① 역세권보다 학군 수요가 먼저 움직인다 ② 저녁 시간대 유동인구가 진짜 수요다 ③ 부동산 사장님과의 스몰토크가 최고의 임장 데이터.',
+  cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
+ {d:'9월 14일 (월)',w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedW:{},week:1};
-try{const v=localStorage.getItem('bd5');if(v)state={...state,...JSON.parse(v)};}catch(e){}
-if(!state.placedW)state.placedW={};
-let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedW).flat().map(s=>s.id||0));
-function curPlaced(){return state.placedW[state.week]=(state.placedW[state.week]||[]);}
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedD:{},day:4};
+try{const v=localStorage.getItem('bd7');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+if(!state.placedD)state.placedD={};
+let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedD).flat().map(s=>s.id||0));
+function curPlaced(){return state.placedD[state.day]=(state.placedD[state.day]||[]);}
 const $=id=>document.getElementById(id);
 const diary=$('diary'),layer=$('layer');
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
-function save(){try{localStorage.setItem('bd5',JSON.stringify(state));}catch(e){}}
+function save(){try{localStorage.setItem('bd7',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
@@ -331,22 +342,42 @@ function openStkShop(){
     if(!confirm(`「${s.n}」 스티커를 🪙${s.p}에 살까요?`))return;
     state.coins-=s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
 }
+function openShelf(){
+  msheet.innerHTML=`<h2>📚 내 책장 <span style="font-weight:400;font-size:11px;color:#8a8172">— 12주 완주마다 한 권</span></h2>
+  <div style="background:linear-gradient(#c9a97a,#b5915f);border-radius:12px;padding:16px 12px 0;box-shadow:inset 0 -8px 12px rgba(0,0,0,.15)">
+    <div style="display:flex;gap:12px;align-items:flex-end">
+      <div id="shelfBook" style="width:86px;cursor:pointer">
+        <img src="covers/${state.cover}.png" style="width:100%;aspect-ratio:728/1024;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:3px 3px 8px rgba(0,0,0,.35);display:block">
+        <p style="margin:4px 0 0;font-size:9.5px;text-align:center;color:#4d3d26;font-weight:700">2026 가을<br>(진행 중)</p></div>
+      ${['겨울','봄','여름'].map(n=>`<div style="width:86px;opacity:.55">
+        <div style="width:100%;aspect-ratio:728/1024;border:1.5px dashed #8a6f47;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#8a6f47">?</div>
+        <p style="margin:4px 0 0;font-size:9.5px;text-align:center;color:#6b5636">${n} 여행<br>(예정)</p></div>`).join('')}
+    </div>
+    <div style="height:12px;background:#8a6a42;border-radius:0 0 12px 12px;margin:14px -12px 0"></div>
+  </div>
+  <p style="font-size:11px;color:#8a8172;margin:10px 2px 0;line-height:1.6">완성된 책은 영구 소장되고, 실물 인쇄본으로도 만들 수 있어요. 진행 중인 책을 누르면 펼쳐집니다.</p>
+  <button class="closeM">닫기</button>`;
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  document.getElementById('shelfBook').onclick=()=>{modal.classList.remove('on');bkIdx=0;bkRender();$('book').classList.add('on');};
+}
+$('btnShelf').onclick=openShelf;
 $('btnCover').onclick=openCoverGal;$('btnSkin').onclick=openSkinShop;
 let bkIdx=0;
 function bookPages(){
   const sk=SKINS.find(k=>k.id===state.skin)||SKINS[0];
   const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
   const pages=[];
-  pages.push({t:'표지',html:`<img src="covers/${state.cover}.png">`});
-  WEEKS.forEach((w,i)=>{
-    const stk=(state.placedW[i]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
+  pages.push({t:'표지',html:`<img src="covers/${state.cover}.png"><div class="coverTitle"><b>리매님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
+  DAYS.forEach((w,i)=>{
+    const stk=(state.placedD[i]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
       return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${d.w*p.sc}px;height:${d.h*p.sc}px;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
-    pages.push({t:(i+1)+'주차',html:`<div class="inner" style="${skinStyle}">
-      <div class="dhead">${w.head}</div><div class="dsub">${w.sub}</div>
-      <div class="week">${['월','화','수','목','금','토','일'].map((d,j)=>`<div class="day"><b>${d}</b><span>${w.days[j]||'&nbsp;'}</span></div>`).join('')}</div>
-      <div class="card"><h3>📔 산책 일지</h3><p>${w.diary||'—'}</p></div>
-      <div class="card"><h3>목표</h3><p>${w.goal}</p></div>
-      <div class="cheer">${w.cheer}</div>${stk}</div>`});
+    pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
+      <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
+      <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
+      <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
+      ${w.diary?`<div class="card"><h3>📔 산책 일지</h3><p>${w.diary}</p></div>`:''}
+      ${w.cmt?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
   pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 가을 여행</b>
@@ -363,8 +394,17 @@ function bkRender(){
 }
 $('coverThumb').onclick=()=>{bkIdx=0;bkRender();$('book').classList.add('on');};
 $('bkClose').onclick=()=>$('book').classList.remove('on');
-$('bkPrev').onclick=()=>{bkIdx--;bkRender();};
-$('bkNext').onclick=()=>{bkIdx++;bkRender();};
+function bkFlip(dir){
+  const pg=$('bkStage').querySelector('.bkPage'); if(!pg){bkIdx+=dir;bkRender();return;}
+  pg.classList.add(dir>0?'outL':'outR');
+  setTimeout(()=>{bkIdx+=dir;bkRender();
+    const np=$('bkStage').querySelector('.bkPage');
+    np.classList.add(dir>0?'outR':'outL');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>np.classList.remove('outR','outL')));
+  },300);
+}
+$('bkPrev').onclick=()=>bkFlip(-1);
+$('bkNext').onclick=()=>bkFlip(1);
 let swX=null;
 $('bkStage').addEventListener('pointerdown',e=>swX=e.clientX);
 $('bkStage').addEventListener('pointerup',e=>{if(swX===null)return;const d=e.clientX-swX;swX=null;
@@ -375,21 +415,24 @@ $('bigger').onclick=()=>mod(s=>s.sc=Math.min(2,s.sc*1.15));
 $('smaller').onclick=()=>mod(s=>s.sc=Math.max(.4,s.sc/1.15));
 $('rotL').onclick=()=>mod(s=>s.r-=15);
 $('rotR').onclick=()=>mod(s=>s.r+=15);
-$('del').onclick=()=>{state.placedW[state.week]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
+$('del').onclick=()=>{state.placedD[state.day]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
 $('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
-function renderWeek(){
-  const w=WEEKS[state.week];
-  $('wLabel').textContent=w.label;
-  $('wPrev').disabled=state.week===0; $('wNext').disabled=state.week===WEEKS.length-1;
-  $('dHead').textContent=w.head; $('dSub').textContent=w.sub;
-  $('dWeek').innerHTML=['월','화','수','목','금','토','일'].map((d,i)=>`<div class="day"><b>${d}</b><span>${w.days[i]===''?'&nbsp;':w.days[i]}</span></div>`).join('');
-  $('dDiaryT').textContent=w.diary?'📔 이번 주 산책 일지':'📔 산책 일지 (아직)';
-  $('dDiary').textContent=w.diary||'이번 주 배운 것을 [산책일지] 글로 정리하면 보름달 2개!';
-  $('dGoal').textContent=w.goal; $('dCheer').textContent=w.cheer;
+function renderDay(){
+  const w=DAYS[state.day];
+  $('wLabel').textContent=w.d+(w.today?' · 오늘':'');
+  $('wPrev').disabled=state.day===0; $('wNext').disabled=state.day===DAYS.length-1;
+  $('dHead').textContent=w.d+' '+w.moon;
+  $('dSub').textContent='가을 여행 · '+w.w;
+  $('dGoal').textContent=w.goal;
+  $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
+  $('dDiaryCard').style.display=w.diary?'block':'none';
+  if(w.diary)$('dDiary').textContent=w.diary;
+  $('dCheer').style.display=w.cmt?'block':'none';
+  if(w.cmt)$('dCheer').textContent=w.cmt;
   sel=null; render();
 }
-$('wPrev').onclick=()=>{state.week=Math.max(0,state.week-1);save();renderWeek();};
-$('wNext').onclick=()=>{state.week=Math.min(WEEKS.length-1,state.week+1);save();renderWeek();};
+$('wPrev').onclick=()=>{state.day=Math.max(0,state.day-1);save();renderDay();};
+$('wNext').onclick=()=>{state.day=Math.min(DAYS.length-1,state.day+1);save();renderDay();};
 function renderJourney(){
   $('jBar').innerHTML=Array.from({length:12},(_,i)=>{
     const mile={3:'🪑',7:'🌾',11:'🗼'}[i]||'';
@@ -408,5 +451,5 @@ function showTab(t){
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
 $('tabS').onclick=()=>showTab('tabS');
-apply();renderWeek();
+apply();renderDay();
 </script>
