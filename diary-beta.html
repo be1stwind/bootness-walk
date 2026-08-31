@@ -28,15 +28,15 @@ h1{font-size:18px;font-weight:700;margin:0}
 .dhead{font-weight:700;font-size:16px}
 .dsub{font-size:11.5px;color:var(--sub);margin-bottom:9px}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0 10px}
-.day{background:rgba(255,253,247,.85);border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0 3px}
+.day{background:rgba(255,253,247,.6);border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0 3px}
 .day b{display:block;font-size:9px;color:var(--sub);font-weight:500}
 .day span{font-size:14px}
-.card{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
+.card{background:rgba(255,253,247,.55);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
 .card h3{margin:0 0 3px;font-size:13px}
 .card p{margin:0;font-size:14.5px;color:#5a5142;line-height:1.8;white-space:pre-line}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
-.cheer{font-size:13px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.cheer{font-size:13px;background:rgba(255,248,220,.7);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
 .page{margin-bottom:10px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
 .page.auto .jSec:last-child{margin-bottom:0}
@@ -125,7 +125,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .sheet2{background:#fffdf7;border-radius:18px 18px 0 0;width:100%;max-height:74vh;overflow-y:auto;padding:16px 14px calc(20px + env(safe-area-inset-bottom))}
 .sheet2 h2{font-size:15px;margin:0 0 10px}
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.gal3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gal3{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.gal3 .gitem b{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .gitem{border:2px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#fff}
 .gitem.selq{border-color:var(--accent)}
 .gitem img{width:100%;aspect-ratio:728/1024;object-fit:cover;display:block}
@@ -179,9 +180,9 @@ h1{font-size:18px;font-weight:700;margin:0}
 <g id="b-done"><circle cx="50" cy="46" r="38" fill="none" stroke="#fff" stroke-width="12"/><circle cx="50" cy="46" r="38" fill="none" stroke="#d95a45" stroke-width="5"/><text x="50" y="53" text-anchor="middle" font-size="20" font-weight="700" fill="#d95a45" font-family="IBM Plex Sans KR" transform="rotate(-12 50 46)">완료!</text></g>
 <g id="b-spark"><g stroke="#fff" stroke-width="8" stroke-linejoin="round"><path d="M50 8 L57 38 L88 46 L57 54 L50 84 L43 54 L12 46 L43 38 Z" fill="#ffcf6e"/></g><path d="M50 8 L57 38 L88 46 L57 54 L50 84 L43 54 L12 46 L43 38 Z" fill="#ffcf6e"/><circle cx="78" cy="20" r="5" fill="#ffcf6e"/><circle cx="22" cy="72" r="4" fill="#ffcf6e"/></g>
 <g id="b-tape"><g transform="rotate(-8 50 46)"><rect x="8" y="30" width="84" height="32" fill="#bfd9c8" opacity=".85" stroke="#fff" stroke-width="7"/><rect x="8" y="30" width="84" height="32" fill="#bfd9c8" opacity=".85"/><path d="M8 30 L2 38 L8 46 L2 54 L8 62 M92 30 L98 38 L92 46 L98 54 L92 62" fill="#bfd9c8" opacity=".85"/></g></g>
-<g id="st-bench"><g transform="translate(6,6)"><rect x="14" y="26" width="5" height="22" rx="2.5" fill="#a8825f"/><circle cx="16" cy="18" r="15" fill="#d97b52"/><circle cx="5" cy="27" r="8" fill="#e8a87c"/><circle cx="28" cy="26" r="8" fill="#e8a87c"/><rect x="38" y="27" width="26" height="3.5" rx="1.7" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><rect x="38" y="35" width="26" height="4" rx="2" fill="#e8c9a0" stroke="#9a917f" stroke-width="1"/><path d="M42 39 L42 50 M60 39 L60 50" stroke="#9a917f" stroke-width="2.4" stroke-linecap="round"/></g></g>
-<g id="st-reed"><g transform="translate(14,2)"><path d="M8 54 q-3 -20 -8 -34 M20 54 q-1 -24 -3 -40 M32 54 q2 -22 6 -36 M44 54 q4 -18 9 -28" stroke="#b3a479" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="16" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-14 0 16)"/><ellipse cx="17" cy="10" rx="3.4" ry="8.5" fill="#efe3c8" stroke="#cbbd97" transform="rotate(-5 17 10)"/><ellipse cx="38" cy="14" rx="3.4" ry="8" fill="#efe3c8" stroke="#cbbd97" transform="rotate(10 38 14)"/><ellipse cx="53" cy="22" rx="3.2" ry="7" fill="#efe3c8" stroke="#cbbd97" transform="rotate(18 53 22)"/></g></g>
-<g id="st-tower"><g transform="translate(12,2)"><path d="M2 52 Q26 30 50 52 Z" fill="#e8a87c" stroke="#d97b52" stroke-width="1.4"/><path d="M23 44 L24.6 20 L27.4 20 L29 44 Z" fill="#e7e1d3" stroke="#9a917f" stroke-width="1.2"/><rect x="20" y="14" width="12" height="6" rx="2.4" fill="#f0b072" stroke="#9a917f" stroke-width="1.2"/><line x1="26" y1="14" x2="26" y2="4" stroke="#9a917f" stroke-width="1.8" stroke-linecap="round"/><circle cx="26" cy="3" r="1.7" fill="#d97b52"/></g></g>
+<g id="st-bench"><g stroke="#fff" stroke-width="6" stroke-linejoin="round"><rect x="10" y="24" width="56" height="8" rx="4" fill="#d99a62"/><rect x="10" y="37" width="56" height="8" rx="4" fill="#d99a62"/></g><path d="M17 45v11M59 45v11" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M17 45v11M59 45v11" stroke="#a8724a" stroke-width="4" stroke-linecap="round"/><g stroke="#fff" stroke-width="4"><g fill="#e2574c"><circle cx="31" cy="10" r="4.6"/><circle cx="38" cy="7" r="4.6"/><circle cx="45" cy="10" r="4.6"/><path d="M30 12h16l-6 7h-4Z"/></g></g><g fill="#e2574c"><circle cx="31" cy="10" r="4.6"/><circle cx="38" cy="7" r="4.6"/><circle cx="45" cy="10" r="4.6"/><path d="M30 12h16l-6 7h-4Z"/></g><path d="M38 19v4" stroke="#a8724a" stroke-width="2.4" stroke-linecap="round"/></g>
+<g id="st-reed"><g stroke="#fff" stroke-width="7" stroke-linecap="round"><path d="M19 57V30M38 59V22M57 57V34"/></g><g stroke="#b3a479" stroke-width="3" stroke-linecap="round"><path d="M19 57V30M38 59V22M57 57V34"/></g><g stroke="#fff" stroke-width="4"><g fill="#f0e2c0"><ellipse cx="19" cy="21" rx="5.2" ry="10" transform="rotate(-10 19 21)"/><ellipse cx="38" cy="12" rx="5.2" ry="10" transform="rotate(-4 38 12)"/><ellipse cx="57" cy="25" rx="5.2" ry="10" transform="rotate(10 57 25)"/></g></g><g fill="#f0e2c0"><ellipse cx="19" cy="21" rx="5.2" ry="10" transform="rotate(-10 19 21)"/><ellipse cx="38" cy="12" rx="5.2" ry="10" transform="rotate(-4 38 12)"/><ellipse cx="57" cy="25" rx="5.2" ry="10" transform="rotate(10 57 25)"/></g><g stroke="#d9c89a" stroke-width="1.6" stroke-linecap="round"><path d="M16 16l-3-4M40 6l2-4M60 19l3-3"/></g></g>
+<g id="st-tower"><path d="M14 56c4-10 12-16 24-16s20 6 24 16Z" fill="#8fce7c" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><g stroke="#fff" stroke-width="4" stroke-linejoin="round"><path d="M34 42l2-20h4l2 20Z" fill="#f2ece0"/><rect x="29" y="16" width="18" height="7" rx="3.5" fill="#e2574c"/></g><path d="M38 16V7" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M38 16V7" stroke="#8a8a8a" stroke-width="2.4" stroke-linecap="round"/><circle cx="38" cy="5.5" r="2.6" fill="#e2574c" stroke="#fff" stroke-width="2"/><g stroke="#fff" stroke-width="3.4"><g><circle cx="22" cy="46" r="6" fill="#f0a852"/><circle cx="54" cy="46" r="6" fill="#e2704c"/></g></g><circle cx="22" cy="46" r="6" fill="#f0a852"/><circle cx="54" cy="46" r="6" fill="#e2704c"/></g>
 
 <g id="d-ribbon"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><path d="M50 42 L22 24 Q14 20 14 30 L14 54 Q14 64 22 60 L50 42 L78 24 Q86 20 86 30 L86 54 Q86 64 78 60 Z" fill="#f7a8bc"/></g><path d="M50 42 L22 24 Q14 20 14 30 L14 54 Q14 64 22 60 Z" fill="#f7a8bc"/><path d="M50 42 L78 24 Q86 20 86 30 L86 54 Q86 64 78 60 Z" fill="#f7a8bc"/><circle cx="50" cy="42" r="8" fill="#e87d99" stroke="#fff" stroke-width="4"/><path d="M44 50 L36 72 M56 50 L64 72" stroke="#e87d99" stroke-width="7" stroke-linecap="round"/></g>
 <g id="d-sakura"><g fill="#fbc7d8" stroke="#fff" stroke-width="6" stroke-linejoin="round"><ellipse cx="50" cy="22" rx="12" ry="15"/><ellipse cx="74" cy="40" rx="12" ry="15" transform="rotate(72 74 40)"/><ellipse cx="65" cy="68" rx="12" ry="15" transform="rotate(144 65 68)"/><ellipse cx="35" cy="68" rx="12" ry="15" transform="rotate(216 35 68)"/><ellipse cx="26" cy="40" rx="12" ry="15" transform="rotate(288 26 40)"/></g><ellipse cx="50" cy="22" rx="12" ry="15" fill="#fbc7d8"/><ellipse cx="74" cy="40" rx="12" ry="15" fill="#fbc7d8" transform="rotate(72 74 40)"/><ellipse cx="65" cy="68" rx="12" ry="15" fill="#fbc7d8" transform="rotate(144 65 68)"/><ellipse cx="35" cy="68" rx="12" ry="15" fill="#fbc7d8" transform="rotate(216 35 68)"/><ellipse cx="26" cy="40" rx="12" ry="15" fill="#fbc7d8" transform="rotate(288 26 40)"/><circle cx="50" cy="46" r="8" fill="#f9e08e"/></g>
@@ -299,9 +300,9 @@ h1{font-size:18px;font-weight:700;margin:0}
   <div class="dsub">이정표에 도착할 때마다 그곳의 스탬프가 찍힙니다</div>
   <div class="jSec"><h3>🍂 가을 여행 스탬프 (2026)</h3>
   <div class="stampGrid">
-    <div class="slot got"><img src="stamps/bench.jpg" alt=""><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
-    <div class="slot lock"><img src="stamps/reed.jpg" alt=""><b>억새밭</b><i>8걸음에 획득</i></div>
-    <div class="slot lock"><img src="stamps/tower.jpg" alt=""><b>남산타워</b><i>12걸음에 획득</i></div>
+    <div class="slot got"><svg viewBox="0 0 76 62"><use href="#st-bench"/></svg><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
+    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-reed"/></svg><b>억새밭</b><i>8걸음에 획득</i></div>
+    <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
   <div class="jSec"><h3>💎 여행 중 발견한 보물</h3>
@@ -325,7 +326,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 
 <script>
 const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'},{id:'c5',n:'수채 은행나무길',e:'jpg'},{id:'c6',n:'가을 별밤',e:'jpg'},{id:'c7',n:'한지 단풍',e:'jpg'},{id:'c8',n:'파스텔 낙엽',e:'jpg'}];
-const cvUrl=id=>{const c=COVERS.find(x=>x.id===id)||COVERS[0];return 'covers/'+c.id+'.'+(c.e||'png');};
+const cvUrl=id=>{const c=COVERS.find(x=>x.id===id)||COVERS[0];return 'covers/'+c.id+'.'+(c.e||'png')+(c.e?'?3':'');};
 const SKINS=[
  {id:'basic',n:'기본 줄노트',p:0, bg:'#fdf8ee', im:'repeating-linear-gradient(transparent 0 24px, #e6dcc6 24px 25px)', sz:'auto'},
  {id:'dot',n:'도트',p:3, bg:'#fbf6e9', im:'radial-gradient(#ddd2b6 1.3px, transparent 1.3px)', sz:'17px 17px'},
@@ -416,22 +417,22 @@ function computeFlow(w){
   M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+(live.clientWidth||360)+'px';
   const pg=document.createElement('div'); pg.className='page'; pg.style.margin='0'; M.appendChild(pg);
   document.body.appendChild(M);
-  const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
+  const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight-2;};
   const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
   const _ad=(state.addenda||{})[w.n]||'';
   const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
   const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
   const wrap0=t=>head+cards+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
-  const wrapN=t=>`<div class="dhead">📔 산책 일지 (계속)</div><div class="dsub">${w.d}</div><p style="font-size:14.5px;line-height:1.85;margin:6px 2px;color:#5a5142;white-space:pre-line">${t}</p>`;
+  const wrapN=t=>`<div class="dhead">📔 산책 일지</div><div class="dsub">${w.d}</div><p style="font-size:14.5px;line-height:1.85;margin:6px 2px;color:#5a5142;white-space:pre-line">${t}</p>`;
   const cut=(builder,txt,tail)=>{let lo=0,hi=txt.length,ans=0;
     while(lo<=hi){const m=(lo+hi)>>1; if(fits(builder(txt.slice(0,m))+tail)){ans=m;lo=m+1;}else hi=m-1;}
     const sp=txt.lastIndexOf(' ',ans); return sp>ans*0.6?sp:ans;};
   const T=w.diary; let flow='',parts=[],rest=T;
   if(fits(wrap0(T)+cheer)){ flow=T; rest=''; }
-  else { const n=cut(wrap0,T,''); flow=T.slice(0,n); rest=T.slice(n).trim(); }
+  else { const n=cut(wrap0,T,' ⟶'); flow=T.slice(0,n); rest=T.slice(n).trim(); }
   while(rest){
     if(fits(wrapN(rest)+cheer)){ parts.push(rest); rest=''; break; }
-    const n=cut(wrapN,rest,''); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
+    const n=cut(wrapN,rest,' ⟶'); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
   }
   M.remove();
   return w._pg={flow,parts};
@@ -550,7 +551,7 @@ function buildPalette(){
   const row=$('prow');row.innerHTML='';
   for(const k of state.ownedStk){const d=stDef(k);if(!d)continue;
     const b=document.createElement('div');b.className='pitem';
-    b.innerHTML=`<svg viewBox="${d.vb}" width="48" height="44"><use href="#${d.k}"/></svg>`;
+    b.innerHTML=`<svg viewBox="${d.vb}">${(document.getElementById(d.k)||{innerHTML:''}).innerHTML}</svg>`;
     b.onclick=()=>{curPlaced().push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
       sel=uid-1;$('stkPanel').style.display='none';render();save();toast('드래그로 원하는 자리에 놓으세요');};
     row.appendChild(b);}
@@ -590,7 +591,8 @@ function openStkShop(){
   msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':'')+c+'</p><div class="gal3">'
    +STICKERS.filter(s=>s.cat===c).map(s=>{
      const own=state.ownedStk.includes(s.k);
-     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="52" height="46"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
+     const inner=(document.getElementById(s.k)||{innerHTML:''}).innerHTML;
+     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="46" height="42">${inner}</svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
    +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
@@ -643,7 +645,7 @@ function bookPages(){
         ${(w.cmt&&!fl.parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
-        <div class="dhead">📔 산책 일지${q.sub>1?' (계속)':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
+        <div class="dhead">📔 산책 일지${q.sub>1?'':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
         <p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${parts[q.sub-1]}${q.sub<parts.length?' <span style="color:#b0a488">(계속)</span>':''}</p>${stk}</div>`});
     }
   });
@@ -708,7 +710,7 @@ function renderDay(){
     $('dDiaryCard').style.display='block';
     $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' ⟶':'');
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
-    document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?' (계속)':'');
+    document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
     const last=q.sub===parts.length;
     $('dCheer').style.display=(last&&w.cmt)?'block':'none'; if(last&&w.cmt)$('dCheer').textContent=w.cmt;
   }
