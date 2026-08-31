@@ -96,6 +96,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 #gate .gok .big{font-size:40px;margin-bottom:8px}
 #gate .gok p{font-size:13px;line-height:1.8;color:var(--ink);margin:0 0 4px}
 
+.addTxt{color:#8a7250;font-size:.92em}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -121,7 +122,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .sheet2{background:#fffdf7;border-radius:18px 18px 0 0;width:100%;max-height:74vh;overflow-y:auto;padding:16px 14px calc(20px + env(safe-area-inset-bottom))}
 .sheet2 h2{font-size:15px;margin:0 0 10px}
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.gal3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gal3{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.gal3 .gitem b{font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .gitem{border:2px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#fff}
 .gitem.selq{border-color:var(--accent)}
 .gitem img{width:100%;aspect-ratio:728/1024;object-fit:cover;display:block}
@@ -283,7 +285,7 @@ h1{font-size:18px;font-weight:700;margin:0}
   <div class="dhead" id="dHead"></div>
   <div class="dsub" id="dSub"></div>
   <div class="card"><h3>🌅 오늘 목표</h3><p id="dGoal"></p></div>
-  <div class="card"><h3>🌙 달성 & 리뷰</h3><p id="dRev"></p></div>
+  <div class="card"><h3>🌙 달성 & 하루소회</h3><p id="dRev"></p><button class="morebtn" id="dAddBtn">✍ 나중에 덧붙이기</button></div>
   <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><p id="dDiary" class="clamp"></p><button class="morebtn" id="dMore" style="display:none">전문 보기 →</button></div>
   <div class="cheer" id="dCheer" style="display:none"></div>
   <div id="layer"></div>
@@ -300,9 +302,9 @@ h1{font-size:18px;font-weight:700;margin:0}
   </div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
   <div class="jSec"><h3>💎 여행 중 발견한 보물</h3>
-  <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 <b>4주 참여권</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
+  <div onclick="openTreasure('brief')" style="cursor:pointer;background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 <b>4주 참여권</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
   <p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">4걸음 보상 · 매주 시청 링크가 카카오톡으로 와요</p></div>
-  <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;opacity:.55"><div class="jrow"><span>🎓 정기특강 무료 참석권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
+  <div onclick="openTreasure('lecture')" style="cursor:pointer;background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;opacity:.55"><div class="jrow"><span>🎓 정기특강 무료 참석권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#a08a5f">보물은 기한 안에 쓰는 혜택이에요 — 잊기 전에 사용하세요!</p></div>
   <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️</div>
 </div>
@@ -399,8 +401,8 @@ const DAYS=[
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1};
-try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{}};
+try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){} state.addenda=state.addenda||{};
 if(!state.placedD)state.placedD={};
 function computeFlow(w){
   if(!w.diary) return {flow:null,parts:[]};
@@ -412,7 +414,8 @@ function computeFlow(w){
   document.body.appendChild(M);
   const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
   const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
-  const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||''}</p></div>`;
+  const _ad=(state.addenda||{})[w.n]||'';
+  const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
   const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
   const wrap0=t=>head+cards+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
   const wrapN=t=>`<div class="dhead">📔 산책 일지 (계속)</div><div class="dsub">${w.d}</div><p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${t}</p>`;
@@ -476,6 +479,33 @@ gv('gJoinBtn').onclick=()=>{
   if(gv('jPin').value!==gv('jPin2').value){toast('비밀번호 확인이 달라요');return;}
   gShow('gDone');};
 gv('gDoneBtn').onclick=()=>gShow('gLogin');
+window.openTreasure=(k)=>{
+  const B={brief:`<h2>📺 주간브리핑 4주 참여권</h2>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#3c763d">보유 중 · 10/12까지</b><br>4걸음 이정표 보상이에요. 매주 브리핑 시청 링크가 카카오톡으로 와요.<br>계속 걸으면 다음 이정표에서 자동 연장!</p>
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">링크를 못 받았다면 → 오늘의 산책 글에 댓글로 알려주세요</p>`,
+  lecture:`<h2>🎓 정기특강 무료 참석권</h2>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">12걸음 완주 시 획득</b><br>완주하면 <b>쿠폰번호</b>가 여기 표시돼요.<br>정기특강 신청서에 그 번호만 적으면 무료 참석!</p>
+   <div style="border:1.5px dashed var(--line);border-radius:9px;padding:10px;text-align:center;margin:8px 0;color:#c9bfa6;font-size:16px;letter-spacing:2px">BW-····</div>
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">유효기간: 발급 후 정기특강 3회 이내</p>`};
+  msheet.innerHTML=B[k]+'<button class="closeM">닫기</button>'; modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
+window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — 완주 시즌에 열려요');
+function openAddendum(w){
+  msheet.innerHTML=`<h2>✍ ${w.d} 덧붙이기</h2>
+   <p style="font-size:11.5px;color:var(--sub);margin:2px 2px 8px;line-height:1.6">그날 못 다 적은 이야기를 나중에 더할 수 있어요.<br>책으로 만들 때 하루소회 아래에 함께 인쇄돼요.</p>
+   <textarea id="aTxt" style="width:100%;box-sizing:border-box;min-height:110px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fffdf7;outline:none">${((state.addenda||{})[w.n]||'').replace(/</g,'&lt;')}</textarea>
+   <button class="gbtn" id="aSave" style="width:100%;margin-top:10px;border:0;background:var(--accent);color:#fff;border-radius:10px;padding:12px 0;font-size:14px;font-weight:700;font-family:inherit">저장</button>
+   <button class="closeM">닫기</button>`;
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelector('#aSave').onclick=()=>{
+    const v=msheet.querySelector('#aTxt').value.trim();
+    if(v)state.addenda[w.n]=v; else delete state.addenda[w.n];
+    save(); delete w._pg; buildSEQ();
+    let np=SEQ.findIndex(q=>DAYS[q.i].n===w.n&&q.sub===0); if(np>=0)state.pos=np;
+    renderDay(); renderPager(); modal.classList.remove('on');
+    toast(v?'덧붙임을 저장했어요 ✍':'덧붙임을 지웠어요');};
+}
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
 function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
@@ -551,11 +581,11 @@ function openSkinShop(){
     state.coins-=k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
 }
 function openStkShop(){
-  const cats=['기본','가을 시즌'];
+  const cats=['가을 시즌','기본'];
   msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':'')+c+'</p><div class="gal3">'
    +STICKERS.filter(s=>s.cat===c).map(s=>{
      const own=state.ownedStk.includes(s.k);
-     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="52" height="46"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
+     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="100%" height="38"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
    +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
@@ -580,7 +610,7 @@ function openShelf(){
     </div>
     <div style="height:12px;background:#8a6a42;border-radius:0 0 12px 12px;margin:14px -12px 0"></div>
   </div>
-  <p style="font-size:11px;color:#8a8172;margin:10px 2px 0;line-height:1.6">완성된 책은 영구 소장되고, 실물 인쇄본으로도 만들 수 있어요. 진행 중인 책을 누르면 펼쳐집니다.</p>
+  <p style="font-size:11px;color:#8a8172;margin:10px 2px 0;line-height:1.6">완성된 책은 영구 소장돼요. 인쇄용 파일 전송 기능을 준비하고 있어요. 진행 중인 책을 누르면 펼쳐집니다.</p>
   <button class="closeM">닫기</button>`;
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
@@ -603,7 +633,7 @@ function bookPages(){
       pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
         <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
-        <div class="card"><h3>🌙 달성 & 리뷰</h3><p>${w.rev||'—'}</p></div>
+        <div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
         ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><p>${fl.flow}${fl.parts.length?' ⟶':''}</p></div>`:''}
         ${(w.cmt&&!fl.parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
@@ -613,8 +643,9 @@ function bookPages(){
     }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
-  pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 가을 여행</b>
-    <p>12주를 완주하면 이 책이 한 권으로 완성됩니다.<br>완성된 책은 내 책장에 영구 소장 —<br>원하면 실물 인쇄본으로도 만들어 드려요 📚</p>
+  pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 2026년 가을 여행</b>
+    <p>12주를 완주하면 이 책이 한 권으로 완성됩니다.<br>완성된 책은 내 책장에 영구 소장됩니다 📚</p>
+    <button onclick="printSendSoon()" style="margin-top:10px;border:1px solid var(--line);background:#fffdf7;border-radius:9px;padding:9px 14px;font-family:inherit;font-size:12px;font-weight:700;color:var(--ink)">🖨 인쇄 사이트로 파일 보내기</button>
     <p style="color:#c9a86a">BOOTNESS TRAVEL · 2026 AUTUMN</p></div>`});
   return pages;
 }
@@ -656,7 +687,11 @@ function renderDay(){
   $('dSub').textContent='가을 여행 · '+w.w+(parts.length?` · ${q.sub+1}/${parts.length+1}페이지`:'');
   if(q.sub===0){
     $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
-    $('dGoal').textContent=w.goal; $('dRev').textContent=w.rev||'저녁에 달성여부와 리뷰를 남겨보세요';
+    $('dGoal').textContent=w.goal;
+    const _a=(state.addenda||{})[w.n];
+    $('dRev').innerHTML=(w.rev||'저녁에 달성여부와 하루 소회를 남겨보세요').replace(/</g,'&lt;')+(_a?`<span class="addTxt"><br>➕ ${String(_a).replace(/</g,'&lt;')}</span>`:'');
+    $('dAddBtn').textContent=_a?'✍ 덧붙임 고치기':'✍ 나중에 덧붙이기';
+    $('dAddBtn').onclick=()=>openAddendum(w);
     const fl=computeFlow(w);
     $('dDiaryCard').style.display=fl.flow?'block':'none';
     if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
