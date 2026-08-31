@@ -5,7 +5,7 @@
 :root{--paper:#f6efe2;--ink:#3a352b;--sub:#8a8172;--card:#fffdf7;--line:#e6dcc6;--accent:#c96f3d;--yellow:#ffe400}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#efe6d2;color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:15px}
-.wrap{max-width:520px;margin:0 auto;padding:12px 12px 96px}
+.wrap{max-width:520px;margin:0 auto;padding:12px 12px 34px}
 header{display:flex;align-items:center;gap:8px;margin:2px 2px 10px}
 h1{font-size:18px;font-weight:700;margin:0}
 .coin{margin-left:auto;background:var(--yellow);border-radius:20px;padding:3px 12px;font-weight:700;font-size:13px;color:#4d431a}
@@ -37,7 +37,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .morebtn{margin-top:4px;border:0;background:none;color:#c96f3d;font-size:11px;font-weight:700;padding:0;font-family:inherit}
 .cheer{font-size:12px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
-.page{margin-bottom:28px}
+.page{margin-bottom:10px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
 .page.auto .jSec:last-child{margin-bottom:0}
 .footStrip{background:#fff6cf;border:1px solid #e3cc40;border-radius:12px;padding:10px 12px;font-size:12px;color:#6b5d2a;text-align:center;margin-top:2px}
@@ -81,8 +81,9 @@ h1{font-size:18px;font-weight:700;margin:0}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
-#fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;
- background:var(--yellow);border:0;font-size:23px;box-shadow:0 4px 14px rgba(90,70,40,.35);z-index:15;display:none}
+#fab{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));border-radius:22px;padding:11px 16px;
+ background:#fffdf7;border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink);font-family:inherit;
+ box-shadow:0 4px 14px rgba(90,70,40,.22);z-index:15;display:none}
 #stkPanel{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--line);z-index:16;
  box-shadow:0 -4px 14px rgba(90,70,40,.15);padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:none}
 #stkPanel .plabel{font-size:10.5px;color:var(--sub);margin:0 2px 6px;display:flex}
@@ -223,17 +224,16 @@ h1{font-size:18px;font-weight:700;margin:0}
     <div class="slot lock"><svg viewBox="0 0 76 62"><use href="#st-tower"/></svg><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
-  <div class="jSec" style="background:#fdf3df"><h3>💎 여행 중 발견한 보물</h3>
+  <div class="jSec"><h3>💎 여행 중 발견한 보물</h3>
   <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px"><div class="jrow"><span>📺 주간브리핑 시청권 <b>+1개월</b></span><span style="color:#3c763d;font-weight:700">보유 · ~10/12</span></div>
   <p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">4걸음 보상 · 매주 시청 링크가 카카오톡으로 와요</p></div>
   <div style="background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;opacity:.55"><div class="jrow"><span>🎓 정기특강 참여권 <b>1회</b></span><span>12걸음에 획득</span></div></div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#a08a5f">보물은 기한 안에 쓰는 혜택이에요 — 잊기 전에 사용하세요!</p></div>
   <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️</div>
 </div>
-<div class="footStrip">🍂 다음 이정표 <svg viewBox="0 0 76 62" style="width:26px;height:20px;vertical-align:-4px"><use href="#st-bench"/></svg> 단풍나무 벤치까지 <b>3걸음</b> · 가을 여행 12주 중 2주차</div>
 </div>
 
-<button id="fab">🩹</button>
+<button id="fab">✨ 스티커</button>
 <div id="stkPanel"><p class="plabel">내 스티커 — 골라서 붙이세요 <button class="pclose" id="pClose">닫기 ✕</button></p><div class="prow" id="prow"></div></div>
 <div id="ctrlBar"><button id="bigger">크게</button><button id="smaller">작게</button><button id="rotL">↺</button><button id="rotR">↻</button><button id="del" class="danger">삭제</button><button id="doneSel">완료</button></div>
 <div id="modal"><div class="sheet2" id="msheet"></div></div>
