@@ -107,9 +107,10 @@ h1{font-size:18px;font-weight:700;margin:0}
  box-shadow:0 -4px 14px rgba(90,70,40,.15);padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:none}
 #stkPanel .plabel{font-size:10.5px;color:var(--sub);margin:0 2px 6px;display:flex}
 #stkPanel .pclose{margin-left:auto;border:0;background:none;font-size:12px;color:var(--sub);font-family:inherit}
-#stkPanel .prow{display:flex;flex-wrap:wrap;gap:8px;max-height:148px;overflow-y:auto}
-.pitem{width:60px;height:60px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
+#stkPanel .prow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;max-height:190px;overflow-y:auto}
+.pitem{width:100%;aspect-ratio:1;background:var(--paper);border:1px solid var(--line);border-radius:12px;
  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.pitem svg{width:76%;height:76%}
 .pitem:active{transform:scale(.93)}
 .pitem.shop{background:#fff3bf;font-size:11px;font-weight:700;flex-direction:column;color:#6b5d2a}
 #ctrlBar{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:16;display:none;
@@ -122,8 +123,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .sheet2{background:#fffdf7;border-radius:18px 18px 0 0;width:100%;max-height:74vh;overflow-y:auto;padding:16px 14px calc(20px + env(safe-area-inset-bottom))}
 .sheet2 h2{font-size:15px;margin:0 0 10px}
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.gal3{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.gal3 .gitem b{font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.gal3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .gitem{border:2px solid var(--line);border-radius:12px;overflow:hidden;position:relative;cursor:pointer;background:#fff}
 .gitem.selq{border-color:var(--accent)}
 .gitem img{width:100%;aspect-ratio:728/1024;object-fit:cover;display:block}
@@ -133,7 +133,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .price{position:absolute;top:5px;right:5px;background:var(--yellow);border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#4d431a;z-index:2}
 .freeb{position:absolute;top:5px;right:5px;background:#dceefb;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#2a5a7a;z-index:2}
 .owned{position:absolute;top:5px;right:5px;background:#dff0d8;border-radius:10px;font-size:10px;font-weight:700;padding:2px 7px;color:#3c763d;z-index:2}
-.closeM{width:100%;margin-top:12px;border:0;background:#3a352b;color:#fff;border-radius:10px;padding:11px 0;font-size:13.5px;font-family:inherit}
+.closeM{width:100%;margin-top:12px;border:0;background:#3a352b;color:#fff;border-radius:10px;padding:11px 0;font-size:13.5px;font-family:inherit;position:sticky;bottom:0;z-index:3;box-shadow:0 0 0 6px #fffdf7}
 #book{position:fixed;inset:0;background:#241f16;display:none;flex-direction:column;z-index:35}
 #book.on{display:flex}
 .bkTop{display:flex;align-items:center;padding:12px 14px;color:#d8cdb8;font-size:13px}
@@ -587,7 +587,7 @@ function openStkShop(){
   msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':'')+c+'</p><div class="gal3">'
    +STICKERS.filter(s=>s.cat===c).map(s=>{
      const own=state.ownedStk.includes(s.k);
-     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="100%" height="38"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
+     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="52" height="46"><use href="#${s.k}"/></svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
    +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
