@@ -35,6 +35,24 @@ h1{font-size:18px;font-weight:700;margin:0}
 .card h3{margin:0 0 2px;font-size:12px}
 .card p{margin:0;font-size:11px;color:var(--sub);line-height:1.5}
 .cheer{font-size:11px;background:rgba(255,248,220,.92);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
+.pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 8px}
+.pager button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:30px;font-size:13px;color:var(--ink)}
+.pager button:disabled{opacity:.3}
+.pager span{font-size:12.5px;font-weight:700;color:var(--sub)}
+/* 여정 탭 */
+.jSec{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px}
+.jSec h3{margin:0 0 6px;font-size:12px}
+.stepbar{display:flex;align-items:center;gap:0}
+.stepbar .dot{flex:1;height:7px;background:#e7dcc2;position:relative}
+.stepbar .dot.on{background:#e3b750}
+.stepbar .dot:first-child{border-radius:4px 0 0 4px}.stepbar .dot:last-child{border-radius:0 4px 4px 0}
+.stepbar .mile{position:absolute;top:-7px;right:-9px;font-size:15px;z-index:2}
+.wgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.wcell{border:1px solid var(--line);border-radius:8px;text-align:center;padding:5px 0;font-size:10px;color:var(--sub);background:rgba(255,253,247,.8)}
+.wcell b{display:block;font-size:13px}
+.wcell.ok{background:#fff6cf;border-color:#e3cc40}
+.wcell.now{border-style:dashed;border-color:var(--accent)}
+.jrow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--sub);margin-top:2px}
 /* 스탬프북 */
 .stampIntro{font-size:11.5px;color:var(--sub);margin-bottom:10px;line-height:1.55}
 .stampGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -103,7 +121,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 </defs></svg>
 
 <div class="wrap">
-<header><h1>📔 여행자님의 다이어리</h1><span class="coin">🪙 12</span></header>
+<header><h1>📔 리매님의 다이어리</h1><span class="coin">🪙 12</span></header>
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
@@ -112,22 +130,32 @@ h1{font-size:18px;font-weight:700;margin:0}
   </div>
 </div>
 <div class="tabs">
+  <button id="tabJ">🚶 나의 여정</button>
   <button id="tabD" class="on">📔 산책 다이어리</button>
   <button id="tabS">🧳 여행 일지</button>
 </div>
 
-<div class="page" id="diary">
-  <div class="dhead">9월 둘째 주 산책 🍂</div>
-  <div class="dsub">가을 여행 · 1주차</div>
-  <div class="week">
-    <div class="day"><b>월</b><span>🌕</span></div><div class="day"><b>화</b><span>🌗</span></div>
-    <div class="day"><b>수</b><span>🌕</span></div><div class="day"><b>목</b><span>·</span></div>
-    <div class="day"><b>금</b><span>📔</span></div><div class="day"><b>토</b><span>·</span></div>
-    <div class="day"><b>일</b><span>·</span></div>
+<div class="page" id="journey" style="display:none;">
+  <div class="dhead">🚶 나의 여정</div>
+  <div class="dsub">가을 여행 · 리매님은 지금 1걸음째</div>
+  <div class="jSec"><h3>12주 여행길 · 1/12</h3>
+    <div class="stepbar" id="jBar"></div>
+    <div class="jrow"><span>출발</span><span>4주 🪑</span><span>8주 🌾</span><span>12주 🗼</span></div>
   </div>
-  <div class="card"><h3>📔 이번 주 산책 일지</h3><p>강동구 임장에서 배운 3가지 — 역세권보다 학군 수요가 먼저 움직인다는 걸 눈으로 확인했다…</p></div>
-  <div class="card"><h3>이번 주 목표</h3><p>임장 2곳 · 종잣돈 30만원 적립 · 경매 책 3장</p></div>
-  <div class="cheer">💬 바람의색상: 목요일은 하루 카드가 지켜드렸어요. 보름달 1개 남았습니다!</div>
+  <div class="jSec"><h3>주차별 산책</h3><div class="wgrid" id="jGrid"></div></div>
+  <div class="jSec"><h3>이번 주</h3>
+    <div class="jrow"><span>달성률 <b style="color:#c96f3d">2/4</b> · 산책 일지 ⏳</span><span>🌤 하루 2 · 🃏 주 1</span></div>
+  </div>
+  <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>이번 주 적립 +3</span></div></div>
+</div>
+<div class="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
+<div class="page" id="diary">
+  <div class="dhead" id="dHead"></div>
+  <div class="dsub" id="dSub"></div>
+  <div class="week" id="dWeek"></div>
+  <div class="card"><h3 id="dDiaryT">📔 산책 일지</h3><p id="dDiary"></p></div>
+  <div class="card"><h3>이번 주 목표</h3><p id="dGoal"></p></div>
+  <div class="cheer" id="dCheer"></div>
   <div id="layer"></div>
 </div>
 
@@ -180,13 +208,23 @@ const STICKERS=[
  {k:'s-ticket',n:'여행 티켓',p:3,cat:'가을 시즌',vb:'0 0 140 100',w:112,h:80},
  {k:'s-tag',n:'러기지 태그',p:3,cat:'가을 시즌',vb:'0 0 128 86',w:100,h:68},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placed:[]};
-try{const v=localStorage.getItem('bd4');if(v)state={...state,...JSON.parse(v)};}catch(e){}
-let sel=null,drag=null,uid=1+Math.max(0,...state.placed.map(s=>s.id||0));
+const WEEKS=[
+ {label:'1주차 · 9/7 ~ 9/13',head:'9월 둘째 주 산책 🍂',sub:'가을 여행 · 1주차 · 성공 ✅',
+  days:['🌕','🌗','🌕','·','📔','🌕','·'],diary:'강동구 임장에서 배운 3가지 — 역세권보다 학군 수요가 먼저 움직인다는 걸 눈으로 확인했다…',
+  goal:'임장 2곳 · 종잣돈 30만원 적립 · 경매 책 3장',cheer:'💬 바람의색상: 목요일은 하루 카드가 지켜드렸어요. 멋진 첫 주!'},
+ {label:'2주차 · 9/14 ~ 9/20 (이번 주)',head:'9월 셋째 주 산책 🍂',sub:'가을 여행 · 2주차 · 진행 중',
+  days:['🌕','🌕','·','','','',''],diary:null,
+  goal:'경매 물건 3건 분석 · 임장 1곳',cheer:'💬 바람의색상: 수요일 목표는 어디까지 가셨나요? 🌙'},
+];
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','s-leaf','s-moon'],placedW:{},week:1};
+try{const v=localStorage.getItem('bd5');if(v)state={...state,...JSON.parse(v)};}catch(e){}
+if(!state.placedW)state.placedW={};
+let sel=null,drag=null,uid=1+Math.max(0,...Object.values(state.placedW).flat().map(s=>s.id||0));
+function curPlaced(){return state.placedW[state.week]=(state.placedW[state.week]||[]);}
 const $=id=>document.getElementById(id);
 const diary=$('diary'),layer=$('layer');
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
-function save(){try{localStorage.setItem('bd4',JSON.stringify(state));}catch(e){}}
+function save(){try{localStorage.setItem('bd5',JSON.stringify(state));}catch(e){}}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(covers/${state.cover}.png)`;
@@ -197,7 +235,7 @@ function apply(){
 }
 function render(){
   layer.innerHTML='';
-  for(const s of state.placed){
+  for(const s of curPlaced()){
     const d=stDef(s.k); if(!d) continue;
     const el=document.createElementNS('http://www.w3.org/2000/svg','svg');
     el.setAttribute('viewBox',d.vb); el.classList.add('stk'); if(s.id===sel)el.classList.add('sel');
@@ -211,7 +249,7 @@ function render(){
       el.setPointerCapture(ev.pointerId);render();});
     layer.appendChild(el);
   }
-  const on=!!state.placed.find(s=>s.id===sel);
+  const on=!!curPlaced().find(s=>s.id===sel);
   for(const id of['bigger','smaller','rotL','rotR','del'])$(id).disabled=!on;
 }
 diary.addEventListener('pointermove',ev=>{if(!drag)return;const r=diary.getBoundingClientRect();
@@ -224,8 +262,8 @@ function buildPalette(){
   for(const k of state.ownedStk){const d=stDef(k);if(!d)continue;
     const b=document.createElement('div');b.className='pitem';
     b.innerHTML=`<svg viewBox="${d.vb}" width="48" height="44"><use href="#${d.k}"/></svg>`;
-    b.onclick=()=>{state.placed.push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
-      sel=uid-1;$('tabD').click();render();save();toast('붙였어요! 드래그로 옮겨보세요');};
+    b.onclick=()=>{curPlaced().push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
+      sel=uid-1;showTab('tabD');render();save();toast('붙였어요! 드래그로 옮겨보세요');};
     row.appendChild(b);}
   const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
   shop.onclick=openStkShop;row.appendChild(shop);
@@ -276,14 +314,43 @@ function openStkShop(){
 $('btnCover').onclick=openCoverGal;$('btnSkin').onclick=openSkinShop;
 $('coverThumb').onclick=()=>{$('coverFullImg').src=`covers/${state.cover}.png`;$('coverFull').classList.add('on');};
 $('coverFull').onclick=()=>$('coverFull').classList.remove('on');
-$('tabD').onclick=()=>{$('tabD').classList.add('on');$('tabS').classList.remove('on');diary.style.display='block';$('stampbook').style.display='none';};
-$('tabS').onclick=()=>{$('tabS').classList.add('on');$('tabD').classList.remove('on');diary.style.display='none';$('stampbook').style.display='block';};
-const mod=f=>{const s=state.placed.find(x=>x.id===sel);if(s){f(s);render();save();}};
+const mod=f=>{const s=curPlaced().find(x=>x.id===sel);if(s){f(s);render();save();}};
 $('bigger').onclick=()=>mod(s=>s.sc=Math.min(2,s.sc*1.15));
 $('smaller').onclick=()=>mod(s=>s.sc=Math.max(.4,s.sc/1.15));
 $('rotL').onclick=()=>mod(s=>s.r-=15);
 $('rotR').onclick=()=>mod(s=>s.r+=15);
-$('del').onclick=()=>{state.placed=state.placed.filter(x=>x.id!==sel);sel=null;render();save();};
+$('del').onclick=()=>{state.placedW[state.week]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
 $('save').onclick=()=>{save();toast('저장 완료 — 다음에 와도 그대로예요');};
-apply();render();
+function renderWeek(){
+  const w=WEEKS[state.week];
+  $('wLabel').textContent=w.label;
+  $('wPrev').disabled=state.week===0; $('wNext').disabled=state.week===WEEKS.length-1;
+  $('dHead').textContent=w.head; $('dSub').textContent=w.sub;
+  $('dWeek').innerHTML=['월','화','수','목','금','토','일'].map((d,i)=>`<div class="day"><b>${d}</b><span>${w.days[i]===''?'&nbsp;':w.days[i]}</span></div>`).join('');
+  $('dDiaryT').textContent=w.diary?'📔 이번 주 산책 일지':'📔 산책 일지 (아직)';
+  $('dDiary').textContent=w.diary||'이번 주 배운 것을 [산책일지] 글로 정리하면 보름달 2개!';
+  $('dGoal').textContent=w.goal; $('dCheer').textContent=w.cheer;
+  sel=null; render();
+}
+$('wPrev').onclick=()=>{state.week=Math.max(0,state.week-1);save();renderWeek();};
+$('wNext').onclick=()=>{state.week=Math.min(WEEKS.length-1,state.week+1);save();renderWeek();};
+function renderJourney(){
+  $('jBar').innerHTML=Array.from({length:12},(_,i)=>{
+    const mile={3:'🪑',7:'🌾',11:'🗼'}[i]||'';
+    return `<div class="dot ${i<1?'on':''}">${mile?`<span class="mile">${mile}</span>`:''}</div>`;}).join('');
+  $('jGrid').innerHTML=Array.from({length:12},(_,i)=>{
+    const cls=i===0?'ok':(i===1?'now':'');
+    const mark=i===0?'🌕':(i===1?'⏳':'·');
+    return `<div class="wcell ${cls}"><b>${mark}</b>${i+1}주</div>`;}).join('');
+  $('jCoin').textContent=state.coins;
+}
+function showTab(t){
+  for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
+    $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
+  document.getElementById('palette').style.display = t==='tabD'?'block':'none';
+}
+$('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
+$('tabD').onclick=()=>showTab('tabD');
+$('tabS').onclick=()=>showTab('tabS');
+apply();renderWeek();
 </script>
