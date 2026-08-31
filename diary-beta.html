@@ -99,6 +99,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 
 .addTxt{color:#8a7250;font-size:.92em}
 .slot img{width:100%;aspect-ratio:930/758;object-fit:cover;border-radius:7px;display:block;margin-bottom:4px}
+.dimg{width:100%;border-radius:10px;display:block;margin:4px 0 2px;border:1px solid var(--line)}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -144,7 +145,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .bkClose{margin-left:auto;background:none;border:1px solid #5a5142;color:#d8cdb8;border-radius:8px;padding:5px 12px;font-size:13px}
 .bkStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px;overflow:hidden;touch-action:pan-y}
 .bkStage{perspective:1400px}
-.bkPage{width:min(92vw,calc(76vh*0.707));aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
+.bkPage{aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
 .bkPage{transition:transform .28s ease,opacity .28s ease}
 .bkPage.outL{transform:translateX(-9%);opacity:0}
 .bkPage.outR{transform:translateX(9%);opacity:0}
@@ -401,7 +402,7 @@ const DAYS=[
  {d:'9월 7일 (월)',n:7,w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
  {d:'9월 8일 (화)',n:8,w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
  {d:'9월 9일 (수)',n:9,w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
- {d:'9월 11일 (금)',n:11,w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)',
+ {d:'9월 11일 (금)',n:11,w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)', img:'photos/demo1.jpg',
   diary:'강동구 임장에서 배운 3가지를 정리해 본다. 첫째, 역세권보다 학군 수요가 먼저 움직인다. A단지는 역에서 10분 거리인데도 초등학교 배정 문제로 호가가 눌려 있었고, 반대로 역에서 15분인 B단지는 학군 프리미엄으로 매물이 잠겨 있었다. 둘째, 저녁 시간대 유동인구가 진짜 수요다. 낮에는 조용했던 상가 골목이 저녁 7시에 완전히 달라졌다. 임장은 최소 두 번, 다른 시간대에 가야 한다는 걸 몸으로 배웠다. 셋째, 부동산 사장님과의 스몰토크가 최고의 데이터다. 매물 장부보다 「요즘 누가 사러 오는지」 한마디가 더 많은 걸 알려줬다. 다음 주에는 전세가율을 직접 계산해서 이 단지들의 갭을 비교해 볼 예정이다. 그래서 오늘 저녁에는 국토부 실거래가 공개시스템에서 두 단지의 최근 6개월 매매·전세 실거래를 전부 내려받아 표로 만들어 봤다. A단지는 매매 7억 2천에 전세 4억 6천으로 전세가율이 약 64%, B단지는 매매 8억 1천에 전세 5억 9천으로 73%가 나왔다. 숫자로 놓고 보니 발품에서 느꼈던 인상과 정확히 반대였다. 호가가 눌려 있다고 생각했던 A단지가 오히려 갭이 크고, 학군 프리미엄으로 비싸 보였던 B단지가 실제로는 전세가 받쳐줘서 필요한 현금이 더 적었다. 임장에서 받은 인상만으로 판단했다면 완전히 거꾸로 골랐을 것이다. 눈과 숫자를 반드시 같이 봐야 한다는 걸 오늘 뼈저리게 배웠다. 계산하는 김에 대출도 알아봤다. 주거래 은행 앱에서 가심사를 돌려보니 지금 소득 기준으로 주담대 한도가 생각보다 훨씬 적게 나왔다. 작년에 늘어난 신용대출이 DSR을 갉아먹고 있었다. 목표 단지를 사려면 갭 투자든 실거주든 신용대출부터 정리하는 게 순서라는 결론이 나왔고, 바로 상환 계획표를 만들었다. 월 저축액의 배분을 바꾸면 내년 3월이면 신용대출을 다 지울 수 있다. 마지막으로 이번 주 챌린지를 하면서 느낀 점 하나. 아침에 목표를 댓글로 적어두면 하루 종일 그 문장이 머릿속에 남아 있다. 퇴근길에 「오늘 목표 아직 안 했는데」 하는 불편함이 생기는데, 그 불편함이 결국 나를 책상 앞에 앉힌다. 선언의 힘이라는 게 거창한 게 아니라 이 작은 불편함을 매일 만들어내는 장치라는 생각이 들었다. 다음 주 목표는 두 단지 외에 후보를 두 곳 더 늘려서 같은 방식으로 전세가율 표를 완성하는 것. 그리고 부동산 사장님께 들었던 「요즘 누가 사러 오는지」를 세 군데 더 물어보고 수요의 결을 기록해 두려고 한다.',
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
@@ -423,18 +424,20 @@ function computeFlow(w){
   const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
   const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
   const wrap0=t=>head+cards+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
-  const wrapN=t=>`<div class="dhead">📔 산책 일지</div><div class="dsub">${w.d}</div><p style="font-size:14.5px;line-height:1.85;margin:6px 2px;color:#5a5142;white-space:pre-line">${t}</p>`;
+  const wrapN=t=>head+`<div class="card"><h3>📔 산책 일지</h3><p>${t}</p></div>`;
   const cut=(builder,txt,tail)=>{let lo=0,hi=txt.length,ans=0;
     while(lo<=hi){const m=(lo+hi)>>1; if(fits(builder(txt.slice(0,m))+tail)){ans=m;lo=m+1;}else hi=m-1;}
     const sp=txt.lastIndexOf(' ',ans); return sp>ans*0.6?sp:ans;};
   const T=w.diary; let flow='',parts=[],rest=T;
   if(fits(wrap0(T)+cheer)){ flow=T; rest=''; }
-  else { const n=cut(wrap0,T,' ⟶'); flow=T.slice(0,n); rest=T.slice(n).trim(); }
+  else { const n=cut(wrap0,T,''); flow=T.slice(0,n); rest=T.slice(n).trim(); }
   while(rest){
-    if(fits(wrapN(rest)+cheer)){ parts.push(rest); rest=''; break; }
-    const n=cut(wrapN,rest,' ⟶'); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
+    if(fits(wrapN(rest)+(w.img?'':cheer))){ parts.push(rest); rest=''; break; }
+    const n=cut(wrapN,rest,''); parts.push(rest.slice(0,n)); rest=rest.slice(n).trim();
   }
+  if(w.img) parts.push('\u0001IMG');
   M.remove();
+  window.PAGEW=live.clientWidth||360;
   return w._pg={flow,parts};
 }
 function diaryParts(w){ return computeFlow(w).parts; }
@@ -609,7 +612,7 @@ function openShelf(){
   <div style="background:linear-gradient(#c9a97a,#b5915f);border-radius:12px;padding:16px 12px 0;box-shadow:inset 0 -8px 12px rgba(0,0,0,.15)">
     <div style="display:flex;gap:12px;align-items:flex-end">
       <div id="shelfBook" style="width:86px;cursor:pointer">
-        <img src="covers/${state.cover}.png" style="width:100%;aspect-ratio:728/1024;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:3px 3px 8px rgba(0,0,0,.35);display:block">
+        <img src="${cvUrl(state.cover)}" style="width:100%;aspect-ratio:728/1024;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:3px 3px 8px rgba(0,0,0,.35);display:block">
         <p style="margin:4px 0 0;font-size:9.5px;text-align:center;color:#4d3d26;font-weight:700">2026 가을<br>(진행 중)</p></div>
       ${['겨울','봄','여름'].map(n=>`<div style="width:86px;opacity:.55">
         <div style="width:100%;aspect-ratio:728/1024;border:1.5px dashed #8a6f47;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#8a6f47">?</div>
@@ -641,12 +644,14 @@ function bookPages(){
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
         <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
         <div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
-        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><p>${fl.flow}${fl.parts.length?' ⟶':''}</p></div>`:''}
+        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><p>${fl.flow}</p></div>`:''}
         ${(w.cmt&&!fl.parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
+      const _bp=parts[q.sub-1];
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
-        <div class="dhead">📔 산책 일지${q.sub>1?'':''}</div><div class="dsub">${w.d} · ${q.sub}/${parts.length}</div>
-        <p style="font-size:12.5px;line-height:1.75;margin:6px 2px;color:#5a5142">${parts[q.sub-1]}${q.sub<parts.length?' <span style="color:#b0a488">(계속)</span>':''}</p>${stk}</div>`});
+        <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w} · ${q.sub+1}/${parts.length+1}페이지</div>
+        <div class="card"><h3>📔 산책 일지</h3>${_bp==='\u0001IMG'?`<img class="dimg" src="${w.img}">`:`<p>${_bp}</p>`}</div>
+        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
     }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
@@ -659,7 +664,10 @@ function bookPages(){
 function bkRender(){
   const pgs=bookPages();
   bkIdx=Math.max(0,Math.min(bkIdx,pgs.length-1));
-  $('bkStage').innerHTML=`<div class="bkPage">${pgs[bkIdx].html}</div>`;
+  const _W=window.PAGEW||360;
+  const _st=$('bkStage').getBoundingClientRect();
+  const _S=Math.min((_st.width*0.92)/_W, (_st.height*0.96)/(_W*297/210));
+  $('bkStage').innerHTML=`<div class="bkScale" style="transform:scale(${_S});transform-origin:center"><div class="bkPage" style="width:${_W}px">${pgs[bkIdx].html}</div></div>`;
   $('bkInd').textContent=`${pgs[bkIdx].t} · ${bkIdx+1}/${pgs.length}`;
   $('bkPrev').disabled=bkIdx===0; $('bkNext').disabled=bkIdx===pgs.length-1;
 }
@@ -702,13 +710,15 @@ function renderDay(){
     const fl=computeFlow(w);
     $('dDiaryCard').style.display=fl.flow?'block':'none';
     if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
-      $('dDiary').textContent=fl.flow+(fl.parts.length?' ⟶':'');$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
+      $('dDiary').textContent=fl.flow;$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
     $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none'; if(w.cmt&&!fl.parts.length)$('dCheer').textContent=w.cmt;
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
     $('dDiaryCard').style.display='block';
-    $('dDiary').textContent=parts[q.sub-1]+(q.sub<parts.length?' ⟶':'');
+    const _pt=parts[q.sub-1];
+    if(_pt==='\u0001IMG'){$('dDiary').innerHTML=`<img class="dimg" src="${w.img}">`;}
+    else{$('dDiary').textContent=_pt;}
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
     const last=q.sub===parts.length;
