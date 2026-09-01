@@ -103,10 +103,11 @@ h1{font-size:18px;font-weight:700;margin:0}
 mark.hl-y{background:#ffe97a;color:inherit;border-radius:3px;padding:0 1px}
 mark.hl-g{background:#c9edb4;color:inherit;border-radius:3px;padding:0 1px}
 mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
+mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 .hl-u{text-decoration:underline;text-decoration-color:#e2574c;text-decoration-thickness:2.5px;text-underline-offset:3px}
 #hlBar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:19;background:#3a352b;border-radius:22px;padding:8px 12px;gap:9px;box-shadow:0 6px 18px rgba(0,0,0,.35);align-items:center}
 #hlBar button{border:0;width:30px;height:30px;border-radius:50%;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
-#hlBar .hy{background:#ffe97a}#hlBar .hg{background:#c9edb4}#hlBar .hp{background:#ffd2df}
+#hlBar .hy{background:#ffe97a}#hlBar .hg{background:#c9edb4}#hlBar .hp{background:#ffd2df}#hlBar .hb{background:#bfe0f7}
 #hlBar .hu{background:#f2ead8;color:#3a352b;text-decoration:underline;text-decoration-color:#e2574c;text-decoration-thickness:2px}
 #hlBar .hx{background:#5a5142;color:#f2ead8;font-size:13px}
 .slot img{width:100%;aspect-ratio:1;object-fit:contain;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 3px rgba(90,70,40,.18))}
@@ -374,7 +375,7 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
 <div class="bkStage" id="bkStage"></div>
 <div class="bkNav"><button id="bkPrev">◀</button><span id="bkInd"></span><button id="bkNext">▶</button></div></div>
 <div id="coverFull"><img id="coverFullImg"></div>
-<div id="hlBar"><button class="hy" data-h="y"> </button><button class="hg" data-h="g"> </button><button class="hp" data-h="p"> </button><button class="hu" data-h="u">가</button><button class="hx" data-h="x">✕</button></div>
+<div id="hlBar"><button class="hy" data-h="y"> </button><button class="hg" data-h="g"> </button><button class="hp" data-h="p"> </button><button class="hb" data-h="b"> </button><button class="hu" data-h="u">가</button><button class="hx" data-h="x">✕</button></div>
 <p id="acctBar" style="display:none;text-align:center;font-size:10.5px;color:#a89a7d;margin:20px 0 28px">🔑 <b id="acctNick"></b> 계정 · <button id="btnLogout" style="border:0;background:none;font-family:inherit;font-size:10.5px;color:var(--accent);font-weight:700;padding:0;cursor:pointer">로그아웃</button></p>
 <div class="toast" id="toast"></div>
 
@@ -647,15 +648,16 @@ function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;
 function applyMark(st){
   const tx=hlSel(); if(!tx) return false;
   const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
-  if(st==='x'){let hit=false;for(let i=L.length-1;i>=0;i--){if(tx.includes(L[i].t)||L[i].t.includes(tx)){L.splice(i,1);hit=true;}}
-    toast(hit?'강조를 지웠어요':'지울 강조가 없어요');}
+  if(st==='x'){let hit=false;
+    const share=(a,b)=>{for(let n=Math.min(a.length,b.length);n>=3;n--){for(let i=0;i+n<=a.length;i++){if(b.includes(a.substr(i,n)))return true;}}return false;};
+    for(let i=L.length-1;i>=0;i--){const m=L[i].t; if(tx.includes(m)||m.includes(tx)||share(tx,m)){L.splice(i,1);hit=true;}}
+    toast(hit?'강조를 지웠어요 🧽':'지울 강조가 없어요');}
   else {L.push({t:tx,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
   save(); try{window.getSelection().removeAllRanges();}catch(e){}
   document.getElementById('hlBar').style.display='none'; renderDay(); return true;
 }
 document.addEventListener('selectionchange',()=>{clearTimeout(window.__hlT);window.__hlT=setTimeout(()=>{
-  if(pendMark && hlSel()){ const m=pendMark; pendMark=null; applyMark(m); return; }
-  document.getElementById('hlBar').style.display=hlSel()?'flex':'none';},200);});
+  if(pendMark && hlSel()){ const m=pendMark; pendMark=null; applyMark(m); }},200);});
 document.getElementById('hlBar').addEventListener('pointerdown',e=>e.preventDefault());
 document.getElementById('hlBar').querySelectorAll('button').forEach(b=>b.onclick=()=>{
   if(!applyMark(b.dataset.h)) document.getElementById('hlBar').style.display='none';});
@@ -729,7 +731,7 @@ function buildDeco(){
   $('mrow').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===decoMode));
   if(decoMode==='sticker'){buildPalette();return;}
   row.innerHTML='';
-  const items = decoMode==='hl' ? [['y','#ffe97a','노랑'],['g','#c9edb4','연두'],['p','#ffd2df','핑크']]
+  const items = decoMode==='hl' ? [['y','#ffe97a','노랑'],['g','#c9edb4','연두'],['p','#ffd2df','핑크'],['b','#bfe0f7','파랑']]
     : decoMode==='ul' ? [['u','#fff','밑줄 긋기']] : [['x','#f2ece0','지우기']];
   for(const [st,bg,label] of items){
     const b=document.createElement('div'); b.className='ptile';
