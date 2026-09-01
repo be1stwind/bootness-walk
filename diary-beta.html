@@ -694,7 +694,7 @@ async function pullBackup(){
     }
   }catch(e){}
 }
-const BUILD='260901-1515';
+const BUILD='260901-2131';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -898,14 +898,14 @@ diary.addEventListener('pointerup',()=>{drag=null;save();});
 diary.addEventListener('pointerdown',ev=>{if(ev.target.closest('.card,.week,.cheer,.dhead,.dsub')||ev.target===diary){sel=null;render();}});
 function buildPalette(){
   const row=$('prow');row.innerHTML='';
+  const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
+  shop.onclick=()=>{$('stkPanel').style.display='none';openStkShop();};row.appendChild(shop);
   for(const k of state.ownedStk){const d=stDef(k);if(!d)continue;
     const b=document.createElement('div');b.className='pitem';
     b.innerHTML=`<svg viewBox="${d.vb}">${(document.getElementById(d.k)||{innerHTML:''}).innerHTML}</svg>`;
     b.onclick=()=>{curPlaced().push({id:uid++,k:d.k,x:34+Math.random()*16,y:30+Math.random()*20,sc:.8,r:0});
       sel=uid-1;$('stkPanel').style.display='none';render();save();toast('드래그로 원하는 자리에 놓으세요');};
     row.appendChild(b);}
-  const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
-  shop.onclick=()=>{$('stkPanel').style.display='none';openStkShop();};row.appendChild(shop);
 }
 let decoMode='sticker', pendMark=null;
 const TOOLNAME={x:'지우개 🧽',u:'밑줄 ✏️',y:'노랑 형광펜 🖍',g:'연두 형광펜 🖍',p:'핑크 형광펜 🖍',b:'파랑 형광펜 🖍'};
