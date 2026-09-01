@@ -642,7 +642,23 @@ gv('gLoginBtn').onclick=async()=>{
     }catch(e){}
     enterApp(u.nick);toast(u.nick+'님, 어서오세요 🚶');
   }catch(e){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
-try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');if(au&&au.nick)enterApp(au.nick);else paintTitle();}catch(e){}
+async function pullBackup(){
+  const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
+  if(!au||!au.token) return;
+  try{
+    const rr=await apiGet('action=restore&token='+encodeURIComponent(au.token));
+    if(rr&&rr.ok&&rr.data&&rr.data.data){
+      const d=rr.data.data; const mine=state;
+      state={...mine,...d};
+      save(); apply();
+      if(typeof buildSEQ==='function'){DAYS.forEach(w=>{delete w._pg;});buildSEQ();}
+      if(typeof renderDay==='function'){renderDay();renderPager();}
+      if(typeof renderTreasure==='function')renderTreasure();
+    }
+  }catch(e){}
+}
+try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');
+  if(au&&au.nick){enterApp(au.nick);pullBackup();}else paintTitle();}catch(e){}
 gv('gJoinBtn').onclick=async()=>{
   const nick=gv('jNick').value.trim(), id=gv('jId').value.trim();
   if(!nick){toast('카페 닉네임을 입력해주세요');return;}
@@ -826,21 +842,39 @@ function _caret(x,y){
   return null;
 }
 (function(){
-  let a=null;
+  let a=null, lastR=null;
   const dd=()=>document.getElementById('dDiary');
   const paint=(x,y)=>{const s=_caret(x,y); if(!a||!s)return;
     const r=document.createRange();
     try{ r.setStart(a.startContainer,a.startOffset); r.setEnd(s.startContainer,s.startOffset);
       if(r.collapsed){r.setStart(s.startContainer,s.startOffset); r.setEnd(a.startContainer,a.startOffset);} }catch(e){return;}
-    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);};
+    lastR=r;
+    try{const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);}catch(e){}};
+  // 짧게 눌렀을 때: 그 지점이 속한 문장을 통째로 잡아준다
+  const sentenceAt=(node,off)=>{
+    if(!node||node.nodeType!==3) return '';
+    const s=node.textContent||''; if(!s.trim()) return '';
+    let a1=off, b1=off;
+    while(a1>0 && !'.!?。\n'.includes(s[a1-1])) a1--;
+    while(b1<s.length && !'.!?。\n'.includes(s[b1])) b1++;
+    if(b1<s.length) b1++;
+    return s.slice(a1,b1).trim();
+  };
+  const finish=(x,y)=>{
+    const m=pendMark; paint(x,y);
+    let tx=(lastR? lastR.toString() : '').trim();
+    if(tx.length<2){ const c=_caret(x,y); if(c) tx=sentenceAt(c.startContainer,c.startOffset); }
+    a=null; lastR=null; disarm();
+    try{window.getSelection().removeAllRanges();}catch(_){}
+    if(tx.length>=2) applyMarkText(tx,m);
+    else toast('글자 위에서 손가락을 움직여 주세요');
+  };
   document.addEventListener('pointerdown',e=>{
     if(!pendMark)return; const d=dd(); if(!d||!d.contains(e.target))return;
-    a=_caret(e.clientX,e.clientY); e.preventDefault();},{passive:false});
+    a=_caret(e.clientX,e.clientY); lastR=null; e.preventDefault();},{passive:false});
   document.addEventListener('pointermove',e=>{ if(!pendMark||!a)return; paint(e.clientX,e.clientY); e.preventDefault();},{passive:false});
-  document.addEventListener('pointerup',e=>{
-    if(!pendMark||!a)return; paint(e.clientX,e.clientY);
-    const tx=(window.getSelection()||'').toString().trim(); const m=pendMark; a=null; disarm();
-    if(tx.length>=2) applyMarkText(tx,m); else {try{window.getSelection().removeAllRanges();}catch(_){} toast('조금 더 길게 쓸어주세요');}});
+  document.addEventListener('pointerup',e=>{ if(!pendMark||!a)return; finish(e.clientX,e.clientY);});
+  document.addEventListener('pointercancel',e=>{ if(!pendMark||!a)return; finish(e.clientX,e.clientY);});
 })();
 function buildDeco(){
   const row=$('prow'); const T={sticker:'내 스티커 — 골라서 붙이세요',hl:'형광펜 — 색을 고르고 글을 드래그하세요',
