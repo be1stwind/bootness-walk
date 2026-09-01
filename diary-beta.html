@@ -125,6 +125,12 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
  box-shadow:0 -4px 14px rgba(90,70,40,.15);padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:none}
 #stkPanel .plabel{font-size:10.5px;color:var(--sub);margin:0 2px 6px;display:flex}
 #stkPanel .pclose{margin-left:auto;border:0;background:none;font-size:12px;color:var(--sub);font-family:inherit}
+#stkPanel .mrow{display:flex;gap:6px;margin:0 2px 8px;overflow-x:auto}
+#stkPanel .mrow button{flex:none;border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:7px 12px;
+ font-family:inherit;font-size:12px;font-weight:700;color:var(--sub)}
+#stkPanel .mrow button.on{background:var(--ink);color:#fff8e2;border-color:var(--ink)}
+.ptile{width:100%;aspect-ratio:1;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;
+ justify-content:center;font-size:11px;font-weight:700;color:#5a5142;cursor:pointer}
 #stkPanel .prow{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;max-height:min(200px,30vh);overflow-y:auto}
 .pitem{width:100%;aspect-ratio:1;background:var(--paper);border:1px solid var(--line);border-radius:12px;
  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
@@ -356,8 +362,11 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
 </div>
 </div>
 
-<button id="fab">✨ 스티커</button>
-<div id="stkPanel"><p class="plabel">내 스티커 — 골라서 붙이세요 <button class="pclose" id="pClose">닫기 ✕</button></p><div class="prow" id="prow"></div></div>
+<button id="fab">🎨 꾸미기</button>
+<div id="stkPanel"><p class="plabel"><b id="pTitle">꾸미기</b> <button class="pclose" id="pClose">닫기 ✕</button></p>
+<div class="mrow" id="mrow">
+  <button data-m="sticker" class="on">✨ 스티커</button><button data-m="hl">🖍 형광펜</button><button data-m="ul">✏️ 밑줄</button><button data-m="er">🧽 지우개</button>
+</div><div class="prow" id="prow"></div></div>
 <div id="ctrlBar"><button id="bigger">크게</button><button id="smaller">작게</button><button id="rotL">↺</button><button id="rotR">↻</button><button id="del" class="danger">삭제</button><button id="doneSel">완료</button></div>
 <div id="modal"><div class="sheet2" id="msheet"></div></div>
 <div id="book"><div class="bkTop">📖 <b id="bkTitle">&nbsp;가을 여행 · 1권째</b><button class="bkClose" id="bkClose">닫기 ✕</button></div>
@@ -603,17 +612,21 @@ window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — �
 function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
 function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;const tx=s.toString().trim();if(tx.length<2)return null;
   const dd=document.getElementById('dDiary');if(!dd||!dd.contains(s.anchorNode)||!dd.contains(s.focusNode))return null;return tx;}
+function applyMark(st){
+  const tx=hlSel(); if(!tx) return false;
+  const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
+  if(st==='x'){let hit=false;for(let i=L.length-1;i>=0;i--){if(tx.includes(L[i].t)||L[i].t.includes(tx)){L.splice(i,1);hit=true;}}
+    toast(hit?'강조를 지웠어요':'지울 강조가 없어요');}
+  else {L.push({t:tx,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
+  save(); try{window.getSelection().removeAllRanges();}catch(e){}
+  document.getElementById('hlBar').style.display='none'; renderDay(); return true;
+}
 document.addEventListener('selectionchange',()=>{clearTimeout(window.__hlT);window.__hlT=setTimeout(()=>{
+  if(pendMark && hlSel()){ const m=pendMark; pendMark=null; applyMark(m); return; }
   document.getElementById('hlBar').style.display=hlSel()?'flex':'none';},200);});
 document.getElementById('hlBar').addEventListener('pointerdown',e=>e.preventDefault());
 document.getElementById('hlBar').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  const tx=hlSel(); const bar=document.getElementById('hlBar');
-  if(!tx){bar.style.display='none';return;}
-  const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
-  if(b.dataset.h==='x'){ let hit=false; for(let i=L.length-1;i>=0;i--){ if(tx.includes(L[i].t)||L[i].t.includes(tx)){L.splice(i,1);hit=true;} }
-    toast(hit?'강조를 지웠어요':'지울 강조가 없어요'); }
-  else { L.push({t:tx,st:b.dataset.h}); toast(b.dataset.h==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍'); }
-  save(); try{window.getSelection().removeAllRanges();}catch(e){} bar.style.display='none'; renderDay();});
+  if(!applyMark(b.dataset.h)) document.getElementById('hlBar').style.display='none';});
 function openAddendum(w){
   msheet.innerHTML=`<h2>✍ ${w.d} 덧붙이기</h2>
    <p style="font-size:11.5px;color:var(--sub);margin:2px 2px 8px;line-height:1.6">그날 못 다 적은 이야기를 나중에 더할 수 있어요.<br>책으로 만들 때 하루소회 아래에 함께 인쇄돼요.</p>
@@ -676,7 +689,27 @@ function buildPalette(){
   const shop=document.createElement('div');shop.className='pitem shop';shop.innerHTML='🛍<div>상점</div>';
   shop.onclick=()=>{$('stkPanel').style.display='none';openStkShop();};row.appendChild(shop);
 }
-$('fab').onclick=()=>{buildPalette();$('stkPanel').style.display='block';};
+let decoMode='sticker', pendMark=null;
+function buildDeco(){
+  const row=$('prow'); const T={sticker:'내 스티커 — 골라서 붙이세요',hl:'형광펜 — 색을 고르고 글을 드래그하세요',
+    ul:'밑줄 — 누른 뒤 글을 드래그하세요',er:'지우개 — 누른 뒤 지울 부분을 드래그하세요'};
+  $('pTitle').textContent=T[decoMode];
+  $('mrow').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===decoMode));
+  if(decoMode==='sticker'){buildPalette();return;}
+  row.innerHTML='';
+  const items = decoMode==='hl' ? [['y','#ffe97a','노랑'],['g','#c9edb4','연두'],['p','#ffd2df','핑크']]
+    : decoMode==='ul' ? [['u','#fff','밑줄 긋기']] : [['x','#f2ece0','지우기']];
+  for(const [st,bg,label] of items){
+    const b=document.createElement('div'); b.className='ptile';
+    b.style.background=bg; if(st==='u')b.style.textDecoration='underline solid #e2574c 3px';
+    b.textContent=label;
+    b.onclick=()=>{pendMark=st;$('stkPanel').style.display='none';
+      toast(st==='x'?'지울 부분을 드래그하세요 🧽':(st==='u'?'밑줄 그을 부분을 드래그하세요 ✏️':'칠할 부분을 드래그하세요 🖍'));};
+    row.appendChild(b);
+  }
+}
+$('mrow').querySelectorAll('button').forEach(b=>b.onclick=()=>{decoMode=b.dataset.m;buildDeco();});
+$('fab').onclick=()=>{decoMode='sticker';pendMark=null;buildDeco();$('stkPanel').style.display='block';};
 $('pClose').onclick=()=>$('stkPanel').style.display='none';
 const modal=$('modal'),msheet=$('msheet');
 function badge(own,p){return own?'<span class="owned">보유</span>':(p?`<span class="price">🪙${p}</span>`:'<span class="freeb">무료</span>');}
