@@ -10,7 +10,7 @@ body{margin:0 auto;max-width:640px;min-height:100vh;background:#efe6d2;color:var
 .wrap{max-width:520px;margin:0 auto;padding:12px 12px 34px}
 header{display:flex;align-items:center;gap:8px;margin:2px 2px 10px}
 h1{font-size:18px;font-weight:700;margin:0}
-.coin{margin-left:auto;background:var(--yellow);border-radius:20px;padding:3px 12px;font-weight:700;font-size:13px;color:#4d431a}
+.coin{margin-left:auto;border:0;font-family:inherit;cursor:pointer;background:var(--yellow);border-radius:20px;padding:3px 12px;font-weight:700;font-size:13px;color:#4d431a}
 /* 책장 헤더: 세로 표지 썸네일 + 정보 */
 .bookrow{display:flex;gap:12px;margin-bottom:12px;align-items:stretch}
 .coverThumb{flex:none;width:104px;aspect-ratio:728/1024;border-radius:8px 12px 12px 8px;background:#ddd center/cover no-repeat;
@@ -304,7 +304,7 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
   </div>
  </div>
 </div>
-<header><h1>📔 나의 다이어리</h1><span class="coin">🪙 12</span></header>
+<header><h1>📔 나의 다이어리</h1><button class="coin" id="coinBtn">🪙 12</button></header>
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
@@ -331,7 +331,8 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
     <div class="jrow"><span>달성률 <b id="jwRate" style="color:#c96f3d"></b></span><span id="jwDiary"></span></div></div>
   <div class="jSec"><h3>12주 여행길 · <span id="jSteps"></span></h3><div class="wgrid" id="jGrid"></div></div>
   <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>🌤 하루 2 · 🃏 주 1</span></div>
-  <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172;line-height:1.7">보름달 1개 = 🪙1 · 산책일지 1편 = 🪙4 (보름달 2개+보너스 2)<br>주간 성공 +🪙3 · 4·8·12걸음 이정표 +🪙10</p></div>
+  <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172;line-height:1.7">보름달 1개 = 🪙1 · 산책일지 1편 = 🪙4 (보름달 2개+보너스 2)<br>주간 성공 +🪙3 · 4·8·12걸음 이정표 +🪙10</p>
+  <p style="margin:6px 2px 0;font-size:9.5px;color:#8a8172;line-height:1.7">🌤 <b>하루 카드</b> — 빠진 하루를 보름달로 채워줘요 · 시작 2장 + 6걸음마다 2장<br>🃏 <b>한 주 카드</b> — 그 주를 통째로 성공 처리(일지도 면제) · 4·8걸음마다 1장 (최대 2장)<br>따로 쓸 필요 없이 부족할 때 자동으로 쓰여요</p></div>
 </div>
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
@@ -598,6 +599,18 @@ gv('gJoinBtn').onclick=()=>{
   if(!gv('jConsent').checked){toast('글·사진 사용 동의에 체크해주세요');return;}
   gShow('gDone');};
 gv('gDoneBtn').onclick=()=>gShow('gLogin');
+window.openCoinRule=()=>{
+  msheet.innerHTML=`<h2>🪙 코인 모으는 법</h2>
+   <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin:4px 0 2px">
+    <tr><td style="padding:7px 2px;border-bottom:1px solid var(--line)">보름달 🌕 하루</td><td style="text-align:right;font-weight:700;border-bottom:1px solid var(--line)">🪙 1</td></tr>
+    <tr><td style="padding:7px 2px;border-bottom:1px solid var(--line)"><b>산책일지 📔 1편</b></td><td style="text-align:right;font-weight:700;color:var(--accent);border-bottom:1px solid var(--line)">🪙 4</td></tr>
+    <tr><td style="padding:7px 2px;border-bottom:1px solid var(--line)">주간 성공 (한 걸음)</td><td style="text-align:right;font-weight:700;border-bottom:1px solid var(--line)">+🪙 3</td></tr>
+    <tr><td style="padding:7px 2px">4·8·12걸음 이정표</td><td style="text-align:right;font-weight:700">+🪙 10</td></tr>
+   </table>
+   <p style="font-size:11px;color:var(--sub);line-height:1.75;margin:8px 2px 0">일지를 쓰면 보름달 2개 값에 <b>노력 보너스 2</b>가 더 붙어요.<br>일지 1편 + 보름달 4개 = 🪙11 · 일지 없이 보름달 8개 = 🪙8<br>모은 코인은 <b>속지·스티커</b>를 사는 데 써요 🛍</p>
+   <button class="closeM">닫기</button>`;
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
 window.openTreasure=(k)=>{
   const B={brief:`<h2>📺 주간브리핑 4주 참여권</h2>
    <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#3c763d">보유 중 · 10/12까지</b><br>4걸음 이정표 보상이에요. 매주 브리핑 시청 링크가 카카오톡으로 와요.<br>계속 걸으면 다음 이정표에서 자동 연장!</p>
@@ -775,6 +788,7 @@ function openShelf(){
   document.getElementById('shelfBook').onclick=()=>{modal.classList.remove('on');bkIdx=0;$('book').classList.add('on');requestAnimationFrame(bkRender);};
 }
 $('btnShelf').onclick=openShelf;
+$('coinBtn').onclick=openCoinRule;
 $('btnCover').onclick=openCoverGal;$('btnSkin').onclick=openSkinShop;
 let bkIdx=0;
 function bookPages(){
