@@ -634,7 +634,7 @@ gv('gLoginBtn').onclick=async()=>{
     const u=A[id];
     if(!u){toast('등록되지 않은 아이디예요');return;}
     if(await pinHash(u.salt,pin)!==u.hash){toast('비밀번호가 달라요');return;}
-    localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick,token:u.token||id}));
+    localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick,token:u.token||id,mk:u.mk||null}));
     try{
       const rr=await apiGet('action=restore&token='+encodeURIComponent(u.token||id));
       if(rr&&rr.ok&&rr.data&&rr.data.data){ state={...state,...rr.data.data}; save(); apply();
@@ -681,15 +681,17 @@ function renderTreasure(){
       <div class="jrow"><span>${x.i} ${x.t}</span><span style="${x.own?'color:#3c763d;font-weight:700':''}">${x.s}</span></div>
       ${x.sub?`<p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">${x.sub}</p>`:''}</div>`).join('');
 }
+async function h16(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('bw:'+s));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);}
 async function checkMember(){
   const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
-  if(!au||!au.nick){ state.isMember=false; renderTreasure(); return; }
+  if(!au){ state.isMember=false; renderTreasure(); return; }
   try{
-    const enc=new TextEncoder().encode('bw:'+au.nick);
-    const buf=await crypto.subtle.digest('SHA-256',enc);
-    const h=[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);
     const j=await (await fetch('mems.json?t='+Date.now())).json();
-    state.isMember=(j.h||[]).includes(h);
+    let ok=false;
+    if(au.mk){ ok=(j.mk||[]).includes(await h16(au.mk)); }          // ① memberKey 우선 (닉 변경에 안전)
+    else if(au.nick){ ok=(j.nick||j.h||[]).includes(await h16(au.nick)); }  // ② 미관측자는 닉 보조
+    state.isMember=ok;
   }catch(e){ state.isMember=false; }
   save(); renderTreasure();
 }
