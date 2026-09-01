@@ -283,7 +283,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 </defs></svg>
 
 <div class="wrap">
-<!-- BUILD 260901-1507 -->
+<!-- BUILD 260901-1508 -->
 <div id="gate">
  <div class="gcard">
   <div id="gLogin">
@@ -396,7 +396,6 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div id="coverFull"><img id="coverFullImg"></div>
 <div id="hlBar"><button class="hy" data-h="y"> </button><button class="hg" data-h="g"> </button><button class="hp" data-h="p"> </button><button class="hb" data-h="b"> </button><button class="hu" data-h="u">가</button><button class="hx" data-h="x">✕</button></div>
 <footer id="brandFoot">
-  <div class="bfLogo"><b>부트니스</b></div>
   <p class="bfSub">함께 걷는 일주일 · 산책 다이어리</p>
   <p class="bfCopy">© 2026 부트니스 (BOOTNESS). All rights reserved.<br>
    <a href="https://cafe.naver.com/goldentree2nd" target="_blank" rel="noopener">부트니스 카페</a> ·
@@ -518,13 +517,31 @@ function dayBlocks(w){
   return b.length?b:null;
 }
 const escT=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function decorate(html,w){
-  const anns=((state.marks||{})[w.n]||[]).slice().sort((a,b)=>b.t.length-a.t.length);
+function decorate(html,w){ return html; }   // 표시는 원문 그대로, 강조는 markDOM()이 DOM에서 입힌다
+function markDOM(root,w){
+  if(!root) return;
+  const anns=((state.marks||{})[w?w.n:0]||[]);
+  if(!anns.length) return;
   for(const a of anns){
-    const e=escT(a.t);
-    if(html.includes(e)) html=html.replace(e, a.st==='u'?`<span class="hl-u">${e}</span>`:`<mark class="hl-${a.st}">${e}</mark>`);
+    if(!a.t) continue;
+    let guard=0;
+    while(guard++<40){
+      const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{
+        acceptNode:n=>(n.parentElement&&n.parentElement.closest('mark,.hl-u'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+      let hit=null;
+      while(walker.nextNode()){
+        const i=walker.currentNode.textContent.indexOf(a.t);
+        if(i>=0){ hit={node:walker.currentNode,i}; break; }
+      }
+      if(!hit) break;                                  // 이미 칠해졌거나 없음 → 다음 강조로
+      const r=document.createRange();
+      r.setStart(hit.node,hit.i); r.setEnd(hit.node,hit.i+a.t.length);
+      const el=document.createElement(a.st==='u'?'span':'mark');
+      el.className=a.st==='u'?'hl-u':('hl-'+a.st);
+      try{ r.surroundContents(el); }catch(e){ break; }  // 태그 경계를 넘으면 건너뛴다(중첩 방지)
+      break;
+    }
   }
-  return html;
 }
 function computeFlow(w){
   const blocks=dayBlocks(w);
@@ -663,7 +680,7 @@ async function pullBackup(){
     }
   }catch(e){}
 }
-const BUILD='260901-1507';
+const BUILD='260901-1508';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -1036,6 +1053,7 @@ function bkRender(){
   if(_st.width<10||_st.height<10){setTimeout(bkRender,40);return;}
   const _S=Math.min((_st.width*0.92)/_W, (_st.height*0.96)/(_W*297/210));
   $('bkStage').innerHTML=`<div class="bkScale" style="transform:scale(${_S});transform-origin:center"><div class="bkPage" style="width:${_W}px">${pgs[bkIdx].html}</div></div>`;
+  try{ const q0=SEQ[Math.max(0,Math.min(SEQ.length-1,bkIdx-1))]; if(q0) markDOM($('bkStage').querySelector('.bkPage'), DAYS[q0.i]); }catch(e){}
   $('bkInd').textContent=`${pgs[bkIdx].t} · ${bkIdx+1}/${pgs.length}`;
   $('bkPrev').disabled=bkIdx===0; $('bkNext').disabled=bkIdx===pgs.length-1;
 }
@@ -1078,13 +1096,13 @@ function renderDay(){
     const fl=computeFlow(w);
     $('dDiaryCard').style.display=fl.flow?'block':'none';
     if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
-      $('dDiary').innerHTML=decorate(fl.flow,w);$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
+      $('dDiary').innerHTML=decorate(fl.flow,w);markDOM($('dDiary'),w);$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
     $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none'; if(w.cmt&&!fl.parts.length)$('dCheer').textContent=w.cmt;
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
     $('dDiaryCard').style.display='block';
-    $('dDiary').innerHTML=decorate(parts[q.sub-1]||'',w);
+    $('dDiary').innerHTML=decorate(parts[q.sub-1]||'',w);markDOM($('dDiary'),w);
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
     const last=q.sub===parts.length;
