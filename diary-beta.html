@@ -766,7 +766,7 @@ function backupSoon(){
   if(!au||!au.token) return;
   clearTimeout(_bkT); _bkT=setTimeout(()=>{
     apiPost({action:'backup',token:au.token,data:{cover:state.cover,skin:state.skin,ownedSkins:state.ownedSkins,
-      ownedStk:state.ownedStk,placedD:state.placedD,addenda:state.addenda,marks:state.marks,dispName:state.dispName}})
+      ownedStk:state.ownedStk,placedD:state.placedD,addenda:state.addenda,marks:state.marks,dispName:state.dispName,coins:state.coins}})
       .then(()=>{const el=document.getElementById('bkTime'); if(el)el.textContent='방금 백업됨';}).catch(()=>{});
   },2500);
 }
