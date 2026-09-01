@@ -616,7 +616,13 @@ gv('gLoginBtn').onclick=async()=>{
     const u=A[id];
     if(!u){toast('등록되지 않은 아이디예요');return;}
     if(await pinHash(u.salt,pin)!==u.hash){toast('비밀번호가 달라요');return;}
-    localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick}));
+    localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick,token:u.token||id}));
+    try{
+      const rr=await apiGet('action=restore&token='+encodeURIComponent(u.token||id));
+      if(rr&&rr.ok&&rr.data&&rr.data.data){ state={...state,...rr.data.data}; save(); apply();
+        if(typeof buildSEQ==='function'){DAYS.forEach(w=>{delete w._pg;});buildSEQ();}
+        if(typeof renderDay==='function'){renderDay();renderPager();} }
+    }catch(e){}
     enterApp(u.nick);toast(u.nick+'님, 어서오세요 🚶');
   }catch(e){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
 try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');if(au&&au.nick)enterApp(au.nick);else paintTitle();}catch(e){}
