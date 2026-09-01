@@ -82,7 +82,8 @@ h1{font-size:18px;font-weight:700;margin:0}
 .seasonTitle{font-weight:700;font-size:13px;margin:2px 0 8px}
 .pastSeason{margin-top:14px;font-size:11px;color:var(--sub);border-top:1px dashed var(--line);padding-top:10px}
 /* 로그인 게이트 (시안) */
-#gate{position:fixed;inset:0;z-index:60;background:#efe6d2;display:flex;align-items:center;justify-content:center;padding:20px}
+#gate{position:fixed;inset:0;z-index:60;background:#efe6d2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#gate .gateCopy{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:10px;color:#a89a7d;letter-spacing:.2px}
 #gate .gcard{width:100%;max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 22px 20px;box-shadow:0 10px 30px rgba(90,70,40,.14)}
 #gate .glogo{text-align:center;font-size:34px;margin-bottom:4px}
 #gate h2{margin:0 0 2px;text-align:center;font-size:19px;letter-spacing:-.3px}
@@ -314,6 +315,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
    <button class="gbtn" id="gDoneBtn">로그인 화면으로</button>
   </div>
  </div>
+ <p class="gateCopy">© 2026 부트니스 (BOOTNESS)</p>
 </div>
 <header><h1>📔 나의 다이어리</h1><button class="coin" id="coinBtn">🪙 12</button></header>
 <div class="bookrow">
