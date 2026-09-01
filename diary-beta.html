@@ -508,7 +508,7 @@ const DAYS=[
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{},marks:{},dispName:null,isMember:false};
+let state={cover:'c1',skin:'basic',coins:12,spent:null,earned:0,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{},marks:{},dispName:null,isMember:false};
 try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){} state.addenda=state.addenda||{}; state.marks=state.marks||{};
 if(!state.placedD)state.placedD={};
 function dayBlocks(w){
@@ -693,8 +693,26 @@ async function pullBackup(){
       if(typeof renderTreasure==='function')renderTreasure();
     }
   }catch(e){}
+  syncCoins();                       // 복원 다음에 적립분을 얹는다 (순서 중요)
 }
-const BUILD='260901-2131';
+/* 코인 = 시작 12 + 카페에서 번 것(coins.json, 서버 기준) − 상점에서 쓴 것(로컬·백업)
+   연습 기간(9/7 전)에도 도장·일지로 번 코인은 그대로 쌓인다. */
+const COIN_START=12;
+async function syncCoins(){
+  const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
+  if(state.spent==null) state.spent=Math.max(0,COIN_START-(state.coins||0));   // 최초 1회 이관
+  if(!au){ save(); return; }
+  try{
+    const j=await (await fetch('coins.json?t='+Date.now())).json();
+    let earned=0;
+    if(au.mk && j.mk) earned=j.mk[await h16(au.mk)]||0;
+    if(!earned && au.nick && j.nick) earned=j.nick[await h16(au.nick)]||0;
+    state.earned=earned;
+    state.coins=Math.max(0,COIN_START+earned-state.spent);
+  }catch(e){}
+  save(); apply();
+}
+const BUILD='260901-2134';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -858,7 +876,7 @@ function backupSoon(){
   if(!au||!au.token) return;
   clearTimeout(_bkT); _bkT=setTimeout(()=>{
     apiPost({action:'backup',token:au.token,data:{cover:state.cover,skin:state.skin,ownedSkins:state.ownedSkins,
-      ownedStk:state.ownedStk,placedD:state.placedD,addenda:state.addenda,marks:state.marks,dispName:state.dispName,coins:state.coins}})
+      ownedStk:state.ownedStk,placedD:state.placedD,addenda:state.addenda,marks:state.marks,dispName:state.dispName,coins:state.coins,spent:state.spent}})
       .then(()=>{const el=document.getElementById('bkTime'); if(el)el.textContent='방금 백업됨';}).catch(()=>{});
   },2500);
 }
@@ -1003,7 +1021,7 @@ function openSkinShop(){
     if(k.p===0){state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');return;}
     if(state.coins<k.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
     if(!confirm(`「${k.n}」 속지를 🪙${k.p}에 살까요?`))return;
-    state.coins-=k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
+    state.coins-=k.p;state.spent=(state.spent||0)+k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
 }
 function openStkShop(){
   const cats=['가을 시즌','기본'];
@@ -1021,7 +1039,7 @@ function openStkShop(){
     if(s.p===0){state.ownedStk.push(s.k);save();apply();toast('무료로 받았어요!');openStkShop();return;}
     if(state.coins<s.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
     if(!confirm(`「${s.n}」 스티커를 🪙${s.p}에 살까요?`))return;
-    state.coins-=s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
+    state.coins-=s.p;state.spent=(state.spent||0)+s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
 }
 function openShelf(){
   msheet.innerHTML=`<h2>📚 내 책장 <span style="font-weight:400;font-size:11px;color:#8a8172">— 12주 완주마다 한 권</span></h2>
