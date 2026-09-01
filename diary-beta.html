@@ -316,7 +316,7 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
   <div class="stampGrid">
     <div class="slot got"><img src="stamps/bench2.jpg" alt=""><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
     <div class="slot lock"><img src="stamps/reed2.jpg" alt=""><b>억새밭</b><i>8걸음에 획득</i></div>
-    <div class="slot lock"><img src="stamps/tower2.jpg" alt=""><b>남산타워</b><i>12걸음에 획득</i></div>
+    <div class="slot lock"><img src="stamps/tower2.jpg?v=2" alt=""><b>남산타워</b><i>12걸음에 획득</i></div>
   </div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
   <div class="jSec"><h3>💎 여행 중 발견한 보물</h3>
@@ -827,7 +827,7 @@ function renderJourney(){
     const cls=i===0?'ok':(i===1?'now':'');
     const mark=i===0?'🌕':(i===1?'진행':'&nbsp;');
     const _MF={'st-bench':'bench2','st-reed':'reed2','st-tower':'tower2'};
-    const ic=MILE[i]?`<img class="mileimg" src="stamps/${_MF[MILE[i]]}.jpg">`:'';
+    const ic=MILE[i]?`<img class="mileimg" src="stamps/${_MF[MILE[i]]}.jpg?v=2">`:'';
     return `<div class="wcell ${cls}"><b>${mark}</b>${i+1}주${ic}</div>`;}).join('');
   $('jCoin').textContent=state.coins;
 }
