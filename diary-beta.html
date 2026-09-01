@@ -112,8 +112,9 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
 .slot img{width:100%;aspect-ratio:1;object-fit:contain;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 3px rgba(90,70,40,.18))}
 .mileimg{width:46px;height:46px;object-fit:contain;vertical-align:middle;display:block;margin:2px auto 0;filter:drop-shadow(0 1px 2px rgba(90,70,40,.35))}
 .dimg{width:100%;border-radius:10px;display:block;margin:4px 0 2px;border:1px solid var(--line)}
-#demoBar{position:fixed;top:0;left:0;right:0;z-index:30;background:#3a352b;color:#ffe9a8;text-align:center;
- font-size:12px;font-weight:700;padding:8px 0;letter-spacing:.2px}
+#demoBar{position:fixed;left:0;right:0;margin:0 auto;width:fit-content;max-width:92%;
+ bottom:calc(64px + env(safe-area-inset-bottom));z-index:15;background:rgba(58,53,43,.92);color:#ffe9a8;text-align:center;
+ font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:20px;letter-spacing:.2px;box-shadow:0 3px 12px rgba(0,0,0,.2)}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -275,7 +276,7 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
   </div>
  </div>
 </div>
-<header><h1>📔 리매님의 다이어리</h1><span class="coin">🪙 12</span></header>
+<header><h1>📔 나의 다이어리</h1><span class="coin">🪙 12</span></header>
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
@@ -293,7 +294,7 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
 <div class="pager" id="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
 <div class="page auto" id="journey" style="display:none;">
   <div class="dhead">🚶 나의 여정</div>
-  <div class="dsub">가을 여행 · 리매님은 지금 1걸음째</div>
+  <div class="dsub">가을 여행 · 나는 지금 1걸음째</div>
   <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
     <p style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55">"12주 뒤 나는 임장 20곳을 다녀온 사람이다"</p>
     <p style="margin:3px 0 0;font-size:10px;color:#8a8172">2026.9.7 출발 선언</p></div>
@@ -301,7 +302,8 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
     <div class="week" id="jwGrid"></div>
     <div class="jrow"><span>달성률 <b id="jwRate" style="color:#c96f3d"></b></span><span id="jwDiary"></span></div></div>
   <div class="jSec"><h3>12주 여행길 · <span id="jSteps"></span></h3><div class="wgrid" id="jGrid"></div></div>
-  <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>🌤 하루 2 · 🃏 주 1</span></div></div>
+  <div class="jSec"><h3>지갑</h3><div class="jrow"><span>🪙 <b id="jCoin"></b> 코인</span><span>🌤 하루 2 · 🃏 주 1</span></div>
+  <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172;line-height:1.7">보름달 1개 = 🪙1 · 산책일지 1편 = 🪙4 (보름달 2개+보너스 2)<br>주간 성공 +🪙3 · 4·8·12걸음 이정표 +🪙10</p></div>
 </div>
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
@@ -517,7 +519,7 @@ gv('gDemo').onclick=()=>{gv('gate').style.display='none';
   document.body.appendChild(db);};
 async function pinHash(salt,pin){let h=salt+pin;const enc=new TextEncoder();
   for(let i=0;i<10000;i++){const b=await crypto.subtle.digest('SHA-256',enc.encode(h));h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}return h;}
-function enterApp(nick){gv('gate').style.display='none';document.querySelector('header h1').textContent='📔 '+nick+'님의 다이어리';
+function enterApp(nick){gv('gate').style.display='none';document.querySelector('header h1').textContent='📔 나의 다이어리';
   const ab=document.getElementById('acctBar'); if(ab){ab.style.display='block';document.getElementById('acctNick').textContent=nick;
     document.getElementById('btnLogout').onclick=()=>{localStorage.removeItem('bd11auth');location.reload();};}}
 gv('gLoginBtn').onclick=async()=>{
@@ -701,7 +703,7 @@ function bookPages(){
   const sk=SKINS.find(k=>k.id===state.skin)||SKINS[0];
   const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
   const pages=[];
-  pages.push({t:'표지',html:`<img src="${cvUrl(state.cover)}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="coverTitle"><b>리매님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
+  pages.push({t:'표지',html:`<img src="${cvUrl(state.cover)}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="coverTitle"><b>${(JSON.parse(localStorage.getItem('bd11auth')||'null')||{}).nick||'나'}님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
   SEQ.forEach(q=>{
     const w=DAYS[q.i]; const parts=diaryParts(w);
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
