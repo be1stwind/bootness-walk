@@ -51,6 +51,10 @@ svg{display:block;width:100%;height:auto}
 .tree{fill:var(--grass)} .trunk{fill:#b08d5e} .cloud{fill:#fff;opacity:.85}
 :root[data-theme="dark"] .cloud,:root:not([data-theme="light"]) .cloud{opacity:.12}
 .legend{font-size:12px;color:var(--outtext);margin:0 0 22px;text-align:center}
+.testbar{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--grass);
+ border-radius:12px;padding:12px 14px;margin:0 0 16px;color:var(--ink);font-size:13px;line-height:1.6}
+.testbar b{display:block;font-size:14px;margin-bottom:3px}
+.testbar span b{display:inline}
 .board{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);
  border-radius:16px;overflow:hidden;box-shadow:var(--shadow);font-size:14px}
 .board th{padding:10px 8px 10px 14px;text-align:left;font-weight:600;white-space:nowrap}
@@ -112,10 +116,12 @@ h1,h2,.stat b,.board td.cnt,.rs,.medal,.wt{font-weight:700}
   말머리 <b>[산책일지]</b> 글은 한 편에 보름달 2개 📔 — <b>일지 1편 + 보름달 4개</b>면 이번 주 산책 성공! (첫 주는 일지 면제)<br>
   빠진 날은 쉬어가기 카드가 보름달로 채워줘요 🃏</p>
 
+  <div class="testbar"><b>🧪 지금은 연습 기간이에요</b><span>9월 7일(월)부터 도장이 걸음으로 쌓입니다. 그때까지 찍은 도장은 걸음에는 안 들어가지만 <b>코인은 그대로 모여요.</b> 쉬어가기 카드도 쓰이지 않으니 마음 편히 해보세요.</span></div>
+
   <div class="stats">
     <div class="stat"><b>0</b><span>오늘 걸음</span></div>
     <div class="stat"><b>0</b><span>이번 주 함께</span></div>
-    <div class="stat"><b>0</b><span>최장 연속(주)</span></div>
+    <div class="stat"><b>0</b><span>모인 코인</span></div>
   </div>
 
   
@@ -131,7 +137,7 @@ h1,h2,.stat b,.board td.cnt,.rs,.medal,.wt{font-weight:700}
       <g class="tree"><circle cx="22" cy="308" r="12"/></g><rect class="trunk" x="20" y="314" width="4" height="12" rx="2"/>
       <ellipse class="stone2" cx="67" cy="52" rx="6.4" ry="4.2" transform="rotate(0 67 52)"/><ellipse class="stone2" cx="88" cy="52" rx="6.4" ry="4.2" transform="rotate(0 88 52)"/><ellipse class="stone2" cx="108" cy="52" rx="6.4" ry="4.2" transform="rotate(0 108 52)"/><ellipse class="stone2" cx="129" cy="52" rx="6.4" ry="4.2" transform="rotate(0 129 52)"/><ellipse class="stone2" cx="171" cy="52" rx="6.4" ry="4.2" transform="rotate(0 171 52)"/><ellipse class="stone2" cx="192" cy="52" rx="6.4" ry="4.2" transform="rotate(0 192 52)"/><ellipse class="stone2" cx="212" cy="52" rx="6.4" ry="4.2" transform="rotate(0 212 52)"/><ellipse class="stone2" cx="233" cy="52" rx="6.4" ry="4.2" transform="rotate(0 233 52)"/><ellipse class="stone2" cx="254" cy="72" rx="6.4" ry="4.2" transform="rotate(90 254 72)"/><ellipse class="stone2" cx="254" cy="92" rx="6.4" ry="4.2" transform="rotate(90 254 92)"/><ellipse class="stone2" cx="254" cy="112" rx="6.4" ry="4.2" transform="rotate(90 254 112)"/><ellipse class="stone2" cx="254" cy="132" rx="6.4" ry="4.2" transform="rotate(90 254 132)"/><ellipse class="stone2" cx="233" cy="152" rx="6.4" ry="4.2" transform="rotate(180 233 152)"/><ellipse class="stone2" cx="212" cy="152" rx="6.4" ry="4.2" transform="rotate(180 212 152)"/><ellipse class="stone2" cx="192" cy="152" rx="6.4" ry="4.2" transform="rotate(180 192 152)"/><ellipse class="stone2" cx="171" cy="152" rx="6.4" ry="4.2" transform="rotate(180 171 152)"/><ellipse class="stone2" cx="129" cy="152" rx="6.4" ry="4.2" transform="rotate(180 129 152)"/><ellipse class="stone2" cx="108" cy="152" rx="6.4" ry="4.2" transform="rotate(180 108 152)"/><ellipse class="stone2" cx="88" cy="152" rx="6.4" ry="4.2" transform="rotate(180 88 152)"/><ellipse class="stone2" cx="67" cy="152" rx="6.4" ry="4.2" transform="rotate(180 67 152)"/><ellipse class="stone2" cx="46" cy="172" rx="6.4" ry="4.2" transform="rotate(90 46 172)"/><ellipse class="stone2" cx="46" cy="192" rx="6.4" ry="4.2" transform="rotate(90 46 192)"/><ellipse class="stone2" cx="46" cy="212" rx="6.4" ry="4.2" transform="rotate(90 46 212)"/><ellipse class="stone2" cx="46" cy="232" rx="6.4" ry="4.2" transform="rotate(90 46 232)"/><ellipse class="stone2" cx="67" cy="252" rx="6.4" ry="4.2" transform="rotate(0 67 252)"/><ellipse class="stone2" cx="88" cy="252" rx="6.4" ry="4.2" transform="rotate(0 88 252)"/><ellipse class="stone2" cx="108" cy="252" rx="6.4" ry="4.2" transform="rotate(0 108 252)"/><ellipse class="stone2" cx="129" cy="252" rx="6.4" ry="4.2" transform="rotate(0 129 252)"/><ellipse class="stone2" cx="171" cy="252" rx="6.4" ry="4.2" transform="rotate(0 171 252)"/><ellipse class="stone2" cx="192" cy="252" rx="6.4" ry="4.2" transform="rotate(0 192 252)"/><ellipse class="stone2" cx="212" cy="252" rx="6.4" ry="4.2" transform="rotate(0 212 252)"/><ellipse class="stone2" cx="233" cy="252" rx="6.4" ry="4.2" transform="rotate(0 233 252)"/><ellipse class="stone2" cx="254" cy="272" rx="6.4" ry="4.2" transform="rotate(90 254 272)"/><ellipse class="stone2" cx="254" cy="292" rx="6.4" ry="4.2" transform="rotate(90 254 292)"/><ellipse class="stone2" cx="254" cy="312" rx="6.4" ry="4.2" transform="rotate(90 254 312)"/><ellipse class="stone2" cx="254" cy="332" rx="6.4" ry="4.2" transform="rotate(90 254 332)"/><ellipse class="stone2" cx="233" cy="352" rx="6.4" ry="4.2" transform="rotate(180 233 352)"/><ellipse class="stone2" cx="212" cy="352" rx="6.4" ry="4.2" transform="rotate(180 212 352)"/><ellipse class="stone2" cx="192" cy="352" rx="6.4" ry="4.2" transform="rotate(180 192 352)"/><ellipse class="stone2" cx="171" cy="352" rx="6.4" ry="4.2" transform="rotate(180 171 352)"/><ellipse class="stone2" cx="129" cy="352" rx="6.4" ry="4.2" transform="rotate(180 129 352)"/><ellipse class="stone2" cx="108" cy="352" rx="6.4" ry="4.2" transform="rotate(180 108 352)"/><ellipse class="stone2" cx="88" cy="352" rx="6.4" ry="4.2" transform="rotate(180 88 352)"/><ellipse class="stone2" cx="67" cy="352" rx="6.4" ry="4.2" transform="rotate(180 67 352)"/>
       <circle class="stop " cx="46" cy="52" r="6"/><circle class="stop " cx="150" cy="52" r="6"/><circle class="stop " cx="254" cy="52" r="6"/><circle class="stop  mile" cx="254" cy="152" r="9"/><image href="stamps/bench2t.png?v=3" x="180" y="124" width="54" height="54" preserveAspectRatio="xMidYMid meet"/><text class="mlabel" x="254" y="178" text-anchor="middle">4주</text><circle class="stop " cx="150" cy="152" r="6"/><circle class="stop " cx="46" cy="152" r="6"/><circle class="stop " cx="46" cy="252" r="6"/><circle class="stop  mile" cx="150" cy="252" r="9"/><image href="stamps/reed2t.png?v=3" x="123" y="188" width="54" height="54" preserveAspectRatio="xMidYMid meet"/><text class="mlabel" x="150" y="278" text-anchor="middle">8주</text><circle class="stop " cx="254" cy="252" r="6"/><circle class="stop " cx="254" cy="352" r="6"/><circle class="stop " cx="150" cy="352" r="6"/><circle class="stop  mile" cx="46" cy="352" r="9"/><image href="stamps/tower2t.png?v=3" x="62" y="312" width="54" height="54" preserveAspectRatio="xMidYMid meet"/><text class="mlabel" x="46" y="378" text-anchor="middle">12주</text><ellipse cx="78" cy="90" rx="4" ry="2.2" fill="#d97b52" opacity=".8" transform="rotate(-30 78 90)"/><ellipse cx="222" cy="95" rx="4" ry="2.2" fill="#e8a87c" opacity=".8" transform="rotate(20 222 95)"/><ellipse cx="95" cy="298" rx="4" ry="2.2" fill="#d97b52" opacity=".8" transform="rotate(-15 95 298)"/><ellipse cx="228" cy="305" rx="4" ry="2.2" fill="#e8a87c" opacity=".8" transform="rotate(35 228 305)"/><ellipse cx="185" cy="384" rx="4" ry="2.2" fill="#d97b52" opacity=".8" transform="rotate(-20 185 384)"/>
-      <text class="wn" x="140" y="108" text-anchor="middle">첫 걸음을 기다리고 있어요</text>
+      <text class="wn" x="140" y="108" text-anchor="middle">9월 7일에 함께 출발해요</text>
     </svg>
   </div>
   <p class="legend">🥉 4주 · 🥈 8주 · 🥇 12주 여행 완주 → 다음 여행 🔁</p>
@@ -141,5 +147,5 @@ h1,h2,.stat b,.board td.cnt,.rs,.medal,.wt{font-weight:700}
 
   <h2>함께 걷는 사람들</h2>
   <ul><li class="none">출발 선언을 기다리는 중 🐣</li></ul>
-  <p class="foot">🌤 하루 카드 · 🃏 한 주 카드 · 9월 1일 13:56 업데이트</p>
+  <p class="foot">🌤 하루 카드 · 🃏 한 주 카드 · 9월 1일 21:14 업데이트</p>
 </div>
