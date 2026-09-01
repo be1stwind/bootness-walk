@@ -126,6 +126,11 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 #brandFoot .bfSub{margin:3px 0 8px;font-size:11px;color:var(--sub)}
 #brandFoot .bfCopy{margin:0;font-size:10px;color:#a89a7d;line-height:1.8}
 #brandFoot a{color:var(--accent);text-decoration:none;font-weight:700}
+#acctBar{display:none;min-height:44px;margin:10px 12px calc(10px + env(safe-area-inset-bottom));
+ align-items:center;justify-content:center;gap:2px;font-size:10.5px;color:#a89a7d;
+ background:rgba(255,253,247,.5);border:1px solid var(--line);border-radius:10px;text-align:center}
+#acctBar.on{display:flex}
+#acctBar button{border:0;background:none;font-family:inherit;font-size:10.5px;color:var(--accent);font-weight:700;padding:0 2px;cursor:pointer}
 /* 스티커 */
 .stk{position:absolute;cursor:grab;filter:drop-shadow(0 2px 4px rgba(90,70,40,.3));user-select:none;touch-action:none}
 .stk.sel{outline:2px dashed var(--accent);outline-offset:3px;border-radius:8px}
@@ -394,7 +399,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
    <a href="https://cafe.naver.com/goldentree2nd" target="_blank" rel="noopener">부트니스 카페</a> ·
    <a href="https://pf.kakao.com/_LxgHxexb" target="_blank" rel="noopener">카카오채널</a></p>
 </footer>
-<p id="acctBar" style="display:none;text-align:center;font-size:10.5px;color:#a89a7d;margin:20px 0 14px">🔑 <b id="acctNick"></b> 계정 · <button id="btnLogout" style="border:0;background:none;font-family:inherit;font-size:10.5px;color:var(--accent);font-weight:700;padding:0;cursor:pointer">로그아웃</button></p>
+<div id="acctBar">🔑 <b id="acctNick"></b> 계정 · <button id="btnLogout">로그아웃</button></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -620,7 +625,7 @@ function openRename(){
     toast(v?`${v}님의 다이어리로 바꿨어요 ✏️`:'기본 이름으로 되돌렸어요');};
 }
 function enterApp(nick){gv('gate').style.display='none';paintTitle();
-  const ab=document.getElementById('acctBar'); if(ab){ab.style.display='block';document.getElementById('acctNick').textContent=nick;
+  const ab=document.getElementById('acctBar'); if(ab){ab.classList.add('on');document.getElementById('acctNick').textContent=nick;
     document.getElementById('btnLogout').onclick=()=>{localStorage.removeItem('bd11auth');location.reload();};}}
 gv('gLoginBtn').onclick=async()=>{
   const id=gv('gId').value.trim(), pin=gv('gPin').value;
