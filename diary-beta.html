@@ -25,7 +25,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .tabs button{flex:1;border:1px solid var(--line);background:#efe8d6;border-radius:10px 10px 0 0;padding:9px 0;font-size:13px;font-family:inherit;font-weight:700;color:var(--sub)}
 .tabs button.on{background:var(--card);color:var(--ink);border-bottom-color:var(--card)}
 /* A5 고정 비율 페이지 */
-.page{position:relative;width:100%;aspect-ratio:210/340;background:var(--paper);border-radius:6px;
+.page{position:relative;width:100%;aspect-ratio:210/366;background:var(--paper);border-radius:6px;
  box-shadow:0 2px 10px rgba(90,70,40,.14);overflow:hidden;touch-action:pan-y;padding:14px 13px}
 .dhead{font-weight:700;font-size:16px}
 .dsub{font-size:11.5px;color:var(--sub);margin-bottom:9px}
@@ -121,7 +121,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 #demoBar button{margin-left:auto;border:0;background:none;font-family:inherit;font-size:12px;color:#a08a5f;cursor:pointer}
 #brandFoot{margin:26px 12px 0;padding:16px 0 6px;border-top:1px solid var(--line);text-align:center}
 #brandFoot .bfLogo{display:flex;align-items:center;justify-content:center;gap:7px;font-size:15px;color:var(--ink);letter-spacing:-.2px}
-#brandFoot .bfLogo img{width:26px;height:26px;object-fit:contain;display:block}
+#brandFoot .bfLogo img{height:24px;width:auto;max-width:44px;object-fit:contain;display:block}
 #brandFoot .bfSub{margin:3px 0 8px;font-size:11px;color:var(--sub)}
 #brandFoot .bfCopy{margin:0;font-size:10px;color:#a89a7d;line-height:1.8}
 #brandFoot a{color:var(--accent);text-decoration:none;font-weight:700}
@@ -387,13 +387,13 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div id="coverFull"><img id="coverFullImg"></div>
 <div id="hlBar"><button class="hy" data-h="y"> </button><button class="hg" data-h="g"> </button><button class="hp" data-h="p"> </button><button class="hb" data-h="b"> </button><button class="hu" data-h="u">가</button><button class="hx" data-h="x">✕</button></div>
 <footer id="brandFoot">
-  <div class="bfLogo"><img src="brand/logo.png" alt="부트니스"><b>부트니스</b></div>
+  <div class="bfLogo"><img src="brand/logo.png?v=2" alt="부트니스"><b>부트니스</b></div>
   <p class="bfSub">함께 걷는 일주일 · 산책 다이어리</p>
   <p class="bfCopy">© 2026 부트니스 (BOOTNESS). All rights reserved.<br>
    <a href="https://cafe.naver.com/goldentree2nd" target="_blank" rel="noopener">부트니스 카페</a> ·
    <a href="https://pf.kakao.com/_LxgHxexb" target="_blank" rel="noopener">카카오채널</a></p>
 </footer>
-<p id="acctBar" style="display:none;text-align:center;font-size:10.5px;color:#a89a7d;margin:20px 0 28px">🔑 <b id="acctNick"></b> 계정 · <button id="btnLogout" style="border:0;background:none;font-family:inherit;font-size:10.5px;color:var(--accent);font-weight:700;padding:0;cursor:pointer">로그아웃</button></p>
+<p id="acctBar" style="display:none;text-align:center;font-size:10.5px;color:#a89a7d;margin:20px 0 14px">🔑 <b id="acctNick"></b> 계정 · <button id="btnLogout" style="border:0;background:none;font-family:inherit;font-size:10.5px;color:var(--accent);font-weight:700;padding:0;cursor:pointer">로그아웃</button></p>
 <div class="toast" id="toast"></div>
 
 <script>
