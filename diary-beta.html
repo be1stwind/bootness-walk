@@ -278,6 +278,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 </defs></svg>
 
 <div class="wrap">
+<!-- BUILD 260901-1445 -->
 <div id="gate">
  <div class="gcard">
   <div id="gLogin">
@@ -657,6 +658,17 @@ async function pullBackup(){
     }
   }catch(e){}
 }
+const BUILD='260901-1445';
+(async function autoUpdate(){
+  try{
+    const r=await fetch('build.json',{cache:'no-store'});
+    const j=await r.json();
+    if(j&&j.build&&j.build!==BUILD){
+      if(!sessionStorage.getItem('bd11upd')){ sessionStorage.setItem('bd11upd','1');
+        location.replace(location.pathname+'?b='+encodeURIComponent(j.build)); }
+    }
+  }catch(e){}
+})();
 try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');
   if(au&&au.nick){enterApp(au.nick);pullBackup();}else paintTitle();}catch(e){}
 gv('gJoinBtn').onclick=async()=>{
@@ -748,9 +760,18 @@ function applyMark(st){const tx=hlSel(); if(!tx) return false; return applyMarkT
 function applyMarkText(tx,st){
   const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
   if(st==='x'){let hit=false;
-    const share=(a,b)=>{for(let n=Math.min(a.length,b.length);n>=3;n--){for(let i=0;i+n<=a.length;i++){if(b.includes(a.substr(i,n)))return true;}}return false;};
-    for(let i=L.length-1;i>=0;i--){const m=L[i].t; if(tx.includes(m)||m.includes(tx)||share(tx,m)){L.splice(i,1);hit=true;}}
-    toast(hit?'강조를 지웠어요 🧽':'지울 강조가 없어요');}
+    for(let i=L.length-1;i>=0;i--){
+      const m=L[i].t, ms=L[i].st;
+      if(m===tx || tx.includes(m)){ L.splice(i,1); hit=true; continue; }   // 통째로 덮인 강조는 제거
+      const k=m.indexOf(tx);
+      if(k>=0){                                                            // 일부만 겹치면 그 글자들만 지우고 나머지는 색 유지
+        const before=m.slice(0,k).trim(), after=m.slice(k+tx.length).trim();
+        L.splice(i,1); hit=true;
+        if(after.length>=1) L.splice(i,0,{t:after,st:ms});
+        if(before.length>=1) L.splice(i,0,{t:before,st:ms});
+      }
+    }
+    toast(hit?'지웠어요 🧽':'지울 강조가 없어요');}
   else {L.push({t:tx,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
   save(); try{window.getSelection().removeAllRanges();}catch(e){}
   document.getElementById('hlBar').style.display='none'; renderDay(); return true;
@@ -851,23 +872,23 @@ function _caret(x,y){
     lastR=r;
     try{const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);}catch(e){}};
   // 짧게 눌렀을 때: 그 지점이 속한 문장을 통째로 잡아준다
-  const sentenceAt=(node,off)=>{
+  const wordAt=(node,off)=>{            // 탭 한 번 = 그 낱말만 (글자 단위 정밀)
     if(!node||node.nodeType!==3) return '';
     const s=node.textContent||''; if(!s.trim()) return '';
-    let a1=off, b1=off;
-    while(a1>0 && !'.!?。\n'.includes(s[a1-1])) a1--;
-    while(b1<s.length && !'.!?。\n'.includes(s[b1])) b1++;
-    if(b1<s.length) b1++;
+    const brk=' \n\t,.!?、。·:;()[]「」『』"\'';
+    let a1=Math.min(off,s.length-1), b1=a1;
+    while(a1>0 && !brk.includes(s[a1-1])) a1--;
+    while(b1<s.length && !brk.includes(s[b1])) b1++;
     return s.slice(a1,b1).trim();
   };
   const finish=(x,y)=>{
     const m=pendMark; paint(x,y);
     let tx=(lastR? lastR.toString() : '').trim();
-    if(tx.length<2){ const c=_caret(x,y); if(c) tx=sentenceAt(c.startContainer,c.startOffset); }
+    if(tx.length<1){ const c=_caret(x,y); if(c) tx=wordAt(c.startContainer,c.startOffset); }
     a=null; lastR=null; disarm();
     try{window.getSelection().removeAllRanges();}catch(_){}
-    if(tx.length>=2) applyMarkText(tx,m);
-    else toast('글자 위에서 손가락을 움직여 주세요');
+    if(tx.length>=1) applyMarkText(tx,m);
+    else toast('글자 위에서 눌러 주세요');
   };
   document.addEventListener('pointerdown',e=>{
     if(!pendMark)return; const d=dd(); if(!d||!d.contains(e.target))return;
