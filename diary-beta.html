@@ -283,7 +283,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 </defs></svg>
 
 <div class="wrap">
-<!-- BUILD 260901-1508 -->
+<!-- BUILD 260901-1515 -->
 <div id="gate">
  <div class="gcard">
   <div id="gLogin">
@@ -518,29 +518,43 @@ function dayBlocks(w){
 }
 const escT=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function decorate(html,w){ return html; }   // 표시는 원문 그대로, 강조는 markDOM()이 DOM에서 입힌다
+function dayText(w){ const b=dayBlocks(w)||[]; return b.filter(x=>x.t).map(x=>x.t).join('\n'); }
+function pageStartOffset(root,w){          // 현재 페이지 글이 그날 전체 글의 몇 번째 글자부터인지
+  const pt=(root.textContent||''); if(!pt) return -1;
+  const dt=dayText(w); if(!dt) return -1;
+  let i=dt.indexOf(pt.slice(0,40));
+  if(i<0) i=dt.indexOf(pt.slice(0,20));
+  return i;
+}
+function rangeFromOffsets(root,from,to){   // 페이지 안 상대 오프셋 → DOM Range
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let acc=0,sN=null,sO=0,eN=null,eO=0;
+  while(w.nextNode()){
+    const n=w.currentNode, len=n.textContent.length;
+    if(sN===null && acc+len>=from){ sN=n; sO=from-acc; }
+    if(acc+len>=to){ eN=n; eO=to-acc; break; }
+    acc+=len;
+  }
+  if(!sN||!eN) return null;
+  const r=document.createRange();
+  try{ r.setStart(sN,Math.max(0,Math.min(sO,sN.textContent.length)));
+       r.setEnd(eN,Math.max(0,Math.min(eO,eN.textContent.length))); }catch(e){ return null; }
+  return r;
+}
 function markDOM(root,w){
   if(!root) return;
   const anns=((state.marks||{})[w?w.n:0]||[]);
   if(!anns.length) return;
-  for(const a of anns){
-    if(!a.t) continue;
-    let guard=0;
-    while(guard++<40){
-      const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{
-        acceptNode:n=>(n.parentElement&&n.parentElement.closest('mark,.hl-u'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
-      let hit=null;
-      while(walker.nextNode()){
-        const i=walker.currentNode.textContent.indexOf(a.t);
-        if(i>=0){ hit={node:walker.currentNode,i}; break; }
-      }
-      if(!hit) break;                                  // 이미 칠해졌거나 없음 → 다음 강조로
-      const r=document.createRange();
-      r.setStart(hit.node,hit.i); r.setEnd(hit.node,hit.i+a.t.length);
-      const el=document.createElement(a.st==='u'?'span':'mark');
-      el.className=a.st==='u'?'hl-u':('hl-'+a.st);
-      try{ r.surroundContents(el); }catch(e){ break; }  // 태그 경계를 넘으면 건너뛴다(중첩 방지)
-      break;
-    }
+  const base=pageStartOffset(root,w); if(base<0) return;
+  const plen=(root.textContent||'').length;
+  // 뒤에서부터 칠해야 앞쪽 오프셋이 밀리지 않는다
+  const inPage=anns.filter(a=>a.s!=null && a.e>base && a.s<base+plen).sort((x,y)=>y.s-x.s);
+  for(const a of inPage){
+    const from=Math.max(0,a.s-base), to=Math.min(plen,a.e-base);
+    if(to-from<1) continue;
+    const r=rangeFromOffsets(root,from,to); if(!r) continue;
+    const el=document.createElement(a.st==='u'?'span':'mark');
+    el.className=a.st==='u'?'hl-u':('hl-'+a.st);
+    try{ r.surroundContents(el); }catch(e){}
   }
 }
 function computeFlow(w){
@@ -680,7 +694,7 @@ async function pullBackup(){
     }
   }catch(e){}
 }
-const BUILD='260901-1508';
+const BUILD='260901-1515';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -779,22 +793,41 @@ function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
 function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;const tx=s.toString().trim();if(tx.length<2)return null;
   const dd=document.getElementById('dDiary');if(!dd||!dd.contains(s.anchorNode)||!dd.contains(s.focusNode))return null;return tx;}
 function applyMark(st){const tx=hlSel(); if(!tx) return false; return applyMarkText(tx,st);}
+function curPageOffsets(tx){                 // 화면에서 고른 글의 '그날 전체 글' 기준 위치
+  const w=curDayW(), root=document.getElementById('dDiary');
+  const base=pageStartOffset(root,w); if(base<0) return null;
+  const pt=root.textContent||'';
+  const sel=window.getSelection();
+  let local=-1;
+  if(sel&&sel.rangeCount){                   // 선택 위치를 그대로 오프셋으로 변환
+    const r=sel.getRangeAt(0), pre=document.createRange();
+    pre.selectNodeContents(root); try{ pre.setEnd(r.startContainer,r.startOffset); local=pre.toString().length; }catch(e){}
+  }
+  if(local<0||pt.substr(local,tx.length)!==tx) local=pt.indexOf(tx);
+  if(local<0) return null;
+  return {s:base+local, e:base+local+tx.length};
+}
 function applyMarkText(tx,st){
+  const off=curPageOffsets(tx);
   const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
+  if(!off){ toast('그 자리를 다시 눌러 주세요'); return false; }
   if(st==='x'){let hit=false;
     for(let i=L.length-1;i>=0;i--){
-      const m=L[i].t, ms=L[i].st;
-      if(m===tx || tx.includes(m)){ L.splice(i,1); hit=true; continue; }   // 통째로 덮인 강조는 제거
-      const k=m.indexOf(tx);
-      if(k>=0){                                                            // 일부만 겹치면 그 글자들만 지우고 나머지는 색 유지
-        const before=m.slice(0,k).trim(), after=m.slice(k+tx.length).trim();
-        L.splice(i,1); hit=true;
-        if(after.length>=1) L.splice(i,0,{t:after,st:ms});
-        if(before.length>=1) L.splice(i,0,{t:before,st:ms});
-      }
+      const m=L[i]; if(m.s==null) { L.splice(i,1); hit=true; continue; }   // 옛 형식은 정리
+      if(m.e<=off.s || m.s>=off.e) continue;                                // 겹치지 않음
+      hit=true; L.splice(i,1);
+      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st});                  // 앞쪽 남김
+      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st});                  // 뒤쪽 남김
     }
     toast(hit?'지웠어요 🧽':'지울 강조가 없어요');}
-  else {L.push({t:tx,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
+  else {
+    for(let i=L.length-1;i>=0;i--){const m=L[i];                            // 겹치는 기존 강조는 잘라낸다(중복 방지)
+      if(m.s==null||m.e<=off.s||m.s>=off.e){ if(m.s==null)L.splice(i,1); continue; }
+      L.splice(i,1);
+      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st});
+      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st});
+    }
+    L.push({s:off.s,e:off.e,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
   save(); try{window.getSelection().removeAllRanges();}catch(e){}
   document.getElementById('hlBar').style.display='none'; renderDay(); return true;
 }
