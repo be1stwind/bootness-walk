@@ -100,6 +100,9 @@ h1{font-size:18px;font-weight:700;margin:0}
 #gate .gok p{font-size:13px;line-height:1.8;color:var(--ink);margin:0 0 4px}
 
 .addTxt{color:#8a7250;font-size:.92em}
+body.markon #dDiary{touch-action:none;-webkit-user-select:none;user-select:none;cursor:crosshair;
+ background:rgba(255,249,225,.55);border-radius:8px;box-shadow:0 0 0 2px #f0d98a inset}
+body.markon #dDiary::selection,body.markon #dDiary *::selection{background:#ffe97a}
 mark.hl-y{background:#ffe97a;color:inherit;border-radius:3px;padding:0 1px}
 mark.hl-g{background:#c9edb4;color:inherit;border-radius:3px;padding:0 1px}
 mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
@@ -113,7 +116,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 .slot img{width:100%;aspect-ratio:1;object-fit:contain;display:block;margin-bottom:4px;filter:drop-shadow(0 2px 3px rgba(90,70,40,.18))}
 .mileimg{width:46px;height:46px;object-fit:contain;vertical-align:middle;display:block;margin:2px auto 0;filter:drop-shadow(0 1px 2px rgba(90,70,40,.35))}
 .dimg{width:100%;border-radius:10px;display:block;margin:4px 0 2px;border:1px solid var(--line)}
-#demoBar{display:flex;align-items:center;gap:8px;margin:0 12px 8px;background:#fdf3d8;border:1px solid #ecd9a4;color:#7a6224;
+#demoBar{display:flex;align-items:center;gap:8px;margin:10px 12px 2px;background:#fdf3d8;border:1px solid #ecd9a4;color:#7a6224;
  font-size:11.5px;font-weight:700;padding:8px 12px;border-radius:10px;letter-spacing:.2px}
 #demoBar button{margin-left:auto;border:0;background:none;font-family:inherit;font-size:12px;color:#a08a5f;cursor:pointer}
 /* 스티커 */
@@ -572,7 +575,7 @@ gv('gDemo').onclick=()=>{gv('gate').style.display='none';
   const db=document.createElement('div'); db.id='demoBar';
   db.innerHTML='<span>👀 예시 화면이에요 — 가입하면 내 다이어리가 생겨요</span><button aria-label="닫기">✕</button>';
   db.querySelector('button').onclick=()=>db.remove();
-  document.querySelector('header').after(db); paintTitle();};
+  document.querySelector('header').before(db); paintTitle();};
 async function pinHash(salt,pin){let h=salt+pin;const enc=new TextEncoder();
   for(let i=0;i<10000;i++){const b=await crypto.subtle.digest('SHA-256',enc.encode(h));h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}return h;}
 function ownerName(){const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
@@ -645,8 +648,8 @@ window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — �
 function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
 function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;const tx=s.toString().trim();if(tx.length<2)return null;
   const dd=document.getElementById('dDiary');if(!dd||!dd.contains(s.anchorNode)||!dd.contains(s.focusNode))return null;return tx;}
-function applyMark(st){
-  const tx=hlSel(); if(!tx) return false;
+function applyMark(st){const tx=hlSel(); if(!tx) return false; return applyMarkText(tx,st);}
+function applyMarkText(tx,st){
   const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
   if(st==='x'){let hit=false;
     const share=(a,b)=>{for(let n=Math.min(a.length,b.length);n>=3;n--){for(let i=0;i+n<=a.length;i++){if(b.includes(a.substr(i,n)))return true;}}return false;};
@@ -656,8 +659,7 @@ function applyMark(st){
   save(); try{window.getSelection().removeAllRanges();}catch(e){}
   document.getElementById('hlBar').style.display='none'; renderDay(); return true;
 }
-document.addEventListener('selectionchange',()=>{clearTimeout(window.__hlT);window.__hlT=setTimeout(()=>{
-  if(pendMark && hlSel()){ const m=pendMark; pendMark=null; applyMark(m); }},200);});
+
 document.getElementById('hlBar').addEventListener('pointerdown',e=>e.preventDefault());
 document.getElementById('hlBar').querySelectorAll('button').forEach(b=>b.onclick=()=>{
   if(!applyMark(b.dataset.h)) document.getElementById('hlBar').style.display='none';});
@@ -724,21 +726,46 @@ function buildPalette(){
   shop.onclick=()=>{$('stkPanel').style.display='none';openStkShop();};row.appendChild(shop);
 }
 let decoMode='sticker', pendMark=null;
+function armMark(st){pendMark=st;$('stkPanel').style.display='none';document.body.classList.add('markon');
+  toast(st==='x'?'지울 부분을 손가락으로 쓸어주세요 🧽':(st==='u'?'밑줄 그을 부분을 쓸어주세요 ✏️':'칠할 부분을 쓸어주세요 🖍'));}
+function disarm(){pendMark=null;document.body.classList.remove('markon');}
+function _caret(x,y){
+  if(document.caretRangeFromPoint) return document.caretRangeFromPoint(x,y);
+  if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(x,y);if(!p)return null;
+    const r=document.createRange();r.setStart(p.offsetNode,p.offset);r.collapse(true);return r;}
+  return null;
+}
+(function(){
+  let a=null;
+  const dd=()=>document.getElementById('dDiary');
+  const paint=(x,y)=>{const s=_caret(x,y); if(!a||!s)return;
+    const r=document.createRange();
+    try{ r.setStart(a.startContainer,a.startOffset); r.setEnd(s.startContainer,s.startOffset);
+      if(r.collapsed){r.setStart(s.startContainer,s.startOffset); r.setEnd(a.startContainer,a.startOffset);} }catch(e){return;}
+    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);};
+  document.addEventListener('pointerdown',e=>{
+    if(!pendMark)return; const d=dd(); if(!d||!d.contains(e.target))return;
+    a=_caret(e.clientX,e.clientY); e.preventDefault();},{passive:false});
+  document.addEventListener('pointermove',e=>{ if(!pendMark||!a)return; paint(e.clientX,e.clientY); e.preventDefault();},{passive:false});
+  document.addEventListener('pointerup',e=>{
+    if(!pendMark||!a)return; paint(e.clientX,e.clientY);
+    const tx=(window.getSelection()||'').toString().trim(); const m=pendMark; a=null; disarm();
+    if(tx.length>=2) applyMarkText(tx,m); else {try{window.getSelection().removeAllRanges();}catch(_){} toast('조금 더 길게 쓸어주세요');}});
+})();
 function buildDeco(){
   const row=$('prow'); const T={sticker:'내 스티커 — 골라서 붙이세요',hl:'형광펜 — 색을 고르고 글을 드래그하세요',
     ul:'밑줄 — 누른 뒤 글을 드래그하세요',er:'지우개 — 누른 뒤 지울 부분을 드래그하세요'};
   $('pTitle').textContent=T[decoMode];
   $('mrow').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===decoMode));
   if(decoMode==='sticker'){buildPalette();return;}
+  if(decoMode!=='hl'){ armMark(decoMode==='ul'?'u':'x'); return; }
   row.innerHTML='';
-  const items = decoMode==='hl' ? [['y','#ffe97a','노랑'],['g','#c9edb4','연두'],['p','#ffd2df','핑크'],['b','#bfe0f7','파랑']]
-    : decoMode==='ul' ? [['u','#fff','밑줄 긋기']] : [['x','#f2ece0','지우기']];
+  const items = [['y','#ffe97a','노랑'],['g','#c9edb4','연두'],['p','#ffd2df','핑크'],['b','#bfe0f7','파랑']];
   for(const [st,bg,label] of items){
     const b=document.createElement('div'); b.className='ptile';
     b.style.background=bg; if(st==='u')b.style.textDecoration='underline solid #e2574c 3px';
     b.textContent=label;
-    b.onclick=()=>{pendMark=st;$('stkPanel').style.display='none';
-      toast(st==='x'?'지울 부분을 드래그하세요 🧽':(st==='u'?'밑줄 그을 부분을 드래그하세요 ✏️':'칠할 부분을 드래그하세요 🖍'));};
+    b.onclick=()=>armMark(st);
     row.appendChild(b);
   }
 }
