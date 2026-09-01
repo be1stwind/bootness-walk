@@ -118,11 +118,11 @@ mark.hl-p{background:#ffd2df;color:inherit;border-radius:3px;padding:0 1px}
 #fab{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));border-radius:22px;padding:11px 16px;
  background:#fffdf7;border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink);font-family:inherit;
  box-shadow:0 4px 14px rgba(90,70,40,.22);z-index:15;display:none}
-#stkPanel{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--line);z-index:16;
+#stkPanel{position:fixed;left:0;right:0;bottom:0;margin:0 auto;width:100%;max-width:600px;background:#fffdf7;border-top:1px solid var(--line);border-radius:14px 14px 0 0;z-index:16;
  box-shadow:0 -4px 14px rgba(90,70,40,.15);padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:none}
 #stkPanel .plabel{font-size:10.5px;color:var(--sub);margin:0 2px 6px;display:flex}
 #stkPanel .pclose{margin-left:auto;border:0;background:none;font-size:12px;color:var(--sub);font-family:inherit}
-#stkPanel .prow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;max-height:190px;overflow-y:auto}
+#stkPanel .prow{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;max-height:min(200px,30vh);overflow-y:auto}
 .pitem{width:100%;aspect-ratio:1;background:var(--paper);border:1px solid var(--line);border-radius:12px;
  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
 .pitem svg{width:76%;height:76%}
