@@ -9,22 +9,19 @@
 :root{--sky:#faf3e2;--paper:#fdfcf8;--surface:#fff;--ink:#1e2a33;--ink-2:#5f7080;--ink-3:#93a2ae;
  --brand:#003960;--accent:#ffd400;--grass:#e0a96e;--grass-2:#f4e7cb;--road:#e5ddcd;--line:#e8e3d8;
  --bronze:#d59a63;--silver:#a9b4bc;--gold:#f0c33f;--half:#ffe9a8;
+ --head:#1e2a33;--outtext:#5f7080;
  --shadow:0 2px 4px rgba(30,42,51,.05),0 10px 30px -14px rgba(30,42,51,.2)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
- --sky:#2b2013;--paper:#171310;--surface:#221c16;--ink:#f4ece0;--ink-2:#c3b49e;--ink-3:#8d8071;
- --brand:#ffc861;--accent:#ffd400;--grass:#d8955a;--grass-2:#3a2c1a;--road:#4a3a28;--line:#352b21;
- --bronze:#dda870;--silver:#b6c0c8;--gold:#f5cf5c;--half:#4a4020;
+ --paper:#171310;--head:#ffffff;--outtext:#d8c9b0;
  --shadow:0 2px 4px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7)}}
-:root[data-theme="dark"]{--sky:#201b12;--paper:#0f151b;--surface:#18212a;--ink:#e8eef3;--ink-2:#9dabb7;
- --ink-3:#6d7d8a;--brand:#7db8e0;--accent:#ffd400;--grass:#8a6538;--grass-2:#282013;--road:#2e3640;
- --line:#26303a;--bronze:#dda870;--silver:#b6c0c8;--gold:#f5cf5c;--half:#4a4020;
+:root[data-theme="dark"]{--paper:#171310;--head:#ffffff;--outtext:#d8c9b0;
  --shadow:0 2px 4px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);
  font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:16px;line-height:1.7}
 .wrap{max-width:560px;margin:0 auto;padding:40px 20px 68px}
-h1{font-family:"Paperlogy",sans-serif;font-size:clamp(32px,8.5vw,42px);margin:0 0 4px;line-height:1.2;color:var(--brand)}
-h2{font-family:"Paperlogy",sans-serif;font-size:23px;color:var(--brand);margin:30px 0 10px}
+h1{font-family:"Paperlogy",sans-serif;font-size:clamp(32px,8.5vw,42px);margin:0 0 4px;line-height:1.2;color:var(--head)}
+h2{font-family:"Paperlogy",sans-serif;font-size:23px;color:var(--head);margin:30px 0 10px}
 .sub{color:var(--ink-2);margin:0 0 24px;font-size:14.5px}
 .stats{display:flex;gap:9px;margin-bottom:18px}
 .stat{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:13px 10px;text-align:center;box-shadow:var(--shadow)}
@@ -51,7 +48,7 @@ svg{display:block;width:100%;height:auto}
 .wn{font-family:"Paperlogy",sans-serif;font-size:14px;fill:var(--ink-2)}
 .tree{fill:var(--grass)} .trunk{fill:#b08d5e} .cloud{fill:#fff;opacity:.85}
 :root[data-theme="dark"] .cloud,:root:not([data-theme="light"]) .cloud{opacity:.12}
-.legend{font-size:12px;color:var(--ink-3);margin:0 0 22px;text-align:center}
+.legend{font-size:12px;color:var(--outtext);margin:0 0 22px;text-align:center}
 .board{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);
  border-radius:16px;overflow:hidden;box-shadow:var(--shadow);font-size:14px}
 .board th{padding:10px 8px 10px 14px;text-align:left;font-weight:600;white-space:nowrap}
@@ -79,7 +76,7 @@ li:last-child{border-bottom:0}
 li.none{color:var(--ink-3);justify-content:center}
 .empty{text-align:center;color:var(--ink-3);background:var(--surface);border:1px solid var(--line);
  border-radius:16px;padding:22px;font-size:14.5px;box-shadow:var(--shadow)}
-.foot{margin-top:16px;font-size:12.5px;color:var(--ink-3);text-align:center}
+.foot{margin-top:16px;font-size:12.5px;color:var(--outtext);text-align:center}
 h1,h2,.stat b,.board td.cnt,.rs,.medal,.wt{font-weight:700}
 .mlabel,.wn,.wkok{font-weight:500}
 
@@ -142,5 +139,5 @@ h1,h2,.stat b,.board td.cnt,.rs,.medal,.wt{font-weight:700}
 
   <h2>함께 걷는 사람들</h2>
   <ul><li class="none">출발 선언을 기다리는 중 🐣</li></ul>
-  <p class="foot">🌤 하루 카드 · 🃏 한 주 카드 · 9월 1일 13:42 업데이트</p>
+  <p class="foot">🌤 하루 카드 · 🃏 한 주 카드 · 9월 1일 13:43 업데이트</p>
 </div>
