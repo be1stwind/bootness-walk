@@ -186,7 +186,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 .bkClose{margin-left:auto;background:none;border:1px solid #5a5142;color:#d8cdb8;border-radius:8px;padding:5px 12px;font-size:13px}
 .bkStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 10px;overflow:hidden;touch-action:pan-y}
 .bkStage{perspective:1400px}
-.bkPage{aspect-ratio:210/297;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
+.bkPage{aspect-ratio:210/366;background:#fff;border-radius:6px;box-shadow:0 10px 44px rgba(0,0,0,.55);overflow:hidden;position:relative;transition:transform .32s ease;transform-origin:center}
 .bkPage{transition:transform .28s ease,opacity .28s ease}
 .bkPage.outL{transform:translateX(-9%);opacity:0}
 .bkPage.outR{transform:translateX(9%);opacity:0}
@@ -359,10 +359,10 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div class="page" id="diary">
   <div class="dhead" id="dHead"></div>
   <div class="dsub" id="dSub"></div>
-  <div class="card"><h3>🌅 오늘 목표</h3><p id="dGoal"></p></div>
-  <div class="card"><h3>🌙 달성 & 하루소회</h3><p id="dRev"></p><button class="morebtn" id="dAddBtn">✍ 나중에 덧붙이기</button></div>
-  <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><div id="dDiary"></div><button class="morebtn" id="dMore" style="display:none">전문 보기 →</button></div>
-  <div class="cheer" id="dCheer" style="display:none"></div>
+  <div class="card"><h3>🌅 오늘 목표</h3><p id="dGoal" data-mk="goal"></p></div>
+  <div class="card"><h3>🌙 달성 & 하루소회</h3><p id="dRev" data-mk="rev"></p><button class="morebtn" id="dAddBtn">✍ 나중에 덧붙이기</button></div>
+  <div class="card" id="dDiaryCard" style="display:none"><h3>📔 산책 일지</h3><div id="dDiary" data-mk="flow"></div><button class="morebtn" id="dMore" style="display:none">전문 보기 →</button></div>
+  <div class="cheer" id="dCheer" data-mk="cheer" style="display:none"></div>
   <div id="layer"></div>
 </div>
 
@@ -540,11 +540,13 @@ function rangeFromOffsets(root,from,to){   // 페이지 안 상대 오프셋 →
        r.setEnd(eN,Math.max(0,Math.min(eO,eN.textContent.length))); }catch(e){ return null; }
   return r;
 }
-function markDOM(root,w){
+function markDOM(root,w,f){
   if(!root) return;
-  const anns=((state.marks||{})[w?w.n:0]||[]);
+  f = f || (root.dataset&&root.dataset.mk) || 'flow';
+  const anns=((state.marks||{})[w?w.n:0]||[]).filter(a=>(a.f||'flow')===f);
   if(!anns.length) return;
-  const base=pageStartOffset(root,w); if(base<0) return;
+  const base = (f==='flow') ? pageStartOffset(root,w) : 0;
+  if(base<0) return;
   const plen=(root.textContent||'').length;
   // 뒤에서부터 칠해야 앞쪽 오프셋이 밀리지 않는다
   const inPage=anns.filter(a=>a.s!=null && a.e>base && a.s<base+plen).sort((x,y)=>y.s-x.s);
@@ -712,7 +714,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260901-2139';
+const BUILD='260902-0009';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -808,12 +810,20 @@ window.openTreasure=(k)=>{
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
 window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — 완주 시즌에 열려요');
 function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
-function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;const tx=s.toString().trim();if(tx.length<2)return null;
-  const dd=document.getElementById('dDiary');if(!dd||!dd.contains(s.anchorNode)||!dd.contains(s.focusNode))return null;return tx;}
-function applyMark(st){const tx=hlSel(); if(!tx) return false; return applyMarkText(tx,st);}
-function curPageOffsets(tx){                 // 화면에서 고른 글의 '그날 전체 글' 기준 위치
-  const w=curDayW(), root=document.getElementById('dDiary');
-  const base=pageStartOffset(root,w); if(base<0) return null;
+function hlSel(){const s=window.getSelection();if(!s||s.isCollapsed)return null;const tx=s.toString().trim();if(!tx)return null;
+  // 산책일지뿐 아니라 목표·하루소회·응원 등 data-mk 가 붙은 모든 영역에서 칠할 수 있다
+  const a=s.anchorNode, el=a&&(a.nodeType===1?a:a.parentElement);
+  const root=el&&el.closest('[data-mk]');
+  if(!root||!root.contains(s.focusNode))return null;
+  return {tx,root,f:root.dataset.mk};}
+function applyMark(st){const h=hlSel(); if(!h) return false; return applyMarkText(h.tx,st,h.root,h.f);}
+function curPageOffsets(tx,root,f){          // 고른 글의 위치 → 저장용 오프셋
+  const w=curDayW();
+  root = root || document.getElementById('dDiary');
+  f = f || 'flow';
+  // 산책일지는 여러 페이지로 나뉘므로 '그날 전체 글' 기준, 나머지 칸은 그 칸 안에서만 센다
+  const base = (f==='flow') ? pageStartOffset(root,w) : 0;
+  if(base<0) return null;
   const pt=root.textContent||'';
   const sel=window.getSelection();
   let local=-1;
@@ -823,29 +833,32 @@ function curPageOffsets(tx){                 // 화면에서 고른 글의 '그�
   }
   if(local<0||pt.substr(local,tx.length)!==tx) local=pt.indexOf(tx);
   if(local<0) return null;
-  return {s:base+local, e:base+local+tx.length};
+  return {s:base+local, e:base+local+tx.length, f};
 }
-function applyMarkText(tx,st){
-  const off=curPageOffsets(tx);
+function applyMarkText(tx,st,root,f){
+  f = f || 'flow';
+  const off=curPageOffsets(tx,root,f);
   const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
+  const same=m=>((m.f||'flow')===f);            // 다른 칸의 강조는 건드리지 않는다
   if(!off){ toast('그 자리를 다시 눌러 주세요'); return false; }
   if(st==='x'){let hit=false;
     for(let i=L.length-1;i>=0;i--){
       const m=L[i]; if(m.s==null) { L.splice(i,1); hit=true; continue; }   // 옛 형식은 정리
+      if(!same(m)) continue;
       if(m.e<=off.s || m.s>=off.e) continue;                                // 겹치지 않음
       hit=true; L.splice(i,1);
-      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st});                  // 앞쪽 남김
-      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st});                  // 뒤쪽 남김
+      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st,f});                // 앞쪽 남김
+      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st,f});                // 뒤쪽 남김
     }
     toast(hit?'지웠어요 🧽':'지울 강조가 없어요');}
   else {
     for(let i=L.length-1;i>=0;i--){const m=L[i];                            // 겹치는 기존 강조는 잘라낸다(중복 방지)
-      if(m.s==null||m.e<=off.s||m.s>=off.e){ if(m.s==null)L.splice(i,1); continue; }
+      if(m.s==null||!same(m)||m.e<=off.s||m.s>=off.e){ if(m.s==null)L.splice(i,1); continue; }
       L.splice(i,1);
-      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st});
-      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st});
+      if(m.s<off.s) L.splice(i,0,{s:m.s,e:off.s,st:m.st,f});
+      if(m.e>off.e) L.splice(i,0,{s:off.e,e:m.e,st:m.st,f});
     }
-    L.push({s:off.s,e:off.e,st}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
+    L.push({s:off.s,e:off.e,st,f}); toast(st==='u'?'밑줄을 그었어요 ✏️':'형광펜을 칠했어요 🖍');}
   save(); try{window.getSelection().removeAllRanges();}catch(e){}
   document.getElementById('hlBar').style.display='none'; renderDay(); return true;
 }
@@ -896,7 +909,7 @@ function render(){
     const el=document.createElementNS('http://www.w3.org/2000/svg','svg');
     el.setAttribute('viewBox',d.vb); el.classList.add('stk'); if(s.id===sel)el.classList.add('sel');
     el.style.left=s.x+'%'; el.style.top=s.y+'%';
-    el.style.width=(d.w*s.sc)+'px'; el.style.height=(d.h*s.sc)+'px';
+    el.style.width=(d.w*s.sc/3.6)+'%'; el.style.height='auto';   // 360px 페이지 기준 %
     el.style.transform=`rotate(${s.r}deg)`;
     el.innerHTML=`<use href="#${s.k}"/>`;
     el.addEventListener('pointerdown',ev=>{ev.preventDefault();sel=s.id;
@@ -1072,21 +1085,21 @@ function bookPages(){
   SEQ.forEach(q=>{
     const w=DAYS[q.i]; const parts=diaryParts(w);
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
-      return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${d.w*p.sc}px;height:${d.h*p.sc}px;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
+      return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${(d.w*p.sc/3.6).toFixed(2)}%;height:auto;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
     if(q.sub===0){
       const fl=computeFlow(w);
       pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
-        <div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div>
-        <div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
-        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3>${decorate(fl.flow,w)}</div>`:''}
-        ${(w.cmt&&!fl.parts.length)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+        <div class="card"><h3>🌅 오늘 목표</h3><p data-mk="goal" data-n="${w.n}">${w.goal}</p></div>
+        <div class="card"><h3>🌙 달성 & 하루소회</h3><p data-mk="rev" data-n="${w.n}">${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
+        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(fl.flow,w)}</div></div>`:''}
+        ${(w.cmt&&!fl.parts.length)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${w.cmt}</div>`:''}${stk}</div>`});
     } else {
       const _bp=parts[q.sub-1]||'';
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w} · ${q.sub+1}/${parts.length+1}페이지</div>
-        ${_bp?`<div class="card"><h3>📔 산책 일지</h3>${decorate(_bp,w)}</div>`:''}
-        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer">${w.cmt}</div>`:''}${stk}</div>`});
+        ${_bp?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(_bp,w)}</div></div>`:''}
+        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${w.cmt}</div>`:''}${stk}</div>`});
     }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
@@ -1102,9 +1115,14 @@ function bkRender(){
   const _W=window.PAGEW||360;
   const _st=$('bkStage').getBoundingClientRect();
   if(_st.width<10||_st.height<10){setTimeout(bkRender,40);return;}
-  const _S=Math.min((_st.width*0.92)/_W, (_st.height*0.96)/(_W*297/210));
+  const _S=Math.min((_st.width*0.92)/_W, (_st.height*0.96)/(_W*366/210));
   $('bkStage').innerHTML=`<div class="bkScale" style="transform:scale(${_S});transform-origin:center"><div class="bkPage" style="width:${_W}px">${pgs[bkIdx].html}</div></div>`;
-  try{ const q0=SEQ[Math.max(0,Math.min(SEQ.length-1,bkIdx-1))]; if(q0) markDOM($('bkStage').querySelector('.bkPage'), DAYS[q0.i]); }catch(e){}
+  try{
+    const q0=SEQ[Math.max(0,Math.min(SEQ.length-1,bkIdx-1))];
+    const pg=$('bkStage').querySelector('.bkPage');
+    if(q0&&pg){ const w0=DAYS[q0.i];
+      pg.querySelectorAll('[data-mk]').forEach(el=>markDOM(el,w0,el.dataset.mk)); }
+  }catch(e){}
   $('bkInd').textContent=`${pgs[bkIdx].t} · ${bkIdx+1}/${pgs.length}`;
   $('bkPrev').disabled=bkIdx===0; $('bkNext').disabled=bkIdx===pgs.length-1;
 }
@@ -1139,16 +1157,18 @@ function renderDay(){
   $('dSub').textContent='가을 여행 · '+w.w+(parts.length?` · ${q.sub+1}/${parts.length+1}페이지`:'');
   if(q.sub===0){
     $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
-    $('dGoal').textContent=w.goal;
+    $('dGoal').textContent=w.goal; markDOM($('dGoal'),w,'goal');
     const _a=(state.addenda||{})[w.n];
     $('dRev').innerHTML=(w.rev||'저녁에 달성여부와 하루 소회를 남겨보세요').replace(/</g,'&lt;')+(_a?`<span class="addTxt"><br>➕ ${String(_a).replace(/</g,'&lt;')}</span>`:'');
+    markDOM($('dRev'),w,'rev');
     $('dAddBtn').textContent=_a?'✍ 덧붙임 고치기':'✍ 나중에 덧붙이기';
     $('dAddBtn').onclick=()=>openAddendum(w);
     const fl=computeFlow(w);
     $('dDiaryCard').style.display=fl.flow?'block':'none';
     if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
       $('dDiary').innerHTML=decorate(fl.flow,w);markDOM($('dDiary'),w);$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
-    $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none'; if(w.cmt&&!fl.parts.length)$('dCheer').textContent=w.cmt;
+    $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none';
+    if(w.cmt&&!fl.parts.length){$('dCheer').textContent=w.cmt; markDOM($('dCheer'),w,'cheer');}
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
@@ -1157,7 +1177,8 @@ function renderDay(){
     $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
     const last=q.sub===parts.length;
-    $('dCheer').style.display=(last&&w.cmt)?'block':'none'; if(last&&w.cmt)$('dCheer').textContent=w.cmt;
+    $('dCheer').style.display=(last&&w.cmt)?'block':'none';
+    if(last&&w.cmt){$('dCheer').textContent=w.cmt; markDOM($('dCheer'),w,'cheer');}
   }
   sel=null; render();
 }
