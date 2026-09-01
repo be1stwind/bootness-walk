@@ -482,7 +482,7 @@ const DAYS=[
   cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
  {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
 ];
-let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{},marks:{}};
+let state={cover:'c1',skin:'basic',coins:12,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{},marks:{},dispName:null};
 try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){} state.addenda=state.addenda||{}; state.marks=state.marks||{};
 if(!state.placedD)state.placedD={};
 function dayBlocks(w){
@@ -571,10 +571,29 @@ gv('gDemo').onclick=()=>{gv('gate').style.display='none';
   const db=document.createElement('div'); db.id='demoBar';
   db.innerHTML='<span>👀 예시 화면이에요 — 가입하면 내 다이어리가 생겨요</span><button aria-label="닫기">✕</button>';
   db.querySelector('button').onclick=()=>db.remove();
-  document.querySelector('header').after(db);};
+  document.querySelector('header').after(db); paintTitle();};
 async function pinHash(salt,pin){let h=salt+pin;const enc=new TextEncoder();
   for(let i=0;i<10000;i++){const b=await crypto.subtle.digest('SHA-256',enc.encode(h));h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}return h;}
-function enterApp(nick){gv('gate').style.display='none';document.querySelector('header h1').textContent='📔 나의 다이어리';
+function ownerName(){const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
+  return state.dispName || (au&&au.nick) || null;}
+function paintTitle(){const n=ownerName();
+  document.querySelector('header h1').innerHTML='📔 '+(n?`<span id="ownName">${n}</span>님의 다이어리`:'나의 다이어리');
+  const el=document.getElementById('ownName'); if(el){el.style.cssText='border-bottom:1.5px dotted #c9bfa6;cursor:pointer';el.title='눌러서 이름 바꾸기';el.onclick=openRename;}}
+function openRename(){
+  const cur=ownerName()||'';
+  msheet.innerHTML=`<h2>✏️ 이름 바꾸기</h2>
+   <p style="font-size:11.5px;color:var(--sub);margin:2px 2px 8px;line-height:1.6">다이어리와 책 표지에 표시될 이름이에요.<br>인쇄용으로 실명을 쓰셔도 좋아요.</p>
+   <input id="rnIn" value="${cur.replace(/"/g,'&quot;')}" maxlength="14" style="width:100%;box-sizing:border-box;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit;color:var(--ink);background:#fffdf7;outline:none">
+   <button id="rnSave" style="width:100%;margin-top:10px;border:0;background:var(--accent);color:#fff;border-radius:10px;padding:12px 0;font-size:14px;font-weight:700;font-family:inherit">저장</button>
+   <button class="closeM">닫기</button>`;
+  modal.classList.add('on');
+  msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
+  msheet.querySelector('#rnSave').onclick=()=>{
+    const v=msheet.querySelector('#rnIn').value.trim();
+    state.dispName=v||null; save(); paintTitle(); modal.classList.remove('on');
+    toast(v?`${v}님의 다이어리로 바꿨어요 ✏️`:'기본 이름으로 되돌렸어요');};
+}
+function enterApp(nick){gv('gate').style.display='none';paintTitle();
   const ab=document.getElementById('acctBar'); if(ab){ab.style.display='block';document.getElementById('acctNick').textContent=nick;
     document.getElementById('btnLogout').onclick=()=>{localStorage.removeItem('bd11auth');location.reload();};}}
 gv('gLoginBtn').onclick=async()=>{
@@ -589,7 +608,7 @@ gv('gLoginBtn').onclick=async()=>{
     localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick}));
     enterApp(u.nick);toast(u.nick+'님, 어서오세요 🚶');
   }catch(e){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
-try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');if(au&&au.nick)enterApp(au.nick);}catch(e){}
+try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');if(au&&au.nick)enterApp(au.nick);else paintTitle();}catch(e){}
 gv('gJoinBtn').onclick=()=>{
   const nick=gv('jNick').value.trim(), id=gv('jId').value.trim();
   if(!nick){toast('카페 닉네임을 입력해주세요');return;}
@@ -795,7 +814,7 @@ function bookPages(){
   const sk=SKINS.find(k=>k.id===state.skin)||SKINS[0];
   const skinStyle=`background:${sk.bg};background-image:${sk.im.replace(/"/g,'&quot;')};background-size:${sk.sz}`;
   const pages=[];
-  pages.push({t:'표지',html:`<img src="${cvUrl(state.cover)}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="coverTitle"><b>${(JSON.parse(localStorage.getItem('bd11auth')||'null')||{}).nick||'나'}님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
+  pages.push({t:'표지',html:`<img src="${cvUrl(state.cover)}" style="width:100%;height:100%;object-fit:cover;display:block"><div class="coverTitle"><b>${ownerName()||'나'}님의 2026 가을 다이어리</b><i>BOOTNESS TRAVEL · 함께 걷는 일주일</i></div>`});
   SEQ.forEach(q=>{
     const w=DAYS[q.i]; const parts=diaryParts(w);
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
