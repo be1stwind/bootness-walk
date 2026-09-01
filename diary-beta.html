@@ -576,6 +576,13 @@ gv('gDemo').onclick=()=>{gv('gate').style.display='none';
   db.innerHTML='<span>👀 예시 화면이에요 — 가입하면 내 다이어리가 생겨요</span><button aria-label="닫기">✕</button>';
   db.querySelector('button').onclick=()=>db.remove();
   document.querySelector('header').before(db); paintTitle();};
+const API='https://script.google.com/macros/s/AKfycbx9HRiBUsVwz3jfNzs8FeCT_FbI8Z7BHJy4EgChDwQfroTPPwCyVDgVlse2QmxdqY6ncA/exec';
+async function apiPost(body){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  return await r.json();
+}
+async function apiGet(qs){ const r=await fetch(API+'?'+qs); return await r.json(); }
+function randHex(n){const a=new Uint8Array(n);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function pinHash(salt,pin){let h=salt+pin;const enc=new TextEncoder();
   for(let i=0;i<10000;i++){const b=await crypto.subtle.digest('SHA-256',enc.encode(h));h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}return h;}
 function ownerName(){const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
@@ -620,7 +627,15 @@ gv('gJoinBtn').onclick=()=>{
   if(gv('jPin').value.length<6){toast('비밀번호는 숫자 6자리예요');return;}
   if(gv('jPin').value!==gv('jPin2').value){toast('비밀번호 확인이 달라요');return;}
   if(!gv('jConsent').checked){toast('글·사진 사용 동의에 체크해주세요');return;}
-  gShow('gDone');};
+  const btn=gv('gJoinBtn'); btn.disabled=true; btn.textContent='신청 중…';
+  try{
+    const salt=randHex(6); const hash=await pinHash(salt,gv('jPin').value);
+    const res=await apiPost({action:'join',nick,id,salt,hash,consent:true});
+    if(res && res.ok){ gShow('gDone'); }
+    else if(res && res.error==='dup_id'){ toast('이미 신청된 아이디예요'); }
+    else { toast('신청이 접수되지 않았어요 — 잠시 후 다시 시도해주세요'); }
+  }catch(e){ toast('연결이 불안정해요 — 잠시 후 다시 시도해주세요'); }
+  btn.disabled=false; btn.textContent='가입 신청';};
 gv('gDoneBtn').onclick=()=>gShow('gLogin');
 window.openCoinRule=()=>{
   msheet.innerHTML=`<h2>🪙 코인 모으는 법</h2>
@@ -680,7 +695,17 @@ function openAddendum(w){
     toast(v?'덧붙임을 저장했어요 ✍':'덧붙임을 지웠어요');};
 }
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(t._h);t._h=setTimeout(()=>t.style.opacity=0,1600);}
-function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){}}
+let _bkT=null;
+function backupSoon(){
+  const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
+  if(!au||!au.token) return;
+  clearTimeout(_bkT); _bkT=setTimeout(()=>{
+    apiPost({action:'backup',token:au.token,data:{cover:state.cover,skin:state.skin,ownedSkins:state.ownedSkins,
+      ownedStk:state.ownedStk,placedD:state.placedD,addenda:state.addenda,marks:state.marks,dispName:state.dispName}})
+      .then(()=>{const el=document.getElementById('bkTime'); if(el)el.textContent='방금 백업됨';}).catch(()=>{});
+  },2500);
+}
+function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){} backupSoon();}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(${cvUrl(state.cover)})`;
