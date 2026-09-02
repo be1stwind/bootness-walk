@@ -296,7 +296,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
    <input id="gPin" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
    <button class="gbtn" id="gLoginBtn">내 다이어리 열기</button>
    <button class="glink" id="gToJoin">처음이신가요? 가입하기</button>
-   <button class="glink gghost" id="gDemo">📖 걸음이의 다이어리 구경하기 →</button>
+   <button class="glink gghost" id="gDemo">📖 마스코트 다이어리 구경하기 →</button>
   </div>
   <div id="gJoin" style="display:none">
    <div class="glogo">🌱</div>
@@ -628,6 +628,10 @@ function gShow(v){['gLogin','gJoin','gDone'].forEach(x=>gv(x).style.display=x===
 gv('gToJoin').onclick=()=>gShow('gJoin');
 gv('gToLogin').onclick=()=>gShow('gLogin');
 let demoMode=false;
+(async()=>{ // 마스코트 닉을 읽어 게이트 버튼 라벨을 맞춘다 (개명은 mascot.json 한 곳만 바꾸면 된다)
+  try{ const m=await (await fetch('mascot.json?t='+Date.now())).json();
+    if(m&&m.nick) gv('gDemo').textContent='📖 '+m.nick+'의 다이어리 구경하기 →'; }catch(e){}
+})();
 gv('gDemo').onclick=async()=>{
   // 부트니스 마스코트 「걸음이」의 진짜 다이어리를 구경 모드로 연다 (2026-09-02 오너 기획)
   demoMode=true;
@@ -645,7 +649,7 @@ gv('gDemo').onclick=async()=>{
   }catch(e){}
   gv('gate').style.display='none';
   const db=document.createElement('div'); db.id='demoBar';
-  db.innerHTML='<span>🤖 <b>걸음이</b>(부트니스 마스코트)의 다이어리를 구경하는 중이에요 — 가입하면 내 것이 생겨요</span><button aria-label="닫기">✕</button>';
+  db.innerHTML='<span>🤖 <b>'+(state.dispName||'마스코트')+'</b>(부트니스 마스코트)의 다이어리를 구경하는 중이에요 — 가입하면 내 것이 생겨요</span><button aria-label="닫기">✕</button>';
   db.querySelector('button').onclick=()=>{db.remove();};
   document.querySelector('header').before(db);
   paintTitle(); apply(); renderDay(); renderPager();};
@@ -731,7 +735,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260902-0905';
+const BUILD='260902-1142';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
