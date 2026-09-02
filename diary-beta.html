@@ -296,7 +296,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
    <input id="gPin" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
    <button class="gbtn" id="gLoginBtn">내 다이어리 열기</button>
    <button class="glink" id="gToJoin">처음이신가요? 가입하기</button>
-   <button class="glink gghost" id="gDemo">📖 미리보기 (예시 다이어리) →</button>
+   <button class="glink gghost" id="gDemo">📖 걸음이의 다이어리 구경하기 →</button>
   </div>
   <div id="gJoin" style="display:none">
    <div class="glogo">🌱</div>
@@ -627,11 +627,28 @@ function gShow(v){['gLogin','gJoin','gDone'].forEach(x=>gv(x).style.display=x===
 ['gPin','jPin','jPin2'].forEach(id=>{gv(id).addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);});});
 gv('gToJoin').onclick=()=>gShow('gJoin');
 gv('gToLogin').onclick=()=>gShow('gLogin');
-gv('gDemo').onclick=()=>{gv('gate').style.display='none';
+let demoMode=false;
+gv('gDemo').onclick=async()=>{
+  // 부트니스 마스코트 「걸음이」의 진짜 다이어리를 구경 모드로 연다 (2026-09-02 오너 기획)
+  demoMode=true;
+  try{
+    const m=await (await fetch('mascot.json?t='+Date.now())).json();
+    if(m&&m.days&&m.days.length){
+      DAYS.length=0; m.days.forEach(d=>DAYS.push(d));
+      state={...state, cover:m.cover||'c1', skin:m.skin||'basic',
+        coins:m.coins||0, spent:m.spent||0, earned:m.earned||0,
+        ownedSkins:m.ownedSkins||['basic'], ownedStk:m.ownedStk||[],
+        placedD:m.placedD||{}, addenda:m.addenda||{}, marks:m.marks||{},
+        dispName:m.nick||'걸음이', isMember:false, pos:0};
+      buildSEQ();
+    }
+  }catch(e){}
+  gv('gate').style.display='none';
   const db=document.createElement('div'); db.id='demoBar';
-  db.innerHTML='<span>👀 예시 화면이에요 — 가입하면 내 다이어리가 생겨요</span><button aria-label="닫기">✕</button>';
-  db.querySelector('button').onclick=()=>db.remove();
-  document.querySelector('header').before(db); paintTitle();};
+  db.innerHTML='<span>🤖 <b>걸음이</b>(부트니스 마스코트)의 다이어리를 구경하는 중이에요 — 가입하면 내 것이 생겨요</span><button aria-label="닫기">✕</button>';
+  db.querySelector('button').onclick=()=>{db.remove();};
+  document.querySelector('header').before(db);
+  paintTitle(); apply(); renderDay(); renderPager();};
 const API='https://script.google.com/macros/s/AKfycbx9HRiBUsVwz3jfNzs8FeCT_FbI8Z7BHJy4EgChDwQfroTPPwCyVDgVlse2QmxdqY6ncA/exec';
 async function apiPost(body){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
@@ -698,7 +715,7 @@ async function pullBackup(){
   syncCoins();                       // 복원 다음에 적립분을 얹는다 (순서 중요)
 }
 /* 코인 = 시작 12 + 카페에서 번 것(coins.json, 서버 기준) − 상점에서 쓴 것(로컬·백업)
-   연습 기간(9/7 전)에도 도장·일지로 번 코인은 그대로 쌓인다. */
+   연습 기간(9/7 전)에도 달·일지로 번 코인은 그대로 쌓인다. */
 const COIN_START=12;
 async function syncCoins(){
   const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
@@ -714,7 +731,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260902-0009';
+const BUILD='260902-0905';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -893,7 +910,7 @@ function backupSoon(){
       .then(()=>{const el=document.getElementById('bkTime'); if(el)el.textContent='방금 백업됨';}).catch(()=>{});
   },2500);
 }
-function save(){try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){} backupSoon();}
+function save(){if(demoMode)return; try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){} backupSoon();}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(${cvUrl(state.cover)})`;
@@ -1032,6 +1049,7 @@ function openSkinShop(){
     const k=SKINS.find(x=>x.id===el.dataset.s);
     if(state.ownedSkins.includes(k.id)){state.skin=k.id;save();apply();modal.classList.remove('on');toast('속지를 갈았어요');return;}
     if(k.p===0){state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');return;}
+    if(demoMode){toast('구경 모드에서는 살 수 없어요 — 가입하면 내 코인으로!');return;}
     if(state.coins<k.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
     if(!confirm(`「${k.n}」 속지를 🪙${k.p}에 살까요?`))return;
     state.coins-=k.p;state.spent=(state.spent||0)+k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
@@ -1050,6 +1068,7 @@ function openStkShop(){
     const s=STICKERS.find(x=>x.k===el.dataset.k);
     if(state.ownedStk.includes(s.k)){toast('이미 보유 중 — 아래 팔레트에서 쓰세요');return;}
     if(s.p===0){state.ownedStk.push(s.k);save();apply();toast('무료로 받았어요!');openStkShop();return;}
+    if(demoMode){toast('구경 모드에서는 살 수 없어요 — 가입하면 내 코인으로!');return;}
     if(state.coins<s.p){toast('코인이 부족해요 — 산책으로 모아보세요!');return;}
     if(!confirm(`「${s.n}」 스티커를 🪙${s.p}에 살까요?`))return;
     state.coins-=s.p;state.spent=(state.spent||0)+s.p;state.ownedStk.push(s.k);save();apply();toast(`구매 완료! 남은 코인 ${state.coins}`);openStkShop();});
