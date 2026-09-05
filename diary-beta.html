@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>함께 걷는 다이어리</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
@@ -330,8 +331,8 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div class="bookrow">
   <div class="coverThumb" id="coverThumb"></div>
   <div class="binfo">
-    <div><div class="t1">가을 여행 · 1권째 📖</div>
-<div class="t2">9월 둘째 주 산책 진행 중<br>이번 주 달성률 <b style="color:#c96f3d">2/4</b> · 산책일지 ⏳</div></div>
+    <div><div class="t1" id="hdTitle">가을 여행 · 1권째 📖</div>
+<div class="t2" id="hdSub"></div></div>
     <div class="bbtns"><button id="btnCover">🖼 표지</button><button id="btnSkin">📄 속지</button><button id="btnShelf">📚 책장</button></div>
   </div>
 </div>
@@ -344,10 +345,10 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div class="pager" id="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
 <div class="page auto" id="journey" style="display:none;">
   <div class="dhead">🚶 나의 여정</div>
-  <div class="dsub">가을 여행 · 나는 지금 1걸음째</div>
+  <div class="dsub" id="jDsub">가을 여행</div>
   <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
-    <p style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55">"12주 뒤 나는 임장 20곳을 다녀온 사람이다"</p>
-    <p style="margin:3px 0 0;font-size:10px;color:#8a8172">2026.9.7 출발 선언</p></div>
+    <p id="declText" style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55"></p>
+    <p id="declDate" style="margin:3px 0 0;font-size:10px;color:#8a8172;display:none"></p></div>
   <div class="jSec"><h3 id="jwTitle"></h3>
     <div class="week" id="jwGrid"></div>
     <div class="jrow"><span>달성률 <b id="jwRate" style="color:#c96f3d"></b></span><span id="jwDiary"></span></div></div>
@@ -370,15 +371,11 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
   <div class="dhead">🧳 여행 일지</div>
   <div class="dsub">이정표에 도착할 때마다 그곳의 스탬프가 찍힙니다</div>
   <div class="jSec"><h3>🍂 가을 여행 스탬프 (2026)</h3>
-  <div class="stampGrid">
-    <div class="slot got"><img src="stamps/bench2t.png" alt=""><b>단풍나무 벤치</b><i>4걸음 · 획득!</i></div>
-    <div class="slot lock"><img src="stamps/reed2t.png" alt=""><b>억새밭</b><i>8걸음에 획득</i></div>
-    <div class="slot lock"><img src="stamps/tower2t.png?v=3" alt=""><b>남산타워</b><i>12걸음에 획득</i></div>
-  </div>
+  <div class="stampGrid" id="stampGrid"></div>
   <p style="margin:7px 2px 0;font-size:9.5px;color:#8a8172">이정표에 도착하면 자동으로 찍혀요 · 스탬프는 영구 보관</p></div>
   <div class="jSec"><h3>💎 여행 중 발견한 보물 <span id="trackTag"></span></h3>
   <div id="treasureList"></div>
-  <p style="margin:7px 2px 0;font-size:9.5px;color:#a08a5f">보물은 기한 안에 쓰는 혜택이에요 — 잊기 전에 사용하세요!</p></div>
+  <p id="treasureNote" style="margin:7px 2px 0;font-size:9.5px;color:#a08a5f"></p></div>
   <div class="pastSeason">다음 시즌의 여행지는 겨울에 공개됩니다 ❄️</div>
 </div>
 </div>
@@ -494,21 +491,43 @@ const STICKERS=[
  {k:'a-flagS',n:'깃발',p:2,cat:'기본',vb:'0 0 100 92',w:70,h:74},
  {k:'a-plant',n:'화분',p:2,cat:'기본',vb:'0 0 100 92',w:68,h:74},
 ];
-const DECL='12주 뒤 나는 임장 20곳을 다녀온 사람이다';
-const JWEEKS=[
- {label:'1주차 · 9/7 ~ 9/13',days:['🌕','🌗','🌕','·','📔','🌕','·'],rate:'4/4',ok:true,diary:true},
- {label:'2주차 · 9/14 ~ 9/20 (이번 주)',days:['🌗','','','','','',''],rate:'0.5/4',ok:null,diary:false,now:true},
-];
-const DAYS=[
- {d:'9월 7일 (월)',n:7,w:'1주차',moon:'🌕',goal:'임장 1곳 — 강동구 A단지 주변',rev:'달성 ✅ — 생각보다 골목이 조용했다. 다음엔 평일 저녁에 다시 와보기.',cmt:'💬 바람의색상: 첫 걸음 축하해요! 관찰 디테일이 좋습니다 👏'},
- {d:'9월 8일 (화)',n:8,w:'1주차',moon:'🌗',goal:'경매 기초 책 3장 읽기',rev:'절반 — 15쪽 중 8쪽. 저녁 약속 때문에 못 끝냄.',cmt:'💬 바람의색상: 절반도 걸음이에요. 내일 이어서 갑시다!'},
- {d:'9월 9일 (수)',n:9,w:'1주차',moon:'🌕',goal:'종잣돈 자동이체 세팅',rev:'달성 ✅ — 월 30만원 자동이체 설정 완료.',cmt:'💬 바람의색상: 의지가 아니라 시스템으로 만든 저축이 제일 오래갑니다.'},
- {d:'9월 11일 (금)',n:11,w:'1주차',moon:'📔',goal:'이번 주 배운 것 정리',rev:'산책 일지 작성 완료 (보름달 2개!)', content:[{t:'강동구 임장에서 배운 3가지를 정리해 본다. 첫째, 역세권보다 학군 수요가 먼저 움직인다. A단지는 역에서 10분 거리인데도 초등학교 배정 문제로 호가가 눌려 있었고, 반대로 역에서 15분인 B단지는 학군 프리미엄으로 매물이 잠겨 있었다. 둘째, 저녁 시간대 유동인구가 진짜 수요다. 낮에는 조용했던 상가 골목이 저녁 7시에 완전히 달라졌다. 임장은 최소 두 번, 다른 시간대에 가야 한다는 걸 몸으로 배웠다. 셋째, 부동산 사장님과의 스몰토크가 최고의 데이터다. 매물 장부보다 「요즘 누가 사러 오는지」 한마디가 더 많은 걸 알려줬다. 다음 주에는 전세가율을 직접 계산해서 이 단지들의 갭을 비교해 볼 예정이다. 그래서 오늘 저녁에는 국토부 실거래가 공개시스템에서 두 단지의 최근 6개월 매매·전세 실거래를 전부 내려받아 표로 만들어 봤다. A단지는 매매 7억 2천에 전세 4억 6천으로 전세가율이 약 64%, B단지는 매매 8억 1천에 전세 5억 9천으로 73%가 나왔다. 숫자로 놓고 보니 발품에서 느꼈던 인상과 정확히 반대였다. 호가가 눌려 있다고 생각했던 A단지가 오히려 갭이 크고, 학군 프리미엄으로 비싸 보였던 B단지가 실제로는 전세가 받쳐줘서 필요한 현금이 더 적었다. 임장에서 받은 인상만으로 판단했다면 완전히 거꾸로 골랐을 것이다. 눈과 숫자를 반드시 같이 봐야 한다는 걸 오늘 뼈저리게 배웠다.'},{img:'photos/demo1.jpg',ar:'4/3'},{t:'계산하는 김에 대출도 알아봤다. 주거래 은행 앱에서 가심사를 돌려보니 지금 소득 기준으로 주담대 한도가 생각보다 훨씬 적게 나왔다. 작년에 늘어난 신용대출이 DSR을 갉아먹고 있었다. 목표 단지를 사려면 갭 투자든 실거주든 신용대출부터 정리하는 게 순서라는 결론이 나왔고, 바로 상환 계획표를 만들었다. 월 저축액의 배분을 바꾸면 내년 3월이면 신용대출을 다 지울 수 있다. 마지막으로 이번 주 챌린지를 하면서 느낀 점 하나. 아침에 목표를 댓글로 적어두면 하루 종일 그 문장이 머릿속에 남아 있다. 퇴근길에 「오늘 목표 아직 안 했는데」 하는 불편함이 생기는데, 그 불편함이 결국 나를 책상 앞에 앉힌다. 선언의 힘이라는 게 거창한 게 아니라 이 작은 불편함을 매일 만들어내는 장치라는 생각이 들었다. 다음 주 목표는 두 단지 외에 후보를 두 곳 더 늘려서 같은 방식으로 전세가율 표를 완성하는 것. 그리고 부동산 사장님께 들었던 「요즘 누가 사러 오는지」를 세 군데 더 물어보고 수요의 결을 기록해 두려고 한다.'}],
-  diary:'강동구 임장에서 배운 3가지를 정리해 본다. 첫째, 역세권보다 학군 수요가 먼저 움직인다. A단지는 역에서 10분 거리인데도 초등학교 배정 문제로 호가가 눌려 있었고, 반대로 역에서 15분인 B단지는 학군 프리미엄으로 매물이 잠겨 있었다. 둘째, 저녁 시간대 유동인구가 진짜 수요다. 낮에는 조용했던 상가 골목이 저녁 7시에 완전히 달라졌다. 임장은 최소 두 번, 다른 시간대에 가야 한다는 걸 몸으로 배웠다. 셋째, 부동산 사장님과의 스몰토크가 최고의 데이터다. 매물 장부보다 「요즘 누가 사러 오는지」 한마디가 더 많은 걸 알려줬다. 다음 주에는 전세가율을 직접 계산해서 이 단지들의 갭을 비교해 볼 예정이다. 그래서 오늘 저녁에는 국토부 실거래가 공개시스템에서 두 단지의 최근 6개월 매매·전세 실거래를 전부 내려받아 표로 만들어 봤다. A단지는 매매 7억 2천에 전세 4억 6천으로 전세가율이 약 64%, B단지는 매매 8억 1천에 전세 5억 9천으로 73%가 나왔다. 숫자로 놓고 보니 발품에서 느꼈던 인상과 정확히 반대였다. 호가가 눌려 있다고 생각했던 A단지가 오히려 갭이 크고, 학군 프리미엄으로 비싸 보였던 B단지가 실제로는 전세가 받쳐줘서 필요한 현금이 더 적었다. 임장에서 받은 인상만으로 판단했다면 완전히 거꾸로 골랐을 것이다. 눈과 숫자를 반드시 같이 봐야 한다는 걸 오늘 뼈저리게 배웠다. 계산하는 김에 대출도 알아봤다. 주거래 은행 앱에서 가심사를 돌려보니 지금 소득 기준으로 주담대 한도가 생각보다 훨씬 적게 나왔다. 작년에 늘어난 신용대출이 DSR을 갉아먹고 있었다. 목표 단지를 사려면 갭 투자든 실거주든 신용대출부터 정리하는 게 순서라는 결론이 나왔고, 바로 상환 계획표를 만들었다. 월 저축액의 배분을 바꾸면 내년 3월이면 신용대출을 다 지울 수 있다. 마지막으로 이번 주 챌린지를 하면서 느낀 점 하나. 아침에 목표를 댓글로 적어두면 하루 종일 그 문장이 머릿속에 남아 있다. 퇴근길에 「오늘 목표 아직 안 했는데」 하는 불편함이 생기는데, 그 불편함이 결국 나를 책상 앞에 앉힌다. 선언의 힘이라는 게 거창한 게 아니라 이 작은 불편함을 매일 만들어내는 장치라는 생각이 들었다. 다음 주 목표는 두 단지 외에 후보를 두 곳 더 늘려서 같은 방식으로 전세가율 표를 완성하는 것. 그리고 부동산 사장님께 들었던 「요즘 누가 사러 오는지」를 세 군데 더 물어보고 수요의 결을 기록해 두려고 한다.',
-  cmt:'💬 바람의색상: 학군 수요 관찰은 칼럼감이네요. 이번 주 성공 축하합니다 🎉'},
- {d:'9월 14일 (월)',n:14,w:'2주차',moon:'🌗',goal:'경매 물건 3건 분석',rev:'진행 중… (저녁 리뷰 전)',cmt:null,today:true},
-];
-let state={cover:'c1',skin:'basic',coins:12,spent:null,earned:0,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:1,addenda:{},marks:{},dispName:null,isMember:false};
+/* ── 화면에 그리는 값은 전부 실제 데이터에서 나온다 ─────────────────────────
+   2026-09-06 개편. 그전에는 여기에 만들 때 넣은 예시가 박혀 있었다 —
+   남의 임장 기록, 오너가 하지 않은 응원 한마디, 걸음과 무관한 「4걸음 획득」 스탬프.
+   그 예시가 로그인한 회원 화면에도 그대로 떠서 오너가 직접 발견했다.
+   규칙 두 줄:
+     ① 모르는 값은 꾸미지 않는다. 없으면 없다고 보여준다.
+     ② 걸음 수를 모를 때는 0으로 본다. 못 받은 보상을 받은 것처럼 보이는 쪽이 훨씬 나쁘다. */
+const VIEW={ steps:null, decl:null, declDate:null, mascot:false };
+const DAYS=[];
+function stepsN(){ const n=Number(VIEW.steps); return Number.isFinite(n)&&n>0?Math.floor(n):0; }
+const _WD='월화수목금토일';
+function weekdayIdx(x){ const m=/\(([월화수목금토일])\)/.exec(String(x||'')); return m?_WD.indexOf(m[1]):-1; }
+function domOf(w){ const m=/(\d+)\s*월\s*(\d+)\s*일/.exec(String((w&&w.d)||'')); return m?+m[2]:null; }
+function monthOf(w){ const m=/(\d+)\s*월/.exec(String((w&&w.d)||'')); return m?+m[1]:null; }
+const MOONV={'🌕':1,'🌗':.5,'📔':2};
+const fmtScore=n=>(Math.round(n*10)/10).toString().replace(/\.0$/,'');
+function weeksOf(days){                       // 주차는 기록에 적힌 주(w)로만 묶는다 — 없는 주를 만들지 않는다
+  const order=[], map=new Map();
+  (days||[]).forEach(d=>{
+    const k=d.w||'기록';
+    if(!map.has(k)){ map.set(k,{label:k,cells:['','','','','','',''],score:0,diary:false,now:false}); order.push(k); }
+    const w=map.get(k), i=weekdayIdx(d.d);
+    if(i>=0) w.cells[i]=d.moon||'';
+    w.score+=MOONV[d.moon]||0;
+    if(d.moon==='📔') w.diary=true;
+    if(d.today) w.now=true;
+  });
+  return order.map(k=>map.get(k));
+}
+let JWEEKS=[];
+function rebuildWeeks(){ JWEEKS=weeksOf(DAYS);
+  if(typeof state==='object'&&state) state.jweek=Math.max(0,Math.min(state.jweek||0,JWEEKS.length-1)); }
+function curWeek(){ return JWEEKS.find(w=>w.now)||JWEEKS[JWEEKS.length-1]||null; }
+/* 응원 한마디는 오너가 실제로 적은 것만 뜬다. 앱은 이름표만 붙이고, 말은 지어내지 않는다. */
+function cheerText(w){ const c=(w&&w.cmt)?String(w.cmt).trim():''; if(!c) return '';
+  return /^💬/.test(c)?c:('💬 바람의색상: '+c); }
+let state={cover:'c1',skin:'basic',coins:12,spent:null,earned:0,ownedSkins:['basic'],ownedStk:['b-star','b-heart','b-check','d-cloud','d-smile','s-leaf','s-moon'],placedD:{},pos:0,jweek:0,addenda:{},marks:{},dispName:null,isMember:false};
 try{const v=localStorage.getItem('bd11');if(v)state={...state,...JSON.parse(v)};}catch(e){} state.addenda=state.addenda||{}; state.marks=state.marks||{};
 if(!state.placedD)state.placedD={};
 function dayBlocks(w){
@@ -572,7 +591,7 @@ function computeFlow(w){
   const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
   const _ad=(state.addenda||{})[w.n]||'';
   const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
-  const cheer=w.cmt?`<div class="cheer">${w.cmt}</div>`:'';
+  const cheer=w.cmt?`<div class="cheer">${escT(cheerText(w))}</div>`:'';
   const wrapP=x=>head+cards+`<div class="card"><h3>📔 산책 일지</h3>${x}</div>`;
   const wrapC=x=>head+`<div class="card"><h3>📔 산책 일지</h3>${x}</div>`;
   const pages=[{b:wrapP,x:''}];
@@ -606,7 +625,7 @@ function computeFlow(w){
 }
 function diaryParts(w){ return computeFlow(w).parts; }
 const SEQ=[];
-function buildSEQ(){SEQ.length=0;DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});}
+function buildSEQ(){SEQ.length=0;DAYS.forEach((w,i)=>{SEQ.push({i,sub:0});diaryParts(w).forEach((_,k)=>SEQ.push({i,sub:k+1}));});rebuildWeeks();}
 buildSEQ();
 // 웹폰트 적용 전 측정은 글자를 작게 재서 페이지가 넘친다 → 폰트 로딩 후 전체 재계산
 function reflowAll(){const cur=SEQ[state.pos]||{i:0,sub:0};DAYS.forEach(w=>{delete w._pg;});buildSEQ();
@@ -637,8 +656,11 @@ gv('gDemo').onclick=async()=>{
   demoMode=true;
   try{
     const m=await (await fetch('mascot.json?t='+Date.now())).json();
-    if(m&&m.days&&m.days.length){
-      DAYS.length=0; m.days.forEach(d=>DAYS.push(d));
+    if(m){
+      DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d));
+      VIEW.mascot=true;                                   // 차곡이는 회원 보상 대상이 아니다
+      VIEW.steps=(typeof m.steps==='number')?m.steps:null; // 없으면 0걸음으로 본다 (스탬프·보물 전부 잠김)
+      VIEW.decl=m.decl||null; VIEW.declDate=m.declDate||null;
       state={...state, cover:m.cover||'c1', skin:m.skin||'basic',
         coins:m.coins||0, spent:m.spent||0, earned:m.earned||0,
         ownedSkins:m.ownedSkins||['basic'], ownedStk:m.ownedStk||[],
@@ -646,7 +668,7 @@ gv('gDemo').onclick=async()=>{
         dispName:m.nick||'걸음이', isMember:false, pos:0};
       buildSEQ();
     }
-  }catch(e){}
+  }catch(e){ toast('다이어리를 불러오지 못했어요 — 잠시 후 다시 열어주세요'); }
   gv('gate').style.display='none';
   const db=document.createElement('div'); db.id='demoBar';
   db.innerHTML='<span>🤖 <b>'+(state.dispName||'마스코트')+'</b>(부트니스 마스코트)의 다이어리를 구경하는 중이에요 — 가입하면 내 것이 생겨요</span><button aria-label="닫기">✕</button>';
@@ -735,7 +757,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260902-1142';
+const BUILD='260906-0030';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -765,25 +787,54 @@ gv('gJoinBtn').onclick=async()=>{
   }catch(e){ toast('연결이 불안정해요 — 잠시 후 다시 시도해주세요'); }
   btn.disabled=false; btn.textContent='가입 신청';};
 gv('gDoneBtn').onclick=()=>gShow('gLogin');
+/* 보물은 「기한 안에 쓰는 혜택」이다. 걸음 수로만 판정한다 — 표에 손으로 적지 않는다. */
 const TRACK={
- free:[{k:'brief',i:'📺',n:'주budget',t:'주간브리핑 <b>4주 참여권</b>',s:'보유 · ~10/12',own:true,sub:'4걸음마다 보상 · 시청 링크가 카카오톡으로 와요'},
-       {k:'lecture',i:'🎓',n:'',t:'정기특강 <b>무료 참석권</b>',s:'12걸음에 획득',own:false,sub:''},
-       {k:'coupon',i:'🎟',n:'',t:'정규강의 <b>10만원 할인권</b>',s:'24걸음에 획득',own:false,sub:''}],
- member:[{k:'book',i:'📚',n:'',t:'시즌 <b>추천책 + 손글씨 메모</b>',s:'12걸음에 획득',own:false,sub:'오너가 직접 고른 책을 보내드려요'},
-       {k:'consult',i:'💬',n:'',t:'<b>1:1 상담 +1회권</b>',s:'24걸음에 획득',own:false,sub:'선착순 없이 예약할 수 있어요'},
-       {k:'award',i:'🏆',n:'',t:'<b>올해의 최우수 여행자</b>',s:'연말 시상',own:false,sub:'송년회에서 시상합니다'}]};
+ free:[{k:'brief',i:'📺',t:'주간브리핑 <b>4주 참여권</b>',at:4,sub:'4걸음마다 보상 · 시청 링크가 카카오톡으로 와요'},
+       {k:'lecture',i:'🎓',t:'정기특강 <b>무료 참석권</b>',at:12,sub:''},
+       {k:'coupon',i:'🎟',t:'정규강의 <b>10만원 할인권</b>',at:24,sub:''}],
+ member:[{k:'book',i:'📚',t:'시즌 <b>추천책 + 손글씨 메모</b>',at:12,sub:'오너가 직접 고른 책을 보내드려요'},
+       {k:'consult',i:'💬',t:'<b>1:1 상담 +1회권</b>',at:24,sub:'선착순 없이 예약할 수 있어요'},
+       {k:'award',i:'🏆',t:'<b>올해의 최우수 여행자</b>',at:null,when:'연말 시상',sub:'송년회에서 시상합니다'}],
+ /* 차곡이는 보상 산정에서 빠진다 (오너 확정 2026-09-02). 회원 혜택을 그대로 주면 안 된다.
+    기념품 목록은 오너 결정 대기 — 정해질 때까지 비워 둔다. 없는 것을 있는 것처럼 그리지 않는다. */
+ mascot:[]
+};
+const STAMPS=[{f:'bench2t.png',n:'단풍나무 벤치',at:4},
+              {f:'reed2t.png',n:'억새밭',at:8},
+              {f:'tower2t.png?v=3',n:'남산타워',at:12}];
 function isMember(){ return !!state.isMember; }
+function trackOf(){ return VIEW.mascot?TRACK.mascot:(isMember()?TRACK.member:TRACK.free); }
+function renderStamps(){
+  const g=document.getElementById('stampGrid'); if(!g) return;
+  const s=stepsN();
+  g.innerHTML=STAMPS.map(x=>{ const got=s>=x.at;
+    return `<div class="slot ${got?'got':'lock'}"><img src="stamps/${x.f}" alt=""><b>${x.n}</b>`
+      +`<i>${got?(x.at+'걸음 · 획득!'):(x.at+'걸음에 획득')}</i></div>`;}).join('');
+}
 function renderTreasure(){
   const list=document.getElementById('treasureList'); if(!list) return;
-  const tag=document.getElementById('trackTag');
-  const mem=isMember();
-  if(tag) tag.innerHTML = mem
-    ? '<span style="font-size:9.5px;font-weight:700;color:#a06a2c;background:#ffeec4;border-radius:20px;padding:2px 7px;margin-left:5px">멤버십</span>'
-    : '<span style="font-size:9.5px;font-weight:700;color:#5a7a4a;background:#e6f2dd;border-radius:20px;padding:2px 7px;margin-left:5px">일반</span>';
-  list.innerHTML=(mem?TRACK.member:TRACK.free).map(x=>
-    `<div onclick="openTreasure('${x.k}')" style="cursor:pointer;background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px;${x.own?'':'opacity:.55'}">
-      <div class="jrow"><span>${x.i} ${x.t}</span><span style="${x.own?'color:#3c763d;font-weight:700':''}">${x.s}</span></div>
-      ${x.sub?`<p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">${x.sub}</p>`:''}</div>`).join('');
+  const tag=document.getElementById('trackTag'), note=document.getElementById('treasureNote');
+  const s=stepsN(), rows=trackOf();
+  if(tag) tag.innerHTML = VIEW.mascot
+    ? '<span style="font-size:9.5px;font-weight:700;color:#8a5a2c;background:#f6e3c4;border-radius:20px;padding:2px 7px;margin-left:5px">기념품</span>'
+    : (isMember()
+      ? '<span style="font-size:9.5px;font-weight:700;color:#a06a2c;background:#ffeec4;border-radius:20px;padding:2px 7px;margin-left:5px">멤버십</span>'
+      : '<span style="font-size:9.5px;font-weight:700;color:#5a7a4a;background:#e6f2dd;border-radius:20px;padding:2px 7px;margin-left:5px">일반</span>');
+  if(note) note.textContent = VIEW.mascot
+    ? '차곡이 기념품은 쓰는 혜택이 아니라 여행을 기억하려고 모으는 물건이에요.'
+    : '보물은 기한 안에 쓰는 혜택이에요 — 잊기 전에 사용하세요!';
+  if(!rows.length){
+    list.innerHTML='<p style="margin:2px;font-size:11.5px;color:#8a8172;line-height:1.7">'
+      +(VIEW.mascot?'차곡이 기념품은 준비 중이에요. 정해지면 여기에 차곡차곡 쌓여요.'
+                   :'아직 받은 보물이 없어요.')+'</p>';
+    return;
+  }
+  list.innerHTML=rows.map(x=>{
+    const got=(x.at!=null)&&s>=x.at;
+    const st=got?'보유 중':((x.at!=null)?(x.at+'걸음에 획득'):(x.when||''));
+    return `<div onclick="openTreasure('${x.k}')" style="cursor:pointer;background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px;${got?'':'opacity:.55'}">
+      <div class="jrow"><span>${x.i} ${x.t}</span><span style="${got?'color:#3c763d;font-weight:700':''}">${st}</span></div>
+      ${x.sub?`<p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">${x.sub}</p>`:''}</div>`;}).join('');
 }
 async function h16(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('bw:'+s));
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);}
@@ -812,22 +863,28 @@ window.openCoinRule=()=>{
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
 window.openTreasure=(k)=>{
+  const row=trackOf().find(x=>x.k===k); if(!row) return;
+  const s=stepsN(), got=(row.at!=null)&&s>=row.at;
+  const head=got?'<b style="color:#3c763d">보유 중</b>'
+    :((row.at!=null)?`<b style="color:#a08a5f">${row.at}걸음에 획득</b>`
+                    :`<b style="color:#a08a5f">${row.when||''}</b>`);
   const B={brief:`<h2>📺 주간브리핑 4주 참여권</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#3c763d">보유 중 · 10/12까지</b><br>4걸음 이정표 보상이에요. 매주 브리핑 시청 링크가 카카오톡으로 와요.<br>계속 걸으면 다음 이정표에서 자동 연장!</p>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>4걸음 이정표 보상이에요. 매주 브리핑 시청 링크가 카카오톡으로 와요.<br>계속 걸으면 다음 이정표에서 자동 연장!</p>
    <p style="font-size:11px;color:var(--sub);margin:6px 2px">링크를 못 받았다면 → 오늘의 산책 글에 댓글로 알려주세요</p>`,
   coupon:`<h2>🎟 정규강의 10만원 할인권</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">24걸음(두 바퀴 완주) 시 획득</b><br>정규강의 수강료에서 <b>10만원 할인</b>됩니다.<br>이후에도 2회 완주마다 반복 지급!</p>`,
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}} · 두 바퀴 완주<br>정규강의 수강료에서 <b>10만원 할인</b>됩니다.<br>이후에도 2회 완주마다 반복 지급!</p>`,
   book:`<h2>📚 시즌 추천책 + 손글씨 메모</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">12걸음 완주 시 획득</b><br>오너가 직접 고른 시즌 추천책을<br><b>손글씨 한 줄 메모</b>와 함께 보내드려요.<br>시즌마다 책이 달라져 「부트니스 서가」가 쌓입니다.</p>`,
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>오너가 직접 고른 시즌 추천책을<br><b>손글씨 한 줄 메모</b>와 함께 보내드려요.<br>시즌마다 책이 달라져 「부트니스 서가」가 쌓입니다.</p>`,
   consult:`<h2>💬 1:1 상담 +1회권</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">24걸음(두 바퀴 완주) 시 획득</b><br>월 5명 선착순과 <b>무관하게</b> 예약할 수 있는<br>1:1 상담 1회권이에요.</p>`,
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}} · 두 바퀴 완주<br>월 5명 선착순과 <b>무관하게</b> 예약할 수 있는<br>1:1 상담 1회권이에요.</p>`,
   award:`<h2>🏆 올해의 최우수 여행자</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">연말 송년회에서 시상</b><br>한 해 동안 가장 꾸준히 걸은 분께<br>송년회에서 직접 시상합니다.</p>`,
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>한 해 동안 가장 꾸준히 걸은 분께<br>송년회에서 직접 시상합니다.</p>`,
   lecture:`<h2>🎓 정기특강 무료 참석권</h2>
-   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px"><b style="color:#a08a5f">12걸음 완주 시 획득</b><br>완주하면 <b>쿠폰번호</b>가 여기 표시돼요.<br>정기특강 신청서에 그 번호만 적으면 무료 참석!</p>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>완주하면 <b>쿠폰번호</b>가 여기 표시돼요.<br>정기특강 신청서에 그 번호만 적으면 무료 참석!</p>
    <div style="border:1.5px dashed var(--line);border-radius:9px;padding:10px;text-align:center;margin:8px 0;color:#c9bfa6;font-size:16px;letter-spacing:2px">BW-····</div>
    <p style="font-size:11px;color:var(--sub);margin:6px 2px">유효기간: 발급 후 정기특강 3회 이내</p>`};
-  msheet.innerHTML=B[k]+'<button class="closeM">닫기</button>'; modal.classList.add('on');
+  if(!B[k]) return;
+  msheet.innerHTML=B[k].replace('{{HEAD}}',head)+'<button class="closeM">닫기</button>'; modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
 window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — 완주 시즌에 열려요');
 function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
@@ -859,7 +916,7 @@ function curPageOffsets(tx,root,f){          // 고른 글의 위치 → 저장�
 function applyMarkText(tx,st,root,f){
   f = f || 'flow';
   const off=curPageOffsets(tx,root,f);
-  const w=curDayW(); state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
+  const w=curDayW(); if(!w) return false; state.marks=state.marks||{}; const L=state.marks[w.n]=state.marks[w.n]||[];
   const same=m=>((m.f||'flow')===f);            // 다른 칸의 강조는 건드리지 않는다
   if(!off){ toast('그 자리를 다시 눌러 주세요'); return false; }
   if(st==='x'){let hit=false;
@@ -921,6 +978,7 @@ function apply(){
   const sk=SKINS.find(s=>s.id===state.skin)||SKINS[0];
   for(const pg of [diary,$('stampbook')]){pg.style.background=sk.bg;pg.style.backgroundImage=sk.im;pg.style.backgroundSize=sk.sz;}
   document.querySelector('.coin').textContent='🪙 '+state.coins;
+  paintHeader(); renderStamps(); renderTreasure();
   buildPalette();
 }
 function render(){
@@ -1116,13 +1174,13 @@ function bookPages(){
         <div class="card"><h3>🌅 오늘 목표</h3><p data-mk="goal" data-n="${w.n}">${w.goal}</p></div>
         <div class="card"><h3>🌙 달성 & 하루소회</h3><p data-mk="rev" data-n="${w.n}">${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
         ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(fl.flow,w)}</div></div>`:''}
-        ${(w.cmt&&!fl.parts.length)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${w.cmt}</div>`:''}${stk}</div>`});
+        ${(w.cmt&&!fl.parts.length)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${escT(cheerText(w))}</div>`:''}${stk}</div>`});
     } else {
       const _bp=parts[q.sub-1]||'';
       pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
         <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w} · ${q.sub+1}/${parts.length+1}페이지</div>
         ${_bp?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(_bp,w)}</div></div>`:''}
-        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${w.cmt}</div>`:''}${stk}</div>`});
+        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${escT(cheerText(w))}</div>`:''}${stk}</div>`});
     }
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
@@ -1175,6 +1233,8 @@ $('rotR').onclick=()=>mod(s=>s.r+=15);
 $('del').onclick=()=>{state.placedD[curKey()]=curPlaced().filter(x=>x.id!==sel);sel=null;render();save();};
 $('doneSel').onclick=()=>{sel=null;render();save();toast('저장했어요');};
 function renderDay(){
+  if(!SEQ.length){ renderEmptyDay(); return; }
+  const _e=document.getElementById('dEmpty'); if(_e) _e.style.display='none';
   const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
   $('dHead').textContent=w.d+' '+w.moon;
   $('dSub').textContent='가을 여행 · '+w.w+(parts.length?` · ${q.sub+1}/${parts.length+1}페이지`:'');
@@ -1191,7 +1251,7 @@ function renderDay(){
     if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
       $('dDiary').innerHTML=decorate(fl.flow,w);markDOM($('dDiary'),w);$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
     $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none';
-    if(w.cmt&&!fl.parts.length){$('dCheer').textContent=w.cmt; markDOM($('dCheer'),w,'cheer');}
+    if(w.cmt&&!fl.parts.length){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
   } else {
     $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
     $('dCheer').style.display='none';
@@ -1201,30 +1261,34 @@ function renderDay(){
     document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
     const last=q.sub===parts.length;
     $('dCheer').style.display=(last&&w.cmt)?'block':'none';
-    if(last&&w.cmt){$('dCheer').textContent=w.cmt; markDOM($('dCheer'),w,'cheer');}
+    if(last&&w.cmt){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
   }
   sel=null; render();
 }
 function openCal(){
   if(curTab()==='tabJ'){
-    msheet.innerHTML='<h2>🗓 주차 선택</h2><div class="gal">'+Array.from({length:12},(_,i)=>{
-      const en=i<JWEEKS.length;
-      return `<div class="gitem" ${en?`data-w="${i}"`:'style="opacity:.4"'}><b style="padding:12px 10px;font-size:12.5px">${i+1}주차${en?(JWEEKS[i].now?' · 이번 주':' · '+JWEEKS[i].rate):' · 예정'}</b></div>`;}).join('')
+    msheet.innerHTML='<h2>🗓 주차 선택</h2><div class="gal">'+(JWEEKS.length
+      ? JWEEKS.map((w,i)=>`<div class="gitem" data-w="${i}"><b style="padding:12px 10px;font-size:12.5px">${w.label}${w.now?' · 이번 주':' · '+fmtScore(w.score)+'/4'}</b></div>`).join('')
+      : '<p style="margin:2px;font-size:12px;color:#8a8172">아직 기록이 없어요</p>')
       +'</div><button class="closeM">닫기</button>';
     modal.classList.add('on');
     msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
     msheet.querySelectorAll('[data-w]').forEach(el=>el.onclick=()=>{state.jweek=+el.dataset.w;save();renderJourney();renderPager();modal.classList.remove('on');});
     return;
   }
-  const first=2; // 2026-09-01 = 화요일 (월=1 기준 인덱스)
+  // 1일이 무슨 요일인지도 기록에서 되짚는다 (달을 손으로 적어두면 다음 달에 어긋난다)
+  const _ref=DAYS.map(w=>({dom:domOf(w),wd:weekdayIdx(w.d)})).find(x=>x.dom&&x.wd>=0);
+  const first=_ref?((((_ref.wd-((_ref.dom-1)%7))%7)+7)%7)+1:2;
+  const _mon=(DAYS.length&&monthOf(DAYS[0]))||9;
+  const _last=new Date(2026,_mon,0).getDate();
   let cells='';
   for(let i=0;i<first-1;i++)cells+='<div class="cd" style="visibility:hidden"></div>';
-  for(let d=1;d<=30;d++){
-    const idx=DAYS.findIndex(x=>x.n===d);
+  for(let d=1;d<=_last;d++){
+    const idx=DAYS.findIndex(x=>domOf(x)===d);
     const has=idx>=0;
     cells+=`<div class="cd ${has?'has':''} ${has&&DAYS[idx].today?'today':''}" ${has?`data-i="${idx}"`:''}>${has?`<small>${DAYS[idx].moon}</small>`:''}${d}</div>`;
   }
-  msheet.innerHTML='<h2>🗓 2026년 9월 <span style="font-weight:400;font-size:11px;color:#8a8172">— 기록이 있는 날을 눌러 이동</span></h2>'
+  msheet.innerHTML='<h2>🗓 2026년 '+_mon+'월 <span style="font-weight:400;font-size:11px;color:#8a8172">— 기록이 있는 날을 눌러 이동</span></h2>'
     +'<div class="cal">'+['월','화','수','목','금','토','일'].map(c=>`<div class="ch">${c}</div>`).join('')+cells+'</div>'
     +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
@@ -1234,30 +1298,50 @@ function openCal(){
 $('wLabel').onclick=openCal;
 $('wPrev').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.max(0,state.jweek-1);renderJourney();} else {state.pos=Math.max(0,state.pos-1);renderDay();} save();renderPager();};
 $('wNext').onclick=()=>{ if(curTab()==='tabJ'){state.jweek=Math.min(JWEEKS.length-1,state.jweek+1);renderJourney();} else {state.pos=Math.min(SEQ.length-1,state.pos+1);renderDay();} save();renderPager();};
+function paintHeader(){
+  const t2=document.getElementById('hdSub'); if(!t2) return;
+  const w=curWeek();
+  if(!DAYS.length){ t2.innerHTML='아직 기록이 없어요<br>첫 걸음을 기다리는 중이에요'; return; }
+  t2.innerHTML=(w?w.label:'가을 여행')+' 산책 중<br>이번 주 달성률 '
+    +'<b style="color:#c96f3d">'+(w?fmtScore(w.score):'0')+'/4</b> · 산책일지 '
+    +((w&&w.diary)?'📔':'⏳');
+}
 function renderJourney(){
+  const s=stepsN();
+  const ds=document.getElementById('jDsub');
+  if(ds) ds.textContent = !DAYS.length ? '가을 여행 · 아직 기록이 없어요'
+    : (s>0 ? ('가을 여행 · 나는 지금 '+s+'걸음째') : '가을 여행 · 아직 첫 걸음 전이에요');
+  const dt=document.getElementById('declText'), dd=document.getElementById('declDate');
+  if(VIEW.decl){ dt.textContent='"'+VIEW.decl+'"'; dt.style.opacity='';
+    dd.textContent=VIEW.declDate||''; dd.style.display=VIEW.declDate?'block':'none'; }
+  else { dt.textContent='아직 12주 선언을 적지 않았어요'; dt.style.opacity='.6'; dd.style.display='none'; }
   const w=JWEEKS[state.jweek];
-  $('jwTitle').textContent=(state.jweek+1)+'주차 산책'+(w.now?' (이번 주)':'');
-  $('jwGrid').innerHTML=['월','화','수','목','금','토','일'].map((d,i)=>`<div class="day"><b>${d}</b><span>${w.days[i]===''?'&nbsp;':w.days[i]||'&nbsp;'}</span></div>`).join('');
-  $('jwRate').textContent=w.rate;
-  $('jwDiary').textContent=w.diary?'산책일지 📔 완료':'산책일지 ⏳ 미작성';
-  $('jSteps').textContent='1/12';
-  const MILE={3:'st-bench',7:'st-reed',11:'st-tower'};
+  const cells=w?w.cells:['','','','','','',''];
+  $('jwTitle').textContent=(w?w.label:'이번 주 산책')+((w&&w.now)?' (이번 주)':'');
+  $('jwGrid').innerHTML=['월','화','수','목','금','토','일']
+    .map((d,i)=>`<div class="day"><b>${d}</b><span>${cells[i]||'&nbsp;'}</span></div>`).join('');
+  $('jwRate').textContent=(w?fmtScore(w.score):'0')+'/4';
+  $('jwDiary').textContent=(w&&w.diary)?'산책일지 📔 완료':'산책일지 ⏳ 아직';
+  $('jSteps').textContent=s+'/12';
+  const MILE={3:'bench2',7:'reed2',11:'tower2'};
   $('jGrid').innerHTML=Array.from({length:12},(_,i)=>{
-    const cls=i===0?'ok':(i===1?'now':'');
-    const mark=i===0?'🌕':(i===1?'진행':'&nbsp;');
-    const _MF={'st-bench':'bench2','st-reed':'reed2','st-tower':'tower2'};
-    const ic=MILE[i]?`<img class="mileimg" src="stamps/${_MF[MILE[i]]}t.png?v=3">`:'';
-    return `<div class="wcell ${cls}"><b>${mark}</b>${i+1}주${ic}</div>`;}).join('');
+    const done=i<s, now=(i===s)&&DAYS.length>0;
+    const ic=MILE[i]?`<img class="mileimg" src="stamps/${MILE[i]}t.png?v=3">`:'';
+    return `<div class="wcell ${done?'ok':(now?'now':'')}"><b>${done?'🌕':(now?'진행':'&nbsp;')}</b>${i+1}주${ic}</div>`;}).join('');
   $('jCoin').textContent=state.coins;
-  renderTreasure();
+  renderStamps(); renderTreasure();
 }
 function renderPager(){
-  const t=curTab();
+  const t=curTab(), pg=document.getElementById('pager');
+  if(t==='tabS'){ pg.style.display='none'; return; }
   if(t==='tabJ'){
+    pg.style.display=JWEEKS.length?'flex':'none';
     const w=JWEEKS[state.jweek];
-    $('wLabel').textContent=w.label;
-    $('wPrev').disabled=state.jweek===0; $('wNext').disabled=state.jweek===JWEEKS.length-1;
+    $('wLabel').textContent=w?(w.label+(w.now?' (이번 주)':'')):'';
+    $('wPrev').disabled=state.jweek<=0; $('wNext').disabled=state.jweek>=JWEEKS.length-1;
   } else {
+    pg.style.display=SEQ.length?'flex':'none';
+    if(!SEQ.length){ $('wLabel').textContent=''; return; }
     const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
     $('wLabel').textContent=w.d+(parts.length?` · ${q.sub+1}/${parts.length+1}`:'')+(w.today?' · 오늘':'');
     $('wPrev').disabled=state.pos===0; $('wNext').disabled=state.pos===SEQ.length-1;
@@ -1267,10 +1351,25 @@ function curTab(){ return ['tabJ','tabD','tabS'].find(id=>$(id).classList.contai
 function showTab(t){
   for(const [id,pg] of [['tabJ','journey'],['tabD','diary'],['tabS','stampbook']]){
     $(id).classList.toggle('on',id===t); $(pg).style.display=id===t?'block':'none';}
-  $('fab').style.display = t==='tabD'?'block':'none';
+  $('fab').style.display = (t==='tabD'&&SEQ.length)?'block':'none';
   $('stkPanel').style.display='none'; $('ctrlBar').style.display='none'; sel=null;
   document.getElementById('pager').style.display = (t==='tabS')?'none':'flex';
   renderPager();
+}
+function renderEmptyDay(){                     // 없는 하루를 지어내지 않는다
+  $('dHead').textContent='아직 기록이 없어요';
+  $('dSub').textContent='가을 여행';
+  $('dGoal').parentElement.style.display='none';
+  $('dRev').parentElement.style.display='none';
+  $('dDiaryCard').style.display='none';
+  $('dCheer').style.display='none';
+  layer.innerHTML='';
+  let e=document.getElementById('dEmpty');
+  if(!e){ e=document.createElement('div'); e.id='dEmpty'; e.className='card'; diary.insertBefore(e,layer); }
+  e.style.display='block';
+  e.innerHTML='<h3>🌱 첫 걸음을 기다리는 중</h3>'
+    +'<p style="line-height:1.8">카페 「오늘의 산책 글」에 오늘 목표를<br>댓글로 남기면 여기에 하루가 한 장씩 쌓여요.</p>';
+  $('fab').style.display='none';
 }
 $('tabJ').onclick=()=>{renderJourney();showTab('tabJ');};
 $('tabD').onclick=()=>showTab('tabD');
