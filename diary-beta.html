@@ -668,8 +668,7 @@ gv('gDemo').onclick=async()=>{
         dispName:m.nick||'걸음이', isMember:false, pos:0};
       buildSEQ();
       /* 차곡이 코인도 서버(coins.json)가 정본이다 — mascot.json 의 coins 는 못 읽었을 때의 예비값.
-         두 곳에 숫자를 두면 언젠가 어긋난다 (오너 확정 2026-09-06).
-         시작 코인 12는 주지 않는다. 회원보다 앞서 출발하면 마스코트가 아니라 특혜받는 계정이 된다. */
+         두 곳에 숫자를 두면 언젠가 어긋난다 (오너 확정 2026-09-06). */
       const mc=await mascotCoins(m.nick||state.dispName, m.spent||0);
       if(mc){ state.earned=mc.earned; state.coins=mc.coins; }
       else toast('코인을 새로 읽지 못했어요 — 잠시 후 다시 열어주세요');
@@ -763,7 +762,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260906-0110';
+const BUILD='260906-0140';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -844,12 +843,15 @@ function renderTreasure(){
       <div class="jrow"><span>${x.i} ${x.t}</span><span style="${got?'color:#3c763d;font-weight:700':''}">${st}</span></div>
       ${x.sub?`<p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">${x.sub}</p>`:''}</div>`;}).join('');
 }
-async function mascotCoins(nick,spent){        // 차곡이 잔액 = 카페에서 번 것 − 상점에서 쓴 것 (시작 코인 없음)
+/* 차곡이 잔액도 회원과 **똑같은 식**으로 낸다: 시작 12 + 카페에서 번 것 − 상점에서 쓴 것.
+   시작 코인은 활동 보상이 아니라 모두에게 주는 출발선이라 마스코트도 예외가 아니다 (오너 확정 2026-09-06).
+   식이 갈라지는 순간 두 숫자가 어긋나므로 syncCoins() 와 한 줄도 다르게 쓰지 않는다. */
+async function mascotCoins(nick,spent){
   if(!nick) return null;
   try{
     const j=await (await fetch('coins.json?t='+Date.now())).json();
     const earned=(j.nick||{})[await h16(nick)]||0;
-    return {earned, coins:Math.max(0, earned-(Number(spent)||0))};
+    return {earned, coins:Math.max(0, COIN_START+earned-(Number(spent)||0))};
   }catch(e){ return null; }
 }
 async function h16(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('bw:'+s));
