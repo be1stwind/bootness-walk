@@ -55,7 +55,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .cal .cd.has{color:var(--ink);background:#fff6cf;border-color:#e3cc40;cursor:pointer;font-weight:700}
 .cal .cd.has small{font-size:11px;line-height:1}
 .cal .cd.today{outline:2px solid var(--accent);outline-offset:-1px}
-/* 여정 탭 */
+/* 여행길 탭 */
 .jSec{background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px}
 .jSec h3{margin:0 0 6px;font-size:12px}
 .stepbar{display:flex;align-items:center;gap:0}
@@ -337,14 +337,14 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
   </div>
 </div>
 <div class="tabs">
-  <button id="tabJ">🚶 나의 여정</button>
+  <button id="tabJ">🚶 나의 여행길</button>
   <button id="tabD" class="on">📔 산책 다이어리</button>
   <button id="tabS">🧳 여행 일지</button>
 </div>
 
 <div class="pager" id="pager"><button id="wPrev">◀</button><span id="wLabel"></span><button id="wNext">▶</button></div>
 <div class="page auto" id="journey" style="display:none;">
-  <div class="dhead">🚶 나의 여정</div>
+  <div class="dhead">🚶 나의 여행길</div>
   <div class="dsub" id="jDsub">가을 여행</div>
   <div class="jSec" style="background:#fff6cf;border-color:#e3cc40"><h3>🚩 나의 12주 선언</h3>
     <p id="declText" style="margin:0;font-size:12.5px;font-weight:700;line-height:1.55"></p>
@@ -667,6 +667,12 @@ gv('gDemo').onclick=async()=>{
         placedD:m.placedD||{}, addenda:m.addenda||{}, marks:m.marks||{},
         dispName:m.nick||'걸음이', isMember:false, pos:0};
       buildSEQ();
+      /* 차곡이 코인도 서버(coins.json)가 정본이다 — mascot.json 의 coins 는 못 읽었을 때의 예비값.
+         두 곳에 숫자를 두면 언젠가 어긋난다 (오너 확정 2026-09-06).
+         시작 코인 12는 주지 않는다. 회원보다 앞서 출발하면 마스코트가 아니라 특혜받는 계정이 된다. */
+      const mc=await mascotCoins(m.nick||state.dispName, m.spent||0);
+      if(mc){ state.earned=mc.earned; state.coins=mc.coins; }
+      else toast('코인을 새로 읽지 못했어요 — 잠시 후 다시 열어주세요');
     }
   }catch(e){ toast('다이어리를 불러오지 못했어요 — 잠시 후 다시 열어주세요'); }
   gv('gate').style.display='none';
@@ -757,7 +763,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260906-0030';
+const BUILD='260906-0110';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -796,8 +802,10 @@ const TRACK={
        {k:'consult',i:'💬',t:'<b>1:1 상담 +1회권</b>',at:24,sub:'선착순 없이 예약할 수 있어요'},
        {k:'award',i:'🏆',t:'<b>올해의 최우수 여행자</b>',at:null,when:'연말 시상',sub:'송년회에서 시상합니다'}],
  /* 차곡이는 보상 산정에서 빠진다 (오너 확정 2026-09-02). 회원 혜택을 그대로 주면 안 된다.
-    기념품 목록은 오너 결정 대기 — 정해질 때까지 비워 둔다. 없는 것을 있는 것처럼 그리지 않는다. */
- mascot:[]
+    대신 「쓰는 것」이 아니라 「남기는 것」을 모은다 — 겨울나기 3단 (오너 확정 2026-09-06). */
+ mascot:[{k:'acorn1',i:'🌰',t:'<b>도토리 한 줌</b>',at:4,sub:'첫 이정표에서 주운 도토리예요'},
+       {k:'acorn2',i:'👝',t:'<b>도토리 주머니</b>',at:8,sub:''},
+       {k:'acorn3',i:'🏡',t:'<b>겨울 곳간</b>',at:12,sub:'이만큼 모으면 겨울을 날 수 있어요'}]
 };
 const STAMPS=[{f:'bench2t.png',n:'단풍나무 벤치',at:4},
               {f:'reed2t.png',n:'억새밭',at:8},
@@ -835,6 +843,14 @@ function renderTreasure(){
     return `<div onclick="openTreasure('${x.k}')" style="cursor:pointer;background:rgba(255,253,247,.9);border:1px solid var(--line);border-radius:9px;padding:7px 9px;margin-bottom:6px;${got?'':'opacity:.55'}">
       <div class="jrow"><span>${x.i} ${x.t}</span><span style="${got?'color:#3c763d;font-weight:700':''}">${st}</span></div>
       ${x.sub?`<p style="margin:2px 0 0;font-size:9.5px;color:#8a8172">${x.sub}</p>`:''}</div>`;}).join('');
+}
+async function mascotCoins(nick,spent){        // 차곡이 잔액 = 카페에서 번 것 − 상점에서 쓴 것 (시작 코인 없음)
+  if(!nick) return null;
+  try{
+    const j=await (await fetch('coins.json?t='+Date.now())).json();
+    const earned=(j.nick||{})[await h16(nick)]||0;
+    return {earned, coins:Math.max(0, earned-(Number(spent)||0))};
+  }catch(e){ return null; }
 }
 async function h16(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('bw:'+s));
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,16);}
@@ -882,9 +898,20 @@ window.openTreasure=(k)=>{
   lecture:`<h2>🎓 정기특강 무료 참석권</h2>
    <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>완주하면 <b>쿠폰번호</b>가 여기 표시돼요.<br>정기특강 신청서에 그 번호만 적으면 무료 참석!</p>
    <div style="border:1.5px dashed var(--line);border-radius:9px;padding:10px;text-align:center;margin:8px 0;color:#c9bfa6;font-size:16px;letter-spacing:2px">BW-····</div>
-   <p style="font-size:11px;color:var(--sub);margin:6px 2px">유효기간: 발급 후 정기특강 3회 이내</p>`};
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">유효기간: 발급 후 정기특강 3회 이내</p>`,
+  /* 차곡이 기념품 — 회원 보물과 달리 쓰는 물건이 아니다. 그 차이를 문구로도 갈라 둔다. */
+  acorn1:`<h2>🌰 도토리 한 줌</h2>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>4걸음 이정표에서 차곡이가 주운 도토리예요.<br>손에 쥐면 한 줌, 아직은 그만큼이에요.</p>
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">{{TAIL}}</p>`,
+  acorn2:`<h2>👝 도토리 주머니</h2>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>한 줌으로는 모자라서 주머니가 생겼어요.<br>여행자님들과 같이 걸은 만큼 늘어난 거예요.</p>
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">{{TAIL}}</p>`,
+  acorn3:`<h2>🏡 겨울 곳간</h2>
+   <p style="font-size:12.5px;line-height:1.8;margin:4px 2px">{{HEAD}}<br>12걸음이면 곳간이 찹니다.<br>겨울에 꺼내 먹을 만큼 모았다는 뜻이에요.</p>
+   <p style="font-size:11px;color:var(--sub);margin:6px 2px">{{TAIL}}</p>`};
   if(!B[k]) return;
-  msheet.innerHTML=B[k].replace('{{HEAD}}',head)+'<button class="closeM">닫기</button>'; modal.classList.add('on');
+  const tail='쓰는 혜택이 아니라 차곡이가 여행을 기억하려고 모으는 물건이에요.';
+  msheet.innerHTML=B[k].replace('{{HEAD}}',head).replace('{{TAIL}}',tail)+'<button class="closeM">닫기</button>'; modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');};
 window.printSendSoon=()=>toast('🖨 인쇄 전송은 준비 중이에요 — 완주 시즌에 열려요');
 function curDayW(){const q=SEQ[state.pos]||SEQ[0];return DAYS[q.i];}
