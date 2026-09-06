@@ -296,6 +296,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
    <label>비밀번호 (숫자 6자리)</label>
    <input id="gPin" class="pin" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
    <button class="gbtn" id="gLoginBtn">내 다이어리 열기</button>
+   <p id="gErr" style="display:none;margin:9px 2px 0;font-size:12px;line-height:1.55;color:#c0392b;background:#fdecea;border:1px solid #f5c6c0;border-radius:9px;padding:9px 11px"></p>
    <button class="glink" id="gToJoin">처음이신가요? 가입하기</button>
    <button class="glink gghost" id="gDemo">📖 마스코트 다이어리 구경하기 →</button>
   </div>
@@ -744,17 +745,24 @@ function enterApp(nick){gv('gate').style.display='none';paintTitle();checkMember
   const ab=document.getElementById('acctBar'); if(ab){ab.classList.add('on');document.getElementById('acctNick').textContent=nick;
     const bp=document.getElementById('btnPin'); if(bp)bp.onclick=openPinChange;
     document.getElementById('btnLogout').onclick=()=>{localStorage.removeItem('bd11auth');location.reload();};}}
+function gErr(m){const e=gv('gErr'); if(!e)return;
+  if(m){e.textContent=m;e.style.display='block';}else{e.style.display='none';e.textContent='';}}
+['gId','gPin'].forEach(k=>{const el=gv(k); if(el)el.addEventListener('input',()=>gErr(''));});
 gv('gLoginBtn').onclick=async()=>{
+  const btn=gv('gLoginBtn');
   const id=gv('gId').value.trim(), pin=gv('gPin').value;
-  if(!id||pin.length<6){toast('아이디와 숫자 6자리를 입력해주세요');return;}
-  toast('확인 중…');
+  gErr('');
+  if(!id||!/^[0-9]{6}$/.test(pin)){gErr('아이디와 숫자 6자리를 입력해주세요');return;}
+  if(btn.disabled)return;
+  btn.disabled=true; btn.style.opacity=.65; btn.textContent='확인 중…';
+  const back=(m)=>{btn.disabled=false;btn.style.opacity='';btn.textContent='내 다이어리 열기';gErr(m);};
   try{
     const s=await apiPost({action:'authsalt',id});
-    if(!s||!s.ok||!s.salt){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');return;}
+    if(!s||!s.ok||!s.salt){back('연결이 불안정해요. 잠시 후 다시 시도해주세요');return;}
     const res=await apiPost({action:'login',id,hash:await pinHash(s.salt,pin)});
     if(!res||!res.ok){
-      if(res&&res.error==='locked'){toast('여러 번 틀려서 10분 동안 잠겼어요');return;}
-      toast('아이디나 비밀번호가 달라요');return;}
+      back(res&&res.error==='locked'?'여러 번 틀려서 10분 동안 잠겼어요. 조금 뒤에 다시 해주세요':'아이디나 비밀번호가 달라요');return;}
+    btn.textContent='불러오는 중…';
     localStorage.setItem('bd11auth',JSON.stringify({id,nick:res.nick,token:res.token,mk:res.mk||null}));
     try{
       const rr=await apiGet('action=restore&token='+encodeURIComponent(res.token));
@@ -762,8 +770,9 @@ gv('gLoginBtn').onclick=async()=>{
         if(typeof buildSEQ==='function'){DAYS.forEach(w=>{delete w._pg;});buildSEQ();}
         if(typeof renderDay==='function'){renderDay();renderPager();} }
     }catch(e){}
+    btn.disabled=false; btn.style.opacity=''; btn.textContent='내 다이어리 열기';
     enterApp(res.nick);toast(res.nick+'님, 어서오세요 🚶');
-  }catch(e){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
+  }catch(e){back('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
 async function pullBackup(){
   const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
   if(!au||!au.token) return;
@@ -797,7 +806,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260906-2042';
+const BUILD='260906-2204';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
