@@ -716,18 +716,20 @@ gv('gLoginBtn').onclick=async()=>{
   if(!id||pin.length<6){toast('아이디와 숫자 6자리를 입력해주세요');return;}
   toast('확인 중…');
   try{
-    const A=await (await fetch('auth.json?'+Date.now())).json();
-    const u=A[id];
-    if(!u){toast('등록되지 않은 아이디예요');return;}
-    if(await pinHash(u.salt,pin)!==u.hash){toast('비밀번호가 달라요');return;}
-    localStorage.setItem('bd11auth',JSON.stringify({id,nick:u.nick,token:u.token||id,mk:u.mk||null}));
+    const s=await apiPost({action:'authsalt',id});
+    if(!s||!s.ok||!s.salt){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');return;}
+    const res=await apiPost({action:'login',id,hash:await pinHash(s.salt,pin)});
+    if(!res||!res.ok){
+      if(res&&res.error==='locked'){toast('여러 번 틀려서 10분 동안 잠겼어요');return;}
+      toast('아이디나 비밀번호가 달라요');return;}
+    localStorage.setItem('bd11auth',JSON.stringify({id,nick:res.nick,token:res.token,mk:res.mk||null}));
     try{
-      const rr=await apiGet('action=restore&token='+encodeURIComponent(u.token||id));
+      const rr=await apiGet('action=restore&token='+encodeURIComponent(res.token));
       if(rr&&rr.ok&&rr.data&&rr.data.data){ state={...state,...rr.data.data}; save(); apply();
         if(typeof buildSEQ==='function'){DAYS.forEach(w=>{delete w._pg;});buildSEQ();}
         if(typeof renderDay==='function'){renderDay();renderPager();} }
     }catch(e){}
-    enterApp(u.nick);toast(u.nick+'님, 어서오세요 🚶');
+    enterApp(res.nick);toast(res.nick+'님, 어서오세요 🚶');
   }catch(e){toast('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
 async function pullBackup(){
   const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
@@ -762,7 +764,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260906-1731';
+const BUILD='260906-1945';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
