@@ -547,6 +547,10 @@ function pageStartOffset(root,w){          // 현재 페이지 글이 그날 전
   if(i<0) i=dt.indexOf(pt.slice(0,20));
   return i;
 }
+function revStartOffset(root,w){           // 회고가 여러 장일 때, 이 장의 회고가 전체의 몇 번째 글자부터인지
+  const pt=(root.textContent||''); const dt=(w&&w.rev)||''; if(!pt||!dt) return 0;
+  let i=dt.indexOf(pt.slice(0,40)); if(i<0) i=dt.indexOf(pt.slice(0,20)); return i<0?0:i;
+}
 function rangeFromOffsets(root,from,to){   // 페이지 안 상대 오프셋 → DOM Range
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let acc=0,sN=null,sO=0,eN=null,eO=0;
   while(w.nextNode()){
@@ -566,7 +570,7 @@ function markDOM(root,w,f){
   f = f || (root.dataset&&root.dataset.mk) || 'flow';
   const anns=((state.marks||{})[w?w.n:0]||[]).filter(a=>(a.f||'flow')===f);
   if(!anns.length) return;
-  const base = (f==='flow') ? pageStartOffset(root,w) : 0;
+  const base = (f==='flow') ? pageStartOffset(root,w) : (f==='rev' ? Math.max(0,revStartOffset(root,w)) : 0);
   if(base<0) return;
   const plen=(root.textContent||'').length;
   // 뒤에서부터 칠해야 앞쪽 오프셋이 밀리지 않는다
@@ -581,30 +585,48 @@ function markDOM(root,w,f){
   }
 }
 function computeFlow(w){
-  const blocks=dayBlocks(w);
-  if(!blocks) return {flow:null,parts:[]};
+  // 하루를 A5 장으로 나눈다. 순서: 목표+회고(첫 장) → 회고가 길면 「이어서」 장 → 산책 일지 장들.
+  // 2026-09-08 오너: 회고가 상자보다 길면 비율을 푸는 게 아니라 **페이지를 넘긴다** (일지와 같은 방식).
   if(w._pg) return w._pg;
+  const blocks=dayBlocks(w)||[];
   const live=document.getElementById('diary');
   const M=document.createElement('div');
   M.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:-9999px;top:0;width:'+(live.clientWidth||360)+'px';
   const pg=document.createElement('div'); pg.className='page'; pg.style.margin='0'; M.appendChild(pg);
   document.body.appendChild(M);
   const fits=h=>{pg.innerHTML=h;return pg.scrollHeight<=pg.clientHeight+1;};
-  const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>`;
+  const head=`<div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w} · 9/9페이지</div>`;
   const _ad=(state.addenda||{})[w.n]||'';
-  const cards=`<div class="card"><h3>🌅 오늘 목표</h3><p>${w.goal}</p></div><div class="card"><h3>🌙 달성 & 하루소회</h3><p>${w.rev||''}${_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`;
+  const adH=_ad?`<span class="addTxt"><br>➕ ${escT(_ad)}</span>`:'';
+  const goalC=`<div class="card"><h3>🌅 오늘 목표</h3><p>${escT(w.goal||'')}</p></div>`;
+  // 실제 화면과 같은 구성으로 잰다 — 마지막 회고 장에만 덧붙임과 「나중에 덧붙이기」 단추가 붙는다
+  const revC=(t,cont,last)=>`<div class="card"><h3>🌙 ${cont?'하루소회 (이어서)':'달성 & 하루소회'}</h3><p>${escT(t)}${last?adH:''}</p>${last?'<button class="morebtn">✍ 나중에 덧붙이기</button>':''}</div>`;
+  const diaryC=x=>x?`<div class="card"><h3>📔 산책 일지</h3>${x}</div>`:'';
+  const wrapR=(rp,x)=>head+(rp.cont?'':goalC)+revC(rp.rev,rp.cont,rp.last)+diaryC(x);
+  const wrapC=x=>head+diaryC(x);
+  const cutAt=(rest,ans)=>{ const sp=Math.max(rest.lastIndexOf(' ',ans),rest.lastIndexOf('\n',ans)); return sp>ans*0.6?sp:ans; };
+  // ① 회고를 장으로 나눈다
+  const pages=[]; let rest=w.rev||''; let cont=false; let g=0;
+  for(;;){
+    if(fits(wrapR({rev:rest,cont,last:true},''))){ pages.push({rv:{rev:rest,cont,last:true},x:''}); break; }
+    let lo=0,hi=rest.length,ans=0;
+    while(lo<=hi){const mm=(lo+hi)>>1; if(fits(wrapR({rev:rest.slice(0,mm),cont,last:false},''))){ans=mm;lo=mm+1;}else hi=mm-1;}
+    let n=cutAt(rest,ans); if(n<=0) n=Math.min(rest.length,60);
+    pages.push({rv:{rev:rest.slice(0,n),cont,last:false},x:''}); rest=rest.slice(n).trim(); cont=true;
+    if(!rest || ++g>60){ if(rest) pages[pages.length-1].rv.rev+=' '+rest; pages[pages.length-1].rv.last=true; break; }
+  }
+  pages.forEach(P=>{ P.b=x=>wrapR(P.rv,x); });
   const cheer=w.cmt?`<div class="cheer">${escT(cheerText(w))}</div>`:'';
-  const wrapP=x=>head+cards+`<div class="card"><h3>📔 산책 일지</h3>${x}</div>`;
-  const wrapC=x=>head+`<div class="card"><h3>📔 산책 일지</h3>${x}</div>`;
-  const pages=[{b:wrapP,x:''}];
   const cur=()=>pages[pages.length-1];
-  const np=()=>pages.push({b:wrapC,x:''});
+  const np=()=>pages.push({rv:null,b:wrapC,x:''});
   const F=(x,tail)=>fits(cur().b(x)+tail);
+  const busy=()=>!!(cur().x||cur().rv);     // 이미 뭔가 실린 장이면, 안 들어가는 건 다음 장으로
+  // ② 산책 일지를 이어 붙인다
   blocks.forEach((bk,bi)=>{
     const lastB=bi===blocks.length-1;
     if(bk.img){
       const h=`<img class="dimg" style="aspect-ratio:${bk.ar||'4/3'}" src="${bk.img}">`;
-      if(cur().x && !F(cur().x+h, lastB?cheer:'')) np();
+      if(busy() && !F(cur().x+h, lastB?cheer:'')) np();
       cur().x+=h;
       return;
     }
@@ -614,8 +636,8 @@ function computeFlow(w){
       if(F(cur().x+mk(rest), lastB?cheer:'')){ cur().x+=mk(rest); rest=''; break; }
       let lo=0,hi=rest.length,ans=0;
       while(lo<=hi){const mm=(lo+hi)>>1; if(F(cur().x+mk(rest.slice(0,mm)),'')){ans=mm;lo=mm+1;}else hi=mm-1;}
-      const sp=rest.lastIndexOf(' ',ans); let n=sp>ans*0.6?sp:ans;
-      if(n<=0){ if(cur().x){ np(); continue; } n=Math.min(rest.length,60); }
+      let n=cutAt(rest,ans);
+      if(n<=0){ if(busy()){ np(); continue; } n=Math.min(rest.length,60); }
       cur().x+=mk(rest.slice(0,n)); rest=rest.slice(n).trim(); np();
     }
     if(rest) cur().x+=`<p>${escT(rest)}</p>`;
@@ -623,7 +645,9 @@ function computeFlow(w){
   if(cheer && !fits(cur().b(cur().x)+cheer)) np();
   M.remove();
   window.PAGEW=live.clientWidth||360;
-  return w._pg={flow:pages[0].x, parts:pages.slice(1).map(pp=>pp.x)};
+  pages.forEach(P=>{ delete P.b; });
+  // flow/parts 는 예전 호출부(라벨 등)가 쓰는 모양 그대로: parts 길이 = 장 수 - 1
+  return w._pg={pages, flow:pages[0].x, parts:pages.slice(1).map(pp=>pp.x)};
 }
 function diaryParts(w){ return computeFlow(w).parts; }
 const SEQ=[];
@@ -807,7 +831,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260908-2045';
+const BUILD='260908-2140';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -974,7 +998,7 @@ function curPageOffsets(tx,root,f){          // 고른 글의 위치 → 저장�
   root = root || document.getElementById('dDiary');
   f = f || 'flow';
   // 산책일지는 여러 페이지로 나뉘므로 '그날 전체 글' 기준, 나머지 칸은 그 칸 안에서만 센다
-  const base = (f==='flow') ? pageStartOffset(root,w) : 0;
+  const base = (f==='flow') ? pageStartOffset(root,w) : (f==='rev' ? Math.max(0,revStartOffset(root,w)) : 0);
   if(base<0) return null;
   const pt=root.textContent||'';
   const sel=window.getSelection();
@@ -1241,21 +1265,15 @@ function bookPages(){
     const w=DAYS[q.i]; const parts=diaryParts(w);
     const stk=(state.placedD[q.i+'.'+q.sub]||[]).map(p=>{const d=stDef(p.k);if(!d)return '';
       return `<svg class="stk" style="left:${p.x}%;top:${p.y}%;width:${(d.w*p.sc/3.6).toFixed(2)}%;height:auto;transform:rotate(${p.r}deg)" viewBox="${d.vb}"><use href="#${d.k}"/></svg>`;}).join('');
-    if(q.sub===0){
-      const fl=computeFlow(w);
-      pages.push({t:w.d,html:`<div class="inner" style="${skinStyle}">
-        <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}</div>
-        <div class="card"><h3>🌅 오늘 목표</h3><p data-mk="goal" data-n="${w.n}">${w.goal}</p></div>
-        <div class="card"><h3>🌙 달성 & 하루소회</h3><p data-mk="rev" data-n="${w.n}">${w.rev||'—'}${(state.addenda||{})[w.n]?`<span class="addTxt"><br>➕ ${state.addenda[w.n]}</span>`:''}</p></div>
-        ${fl.flow?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(fl.flow,w)}</div></div>`:''}
-        ${(w.cmt&&!fl.parts.length)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${escT(cheerText(w))}</div>`:''}${stk}</div>`});
-    } else {
-      const _bp=parts[q.sub-1]||'';
-      pages.push({t:w.d+' 일지',html:`<div class="inner" style="${skinStyle}">
-        <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w} · ${q.sub+1}/${parts.length+1}페이지</div>
-        ${_bp?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(_bp,w)}</div></div>`:''}
-        ${(q.sub===parts.length&&w.cmt)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${escT(cheerText(w))}</div>`:''}${stk}</div>`});
-    }
+    const fl=computeFlow(w); const P=fl.pages[q.sub]||fl.pages[0]; const rp=P.rv; const lastPg=q.sub===fl.pages.length-1;
+    const _ad=(state.addenda||{})[w.n];
+    const revH=rp?`<div class="card"><h3>🌙 ${rp.cont?'하루소회 (이어서)':'달성 & 하루소회'}</h3><p data-mk="rev" data-n="${w.n}">${rp.rev||(q.sub===0?'—':'')}${rp.last&&_ad?`<span class="addTxt"><br>➕ ${_ad}</span>`:''}</p></div>`:'';
+    pages.push({t:w.d+(q.sub?' 일지':''),html:`<div class="inner" style="${skinStyle}">
+        <div class="dhead">${w.d} ${w.moon}</div><div class="dsub">가을 여행 · ${w.w}${fl.pages.length>1?` · ${q.sub+1}/${fl.pages.length}페이지`:''}</div>
+        ${q.sub===0?`<div class="card"><h3>🌅 오늘 목표</h3><p data-mk="goal" data-n="${w.n}">${w.goal}</p></div>`:''}
+        ${revH}
+        ${P.x?`<div class="card"><h3>📔 산책 일지</h3><div data-mk="flow">${decorate(P.x,w)}</div></div>`:''}
+        ${(lastPg&&w.cmt)?`<div class="cheer" data-mk="cheer" data-n="${w.n}">${escT(cheerText(w))}</div>`:''}${stk}</div>`});
   });
   pages.push({t:'여행 일지',html:`<div class="inner" style="${skinStyle}">${document.getElementById('stampbook').innerHTML.replace('id="stampbook"','')}</div>`});
   pages.push({t:'뒤표지',html:`<div class="backCover"><div class="lg">🚶🍂</div><b>함께 걷는 일주일 · 2026년 가을 여행</b>
@@ -1309,37 +1327,30 @@ $('doneSel').onclick=()=>{sel=null;render();save();toast('저장했어요');};
 function renderDay(){
   if(!SEQ.length){ renderEmptyDay(); return; }
   const _e=document.getElementById('dEmpty'); if(_e) _e.style.display='none';
-  const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i]; const parts=diaryParts(w);
+  const q=SEQ[state.pos]||SEQ[0]; const w=DAYS[q.i];
+  const fl=computeFlow(w); const P=fl.pages[q.sub]||fl.pages[0]; const rp=P.rv;
   $('dHead').textContent=w.d+' '+w.moon;
-  $('dSub').textContent='가을 여행 · '+w.w+(parts.length?` · ${q.sub+1}/${parts.length+1}페이지`:'');
-  if(q.sub===0){
-    $('dGoal').parentElement.style.display='block'; $('dRev').parentElement.style.display='block';
-    $('dGoal').textContent=w.goal; markDOM($('dGoal'),w,'goal');
+  $('dSub').textContent='가을 여행 · '+w.w+(fl.pages.length>1?` · ${q.sub+1}/${fl.pages.length}페이지`:'');
+  $('dGoal').parentElement.style.display=q.sub===0?'block':'none';
+  if(q.sub===0){ $('dGoal').textContent=w.goal; markDOM($('dGoal'),w,'goal'); }
+  const revCard=$('dRev').parentElement;
+  if(rp){
+    revCard.style.display='block';
+    revCard.querySelector('h3').textContent=rp.cont?'🌙 하루소회 (이어서)':'🌙 달성 & 하루소회';
     const _a=(state.addenda||{})[w.n];
-    $('dRev').innerHTML=(w.rev||'저녁에 달성여부와 하루 소회를 남겨보세요').replace(/</g,'&lt;')+(_a?`<span class="addTxt"><br>➕ ${String(_a).replace(/</g,'&lt;')}</span>`:'');
+    $('dRev').innerHTML=(rp.rev||(q.sub===0?'저녁에 달성여부와 하루 소회를 남겨보세요':'')).replace(/</g,'&lt;')
+      +(rp.last&&_a?`<span class="addTxt"><br>➕ ${String(_a).replace(/</g,'&lt;')}</span>`:'');
     markDOM($('dRev'),w,'rev');
+    $('dAddBtn').style.display=rp.last?'':'none';
     $('dAddBtn').textContent=_a?'✍ 덧붙임 고치기':'✍ 나중에 덧붙이기';
     $('dAddBtn').onclick=()=>openAddendum(w);
-    const fl=computeFlow(w);
-    $('dDiaryCard').style.display=fl.flow?'block':'none';
-    if(fl.flow){document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
-      $('dDiary').innerHTML=decorate(fl.flow,w);markDOM($('dDiary'),w);$('dDiary').classList.remove('clamp');$('dMore').style.display='none';}
-    $('dCheer').style.display=(w.cmt&&!fl.parts.length)?'block':'none';
-    if(w.cmt&&!fl.parts.length){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
-  } else {
-    $('dGoal').parentElement.style.display='none'; $('dRev').parentElement.style.display='none';
-    $('dCheer').style.display='none';
-    $('dDiaryCard').style.display='block';
-    $('dDiary').innerHTML=decorate(parts[q.sub-1]||'',w);markDOM($('dDiary'),w);
-    $('dDiary').classList.remove('clamp'); $('dMore').style.display='none';
-    document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지'+(q.sub>1?'':'');
-    const last=q.sub===parts.length;
-    $('dCheer').style.display=(last&&w.cmt)?'block':'none';
-    if(last&&w.cmt){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
-  }
-  // 회고가 길면 A5 비율을 풀고 내용만큼 늘린다. overflow:hidden 이라 상자가 스스로 안 자란다
-  // (2026-09-08 차곡이 실측: 375px 폭에서 612 상자에 845 내용 → 아래가 잘렸다).
-  const _pg=$('diary'); _pg.style.aspectRatio=''; if(_pg.scrollHeight>_pg.clientHeight+1) _pg.style.aspectRatio='auto';
+  } else revCard.style.display='none';
+  $('dDiaryCard').style.display=P.x?'block':'none';
+  if(P.x){ document.querySelector('#dDiaryCard h3').textContent='📔 산책 일지';
+    $('dDiary').innerHTML=decorate(P.x,w); markDOM($('dDiary'),w); $('dDiary').classList.remove('clamp'); $('dMore').style.display='none'; }
+  const last=q.sub===fl.pages.length-1;
+  $('dCheer').style.display=(last&&w.cmt)?'block':'none';
+  if(last&&w.cmt){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
   sel=null; render();
 }
 function openCal(){
