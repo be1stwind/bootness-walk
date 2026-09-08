@@ -42,6 +42,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .cheer{font-size:13px;background:rgba(255,248,220,.7);border:1px solid #eee0a8;border-radius:9px;padding:7px 10px;color:#6b5d2a}
 .page{margin-bottom:2px}
 .page.auto{aspect-ratio:auto;padding-bottom:18px}
+
 .page.auto .jSec:last-child{margin-bottom:0}
 .footStrip{background:#fff6cf;border:1px solid #e3cc40;border-radius:12px;padding:10px 12px;font-size:12px;color:#6b5d2a;text-align:center;margin-top:2px}
 .footStrip b{color:#c96f3d}
@@ -806,7 +807,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260907-1618';
+const BUILD='260908-2045';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -1336,6 +1337,9 @@ function renderDay(){
     $('dCheer').style.display=(last&&w.cmt)?'block':'none';
     if(last&&w.cmt){$('dCheer').textContent=cheerText(w); markDOM($('dCheer'),w,'cheer');}
   }
+  // 회고가 길면 A5 비율을 풀고 내용만큼 늘린다. overflow:hidden 이라 상자가 스스로 안 자란다
+  // (2026-09-08 차곡이 실측: 375px 폭에서 612 상자에 845 내용 → 아래가 잘렸다).
+  const _pg=$('diary'); _pg.style.aspectRatio=''; if(_pg.scrollHeight>_pg.clientHeight+1) _pg.style.aspectRatio='auto';
   sel=null; render();
 }
 function openCal(){
