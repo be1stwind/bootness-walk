@@ -804,8 +804,32 @@ gv('gLoginBtn').onclick=async()=>{
         if(typeof renderDay==='function'){renderDay();renderPager();} }
     }catch(e){}
     btn.disabled=false; btn.style.opacity=''; btn.textContent='내 다이어리 열기';
-    enterApp(res.nick);toast(res.nick+'님, 어서오세요 🚶');
+    enterApp(res.nick);toast(res.nick+'님, 어서오세요 🚶');loadMyDays();
   }catch(e){back('연결이 불안정해요. 잠시 후 다시 시도해주세요');}};
+/* 회원 하루 카드·걸음 수 — 현황판이 매일 아침 days/<해시>.json 으로 올린다 (다이어리_발행.py, 2026-09-08).
+   앱은 걸음을 다시 계산하지 않고, 하루를 지어내지도 않는다. 파일이 없으면 「아직 기록이 없어요」 그대로.
+   해시는 mems.json 과 같은 sha256("bw:"+값) 앞 16자 — memberKey 를 먼저, 없으면 닉네임으로 찾는다. */
+async function loadMyDays(){
+  const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
+  if(!au||demoMode) return false;
+  const keys=[]; if(au.mk) keys.push(await h16(au.mk)); if(au.nick) keys.push(await h16(au.nick));
+  let m=null;
+  for(const k of keys){
+    try{ const r=await fetch('days/'+k+'.json?t='+Date.now(),{cache:'no-store'}); if(r.ok){ m=await r.json(); break; } }catch(e){}
+  }
+  if(!m) return false;
+  const cur=SEQ[state.pos]; const curD=cur?(DAYS[cur.i]||{}).d:null;
+  DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d));
+  VIEW.steps=(typeof m.steps==='number')?m.steps:null;
+  VIEW.decl=m.decl||null; VIEW.declDate=m.declDate||null;
+  buildSEQ();
+  // 보던 날을 유지하고, 처음이면 오늘(없으면 마지막 날)로
+  let np=curD?SEQ.findIndex(q=>DAYS[q.i].d===curD&&q.sub===0):-1;
+  if(np<0){ const ti=DAYS.findIndex(d=>d.today); np=ti>=0?SEQ.findIndex(q=>q.i===ti&&q.sub===0):SEQ.length-1; }
+  state.pos=Math.max(0,np);
+  apply(); renderDay(); renderPager(); if(curTab()==='tabJ') renderJourney();
+  return true;
+}
 async function pullBackup(){
   const au=(()=>{try{return JSON.parse(localStorage.getItem('bd11auth')||'null')}catch(e){return null}})();
   if(!au||!au.token) return;
@@ -839,7 +863,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260908-2215';
+const BUILD='260908-2250';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -851,7 +875,7 @@ const BUILD='260908-2215';
   }catch(e){}
 })();
 try{const au=JSON.parse(localStorage.getItem('bd11auth')||'null');
-  if(au&&au.nick){enterApp(au.nick);pullBackup();}else paintTitle();}catch(e){}
+  if(au&&au.nick){enterApp(au.nick);pullBackup();loadMyDays();}else paintTitle();}catch(e){}
 gv('gJoinBtn').onclick=async()=>{
   const nick=gv('jNick').value.trim(), id=gv('jId').value.trim();
   if(!nick){toast('카페 닉네임을 입력해주세요');return;}
