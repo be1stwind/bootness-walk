@@ -79,6 +79,7 @@ h1{font-size:18px;font-weight:700;margin:0}
 .slot svg{width:74px;height:64px}
 .slot.lock svg{filter:grayscale(1);opacity:.35}
 .slot.lock img{filter:grayscale(1);opacity:.4}
+.gitem.lock .stpv svg{filter:grayscale(1);opacity:.4}
 .slot b{display:block;font-size:11px;margin-top:2px}
 .slot i{display:block;font-style:normal;font-size:9.5px;color:var(--sub)}
 .seasonTitle{font-weight:700;font-size:13px;margin:2px 0 8px}
@@ -282,6 +283,9 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <g id="a-target"><g stroke="#fff" stroke-width="6"><circle cx="50" cy="46" r="30" fill="#f6e3c4"/><circle cx="50" cy="46" r="19" fill="#f7c1cf"/><circle cx="50" cy="46" r="8" fill="#e2574c"/></g><g stroke="#fff" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M50 46 82 18"/><path d="M69 21 82 18 77 30"/></g><g stroke="#8a6d4b" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M50 46 82 18"/><path d="M69 21 82 18 77 30"/></g></g>
 <g id="a-flagS"><path d="M28 80V12" stroke="#fff" stroke-width="12" stroke-linecap="round"/><path d="M28 80V12" stroke="#8a8a8a" stroke-width="5" stroke-linecap="round"/><path d="M30 16h44l-10 13 10 13H30Z" fill="#e2574c" stroke="#fff" stroke-width="6" stroke-linejoin="round"/></g>
 <g id="a-plant"><path d="M50 56V34" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M50 56V34" stroke="#7a9a5e" stroke-width="4" stroke-linecap="round"/><path d="M50 38c0-12-9-18-20-17 1 12 9 18 20 17Z" fill="#8fce7c" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M50 30c0-11 8-16 18-15-1 11-8 16-18 15Z" fill="#6db85e" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M26 56h48l-6 24H32Z" fill="#e0a06e" stroke="#fff" stroke-width="6" stroke-linejoin="round"/></g>
+<g id="lim-bench"><image href="stamps/bench2t.png" width="100" height="100"/></g>
+<g id="lim-reed"><image href="stamps/reed2t.png" width="100" height="100"/></g>
+<g id="lim-tower"><image href="stamps/tower2t.png?v=3" width="100" height="100"/></g>
 </defs></svg>
 
 <div class="wrap">
@@ -426,6 +430,10 @@ const SKINS=[
  {id:'wongoji',n:'세로 원고지',p:4, bg:'#fcf8ee', im:'repeating-linear-gradient(90deg, transparent 0 26px, #e3d8bd 26px 27px)', sz:'auto'},
 ];
 const STICKERS=[
+ // 한정판 — 4·8·12걸음 이정표 스탬프. 상점에서 살 수 없고 이정표에 닿는 순간 자동으로 들어온다 (2026-09-08 오너)
+ {k:'lim-bench',n:'단풍나무 벤치',p:0,cat:'한정판',vb:'0 0 100 100',w:84,h:84,at:4},
+ {k:'lim-reed',n:'억새밭',p:0,cat:'한정판',vb:'0 0 100 100',w:84,h:84,at:8},
+ {k:'lim-tower',n:'남산타워',p:0,cat:'한정판',vb:'0 0 100 100',w:84,h:84,at:12},
  {k:'b-star',n:'별',p:0,cat:'기본',vb:'0 0 100 92',w:76,h:70},
  {k:'b-heart',n:'하트',p:0,cat:'기본',vb:'0 0 100 92',w:74,h:68},
  {k:'b-check',n:'체크',p:0,cat:'기본',vb:'0 0 100 92',w:70,h:64},
@@ -831,7 +839,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260908-2140';
+const BUILD='260908-2215';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
@@ -1071,13 +1079,19 @@ function backupSoon(){
 }
 function save(){if(demoMode)return; try{localStorage.setItem('bd11',JSON.stringify(state));}catch(e){} backupSoon();}
 function stDef(k){return STICKERS.find(s=>s.k===k);}
+function limitedEarned(s){ return s.at!=null && stepsN()>=s.at; }
+function grantLimited(){   // 이정표에 닿은 한정판을 보유 목록에 넣는다. 걸음 수가 늘 때마다 apply() 에서 다시 본다
+  let added=false;
+  for(const s of STICKERS){ if(s.at!=null && limitedEarned(s) && !state.ownedStk.includes(s.k)){ state.ownedStk.push(s.k); added=true; } }
+  if(added) save();
+}
 function apply(){
   $('coverThumb').style.backgroundImage=`url(${cvUrl(state.cover)})`;
   const sk=SKINS.find(s=>s.id===state.skin)||SKINS[0];
   for(const pg of [diary,$('stampbook')]){pg.style.background=sk.bg;pg.style.backgroundImage=sk.im;pg.style.backgroundSize=sk.sz;}
   document.querySelector('.coin').textContent='🪙 '+state.coins;
   paintHeader(); renderStamps(); renderTreasure();
-  buildPalette();
+  grantLimited(); buildPalette();
 }
 function render(){
   layer.innerHTML='';
@@ -1215,17 +1229,23 @@ function openSkinShop(){
     state.coins-=k.p;state.spent=(state.spent||0)+k.p;state.ownedSkins.push(k.id);state.skin=k.id;save();apply();modal.classList.remove('on');toast(`구매 완료! 남은 코인 ${state.coins}`);});
 }
 function openStkShop(){
-  const cats=['가을 시즌','기본'];
-  msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':'')+c+'</p><div class="gal3">'
+  const cats=['한정판','가을 시즌','기본'];
+  msheet.innerHTML='<h2>🛍 스티커 상점</h2>'+cats.map(c=>'<p class="plabel" style="margin:8px 2px 5px">'+(c==='가을 시즌'?'🍂 ':c==='한정판'?'🏅 ':'')+c+(c==='한정판'?' <span style="font-weight:400">— 4·8·12걸음 이정표에서 받아요</span>':'')+'</p><div class="gal3">'
    +STICKERS.filter(s=>s.cat===c).map(s=>{
-     const own=state.ownedStk.includes(s.k);
+     const own=state.ownedStk.includes(s.k)||(s.at!=null&&limitedEarned(s));
+     const lock=s.at!=null&&!own;
      const inner=(document.getElementById(s.k)||{innerHTML:''}).innerHTML;
-     return `<div class="gitem" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="46" height="42">${inner}</svg></div>${badge(own,s.p)}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
+     const bd=lock?`<span class="price" style="background:#e9e2d2;color:#7a6f5c">${s.at}걸음</span>`:badge(own,s.p);
+     return `<div class="gitem${lock?' lock':''}" data-k="${s.k}"><div class="stpv"><svg viewBox="${s.vb}" width="46" height="42">${inner}</svg></div>${bd}<b>${s.n}</b></div>`;}).join('')+'</div>').join('')
    +'<button class="closeM">닫기</button>';
   modal.classList.add('on');
   msheet.querySelector('.closeM').onclick=()=>modal.classList.remove('on');
   msheet.querySelectorAll('[data-k]').forEach(el=>el.onclick=()=>{
     const s=STICKERS.find(x=>x.k===el.dataset.k);
+    if(s.at!=null){   // 한정판: 살 수 없다. 이정표에 닿았으면 이미 팔레트에 있다
+      if(limitedEarned(s)){ grantLimited(); toast('이정표에서 받은 한정판이에요 — 아래 팔레트에서 쓰세요'); }
+      else toast(`${s.at}걸음 이정표에 닿으면 받는 한정판 스티커예요`);
+      return; }
     if(state.ownedStk.includes(s.k)){toast('이미 보유 중 — 아래 팔레트에서 쓰세요');return;}
     if(s.p===0){state.ownedStk.push(s.k);save();apply();toast('무료로 받았어요!');openStkShop();return;}
     if(demoMode){toast('구경 모드에서는 살 수 없어요 — 가입하면 내 코인으로!');return;}
