@@ -278,7 +278,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <g id="a-dog"><image href="stk/a-dog.png" x="0" y="0" width="100" height="70.7" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="a-note"><image href="stk/a-note.png" x="0" y="0" width="100" height="100.0" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="a-calendar"><image href="stk/a-calendar.png" x="0" y="0" width="100" height="105.7" preserveAspectRatio="xMidYMid meet"/></g>
-<g id="a-money"><image href="stk/a-money.png" x="0" y="0" width="100" height="90.2" preserveAspectRatio="xMidYMid meet"/></g>
+<g id="a-money"><image href="stk/a-money.png?v=2" x="0" y="0" width="100" height="93.2" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="a-house"><image href="stk/a-house.png" x="0" y="0" width="100" height="82.2" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="a-target"><image href="stk/a-target.png" x="0" y="0" width="100" height="94.2" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="a-flagS"><image href="stk/a-flagS.png" x="0" y="0" width="100" height="140.4" preserveAspectRatio="xMidYMid meet"/></g>
@@ -293,9 +293,9 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <g id="c-count"><image href="stk/c-count.png" x="0" y="0" width="100" height="124.1" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="c-hi"><image href="stk/c-hi.png" x="0" y="0" width="100" height="122.5" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="c-sleep"><image href="stk/c-sleep.png" x="0" y="0" width="100" height="121.3" preserveAspectRatio="xMidYMid meet"/></g>
-<g id="m-bill"><image href="stk/m-bill.png" x="0" y="0" width="100" height="58.4" preserveAspectRatio="xMidYMid meet"/></g>
+<g id="m-bill"><image href="stk/m-bill.png?v=2" x="0" y="0" width="100" height="58.2" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-book"><image href="stk/m-book.png?v=3" x="0" y="0" width="100" height="128.9" preserveAspectRatio="xMidYMid meet"/></g>
-<g id="m-calc"><image href="stk/m-calc.png" x="0" y="0" width="100" height="120.2" preserveAspectRatio="xMidYMid meet"/></g>
+<g id="m-calc"><image href="stk/m-calc.png?v=2" x="0" y="0" width="100" height="131.6" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-coin"><image href="stk/m-coin.png?v=2" x="0" y="0" width="100" height="100.0" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-up"><image href="stk/m-up.png" x="0" y="0" width="100" height="104.4" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="w-foot"><image href="stk/w-foot.png" x="0" y="0" width="100" height="86.8" preserveAspectRatio="xMidYMid meet"/></g>
@@ -425,7 +425,7 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <div class="toast" id="toast"></div>
 
 <script>
-const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'},{id:'c5',n:'수채 은행나무길',e:'jpg'},{id:'c6',n:'가을 별밤',e:'jpg'},{id:'c7',n:'한지 단풍',e:'jpg'},{id:'c8',n:'파스텔 낙엽',e:'jpg'}];
+const COVERS=[{id:'c1',n:'가을 산책'},{id:'c2',n:'달빛 산책'},{id:'c3',n:'미니멀 리프'},{id:'c4',n:'창가의 오후'},{id:'c5',n:'수채 은행나무길',e:'jpg'},{id:'c6',n:'가을 별밤',e:'jpg'},{id:'c7',n:'한지 단풍',e:'jpg'},{id:'c8',n:'파스텔 낙엽',e:'jpg'},{id:'c9',n:'고추잠자리와 가을 하늘',e:'jpg'},{id:'c10',n:'올려다본 단풍',e:'jpg'},{id:'c11',n:'가을 소풍 바구니',e:'jpg'},{id:'c12',n:'뜨개 위의 낙엽',e:'jpg'}];
 const cvUrl=id=>{const c=COVERS.find(x=>x.id===id)||COVERS[0];return 'covers/'+c.id+'.'+(c.e||'png')+(c.e?'?3':'');};
 const SKINS=[
  {id:'basic',n:'기본 줄노트',p:0, bg:'#fdf8ee', im:'repeating-linear-gradient(transparent 0 24px, #e6dcc6 24px 25px)', sz:'auto'},
@@ -458,10 +458,10 @@ const STICKERS=[
  {k:'lim-tower',n:'남산타워',p:0,cat:'한정판',vb:'0 0 100 100',w:84,h:84,at:12},
  // 새 스티커 16종 — 새롬이 2026-09-09. 그림은 저장소 stk/<키>.png (앱 파일에 안 넣는다)
  {k:'m-coin',n:'동전',p:1,cat:'돈 차곡차곡',vb:'0 0 100 100.0',w:72,h:66},
- {k:'m-bill',n:'지폐',p:2,cat:'돈 차곡차곡',vb:'0 0 100 58.4',w:86,h:62},
+ {k:'m-bill',n:'지폐',p:2,cat:'돈 차곡차곡',vb:'0 0 100 58.2',w:86,h:50},
  {k:'m-up',n:'우상향',p:2,cat:'돈 차곡차곡',vb:'0 0 100 104.4',w:82,h:70},
  {k:'m-book',n:'가계부',p:2,cat:'돈 차곡차곡',vb:'0 0 100 128.9',w:58,h:76},
- {k:'m-calc',n:'계산기',p:2,cat:'돈 차곡차곡',vb:'0 0 100 120.2',w:66,h:74},
+ {k:'m-calc',n:'계산기',p:2,cat:'돈 차곡차곡',vb:'0 0 100 131.6',w:56,h:74},
  {k:'w-shoe',n:'운동화',p:2,cat:'걷기',vb:'0 0 100 63.5',w:88,h:62},
  {k:'w-water',n:'물병',p:2,cat:'걷기',vb:'0 0 100 201.5',w:50,h:78},
  {k:'w-foot',n:'발자국',p:1,cat:'걷기',vb:'0 0 100 86.8',w:66,h:74},
@@ -534,7 +534,7 @@ const STICKERS=[
  {k:'a-dog',n:'강아지',p:3,cat:'기본',vb:'0 0 100 70.7',w:74,h:70},
  {k:'a-note',n:'메모지',p:1,cat:'기본',vb:'0 0 100 100.0',w:76,h:76},
  {k:'a-calendar',n:'달력',p:2,cat:'기본',vb:'0 0 100 105.7',w:76,h:72},
- {k:'a-money',n:'저금통',p:3,cat:'기본',vb:'0 0 100 90.2',w:80,h:68},
+ {k:'a-money',n:'저금통',p:3,cat:'기본',vb:'0 0 100 93.2',w:73,h:68},
  {k:'a-house',n:'집',p:2,cat:'기본',vb:'0 0 100 82.2',w:80,h:70},
  {k:'a-target',n:'과녁',p:2,cat:'기본',vb:'0 0 100 94.2',w:70,h:70},
  {k:'a-flagS',n:'깃발',p:2,cat:'기본',vb:'0 0 100 140.4',w:70,h:74},
@@ -903,7 +903,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260909-1400';
+const BUILD='260909-1430';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
