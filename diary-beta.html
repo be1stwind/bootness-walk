@@ -294,9 +294,9 @@ mark.hl-b{background:#bfe0f7;color:inherit;border-radius:3px;padding:0 1px}
 <g id="c-hi"><image href="stk/c-hi.png" x="0" y="0" width="100" height="122.5" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="c-sleep"><image href="stk/c-sleep.png" x="0" y="0" width="100" height="121.3" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-bill"><image href="stk/m-bill.png" x="0" y="0" width="100" height="58.4" preserveAspectRatio="xMidYMid meet"/></g>
-<g id="m-book"><image href="stk/m-book.png" x="0" y="0" width="100" height="108.9" preserveAspectRatio="xMidYMid meet"/></g>
+<g id="m-book"><image href="stk/m-book.png?v=2" x="0" y="0" width="100" height="108.9" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-calc"><image href="stk/m-calc.png" x="0" y="0" width="100" height="120.2" preserveAspectRatio="xMidYMid meet"/></g>
-<g id="m-coin"><image href="stk/m-coin.png" x="0" y="0" width="100" height="100.0" preserveAspectRatio="xMidYMid meet"/></g>
+<g id="m-coin"><image href="stk/m-coin.png?v=2" x="0" y="0" width="100" height="100.0" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="m-up"><image href="stk/m-up.png" x="0" y="0" width="100" height="104.4" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="w-foot"><image href="stk/w-foot.png" x="0" y="0" width="100" height="86.8" preserveAspectRatio="xMidYMid meet"/></g>
 <g id="w-map"><image href="stk/w-map.png" x="0" y="0" width="100" height="83.3" preserveAspectRatio="xMidYMid meet"/></g>
@@ -903,7 +903,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260909-1300';
+const BUILD='260909-1320';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
