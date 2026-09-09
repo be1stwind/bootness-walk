@@ -556,6 +556,12 @@ function domOf(w){ const m=/(\d+)\s*월\s*(\d+)\s*일/.exec(String((w&&w.d)||'')
 function monthOf(w){ const m=/(\d+)\s*월/.exec(String((w&&w.d)||'')); return m?+m[1]:null; }
 const MOONV={'🌕':1,'🌗':.5,'📔':2};
 const fmtScore=n=>(Math.round(n*10)/10).toString().replace(/\.0$/,'');
+/* 「오늘」은 파일에 적힌 today 값을 믿지 않고 날짜 글자로 앱이 정한다 (2026-09-09 오너: 「왜 9월 8일이 오늘이라고 뜨지?」).
+   차곡이 mascot.json 은 손으로 쓰는 파일이라 today 가 쓴 날에 멈춰 있었다. 회원 파일도 발행 시각 기준이라 자정을 넘기면 어긋난다. */
+function markToday(days){
+  const now=new Date(), mo=now.getMonth()+1, da=now.getDate();
+  (days||[]).forEach(d=>{ const m=/(\d+)\s*월\s*(\d+)\s*일/.exec(String(d.d||'')); d.today=!!(m&&+m[1]===mo&&+m[2]===da); });
+}
 function weeksOf(days){                       // 주차는 기록에 적힌 주(w)로만 묶는다 — 없는 주를 만들지 않는다
   const order=[], map=new Map();
   (days||[]).forEach(d=>{
@@ -730,7 +736,7 @@ gv('gDemo').onclick=async()=>{
   try{
     const m=await (await fetch('mascot.json?t='+Date.now())).json();
     if(m){
-      DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d));
+      DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d)); markToday(DAYS);
       VIEW.mascot=true;                                   // 차곡이는 회원 보상 대상이 아니다
       VIEW.steps=(typeof m.steps==='number')?m.steps:null; // 없으면 0걸음으로 본다 (스탬프·보물 전부 잠김)
       VIEW.decl=m.decl||null; VIEW.declDate=m.declDate||null;
@@ -858,7 +864,7 @@ async function loadMyDays(){
   }
   if(!m) return false;
   const cur=SEQ[state.pos]; const curD=cur?(DAYS[cur.i]||{}).d:null;
-  DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d));
+  DAYS.length=0; (m.days||[]).forEach(d=>DAYS.push(d)); markToday(DAYS);
   VIEW.steps=(typeof m.steps==='number')?m.steps:null;
   VIEW.decl=m.decl||null; VIEW.declDate=m.declDate||null;
   VIEW.laps=Number(m.laps)||0; VIEW.gifts=m.gifts||{};   // 완주 횟수·보물 지급 기록 (2026-09-09)
@@ -903,7 +909,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260909-1700';
+const BUILD='260909-1730';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
