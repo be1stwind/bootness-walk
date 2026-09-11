@@ -766,7 +766,7 @@ gv('gDemo').onclick=async()=>{
   db.innerHTML='<span>🤖 <b>'+(state.dispName||'마스코트')+'</b>(부트니스 마스코트)의 다이어리를 구경하는 중이에요 — 가입하면 내 것이 생겨요</span><button aria-label="닫기">✕</button>';
   db.querySelector('button').onclick=()=>{db.remove();};
   document.querySelector('header').before(db);
-  paintTitle(); apply(); renderDay(); renderPager();};
+  paintTitle(); apply(); renderDay(); renderPager(); renderJourney();};   // 여행길도 그려 둔다 (로딩 전 클릭해도 이번 주가 뜨게, 2026-09-11)
 const API='https://script.google.com/macros/s/AKfycbx9HRiBUsVwz3jfNzs8FeCT_FbI8Z7BHJy4EgChDwQfroTPPwCyVDgVlse2QmxdqY6ncA/exec';
 async function apiPost(body){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
@@ -917,7 +917,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260911-1200';
+const BUILD='260911-1230';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
