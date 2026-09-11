@@ -577,7 +577,12 @@ function weeksOf(days){                       // 주차는 기록에 적힌 주(
 }
 let JWEEKS=[];
 function rebuildWeeks(){ JWEEKS=weeksOf(DAYS);
-  if(typeof state==='object'&&state) state.jweek=Math.max(0,Math.min(state.jweek||0,JWEEKS.length-1)); }
+  // 나의 여행길은 열 때 「이번 주」를 보여준다. 예전엔 0번(연습 주간)에 머물러서 이번 주 달이 안 보였다
+  // (2026-09-11 오너: 차곡이 여행길에 진행이 하나도 안 반영). now(이번 주)가 있으면 그 주로, 없으면 마지막 주로.
+  if(typeof state==='object'&&state){
+    var ni=JWEEKS.findIndex(function(w){return w.now;});
+    state.jweek = ni>=0 ? ni : Math.max(0, JWEEKS.length-1);
+  } }
 function curWeek(){ return JWEEKS.find(w=>w.now)||JWEEKS[JWEEKS.length-1]||null; }
 /* 응원 한마디는 오너가 실제로 적은 것만 뜬다. 앱은 이름표만 붙이고, 말은 지어내지 않는다. */
 function cheerText(w){ const c=(w&&w.cmt)?String(w.cmt).trim():''; if(!c) return '';
@@ -876,7 +881,7 @@ async function loadMyDays(){
   let np=curD?SEQ.findIndex(q=>DAYS[q.i].d===curD&&q.sub===0):-1;
   if(np<0){ const ti=DAYS.findIndex(d=>d.today); np=ti>=0?SEQ.findIndex(q=>q.i===ti&&q.sub===0):SEQ.length-1; }
   state.pos=Math.max(0,np);
-  apply(); renderDay(); renderPager(); if(curTab()==='tabJ') renderJourney();
+  apply(); renderDay(); renderPager(); renderJourney();   // 여행길도 항상 다시 그린다 (로딩 전 빈 화면 방지, 2026-09-11)
   return true;
 }
 async function pullBackup(){
@@ -912,7 +917,7 @@ async function syncCoins(){
   }catch(e){}
   save(); apply();
 }
-const BUILD='260909-1745';
+const BUILD='260911-1200';
 (async function autoUpdate(){
   try{
     const r=await fetch('build.json',{cache:'no-store'});
