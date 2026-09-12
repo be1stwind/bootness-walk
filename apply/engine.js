@@ -13,6 +13,8 @@
  *  - 미리보기(시트에 아무것도 안 적힌다): ?preview=done|stop|closed 는 그 끝 화면을 바로 띄운다. &member=예 처럼 답을 붙이면 그 답으로.
  *    ?preview=1 은 처음부터 끝까지 써 볼 수 있고, 제출해도 서버로 보내지 않는다
  *  - 신청번호: 서버가 만들어 돌려준다(j.id). 끝 화면 설정이 함수면 두 번째 인자 res.id 로 받는다
+ *  - 쓰던 답 남기기(keepDraft): 새로고침해도 답이 남는다. 이 기기·이 탭의 sessionStorage 에만, 제출·마감 때 지운다
+ *  - 끝 화면 버튼: 링크 · restart(답을 비우고 1쪽) · back(답은 두고 1쪽, clear 에 적은 칸만 비움)
  *
  * 오래된 안드로이드 카톡 웹뷰를 위해 ?. 와 ?? 는 쓰지 않는다.
  */
@@ -216,6 +218,7 @@
   function endButton(b) {
     if (!b) return '';
     if (b.restart) return '<button type="button" class="endbtn" data-restart="1">' + esc(b.label) + '</button>';   // 답을 비우고 1쪽으로
+    if (b.back) return '<button type="button" class="endbtn" data-back="' + esc((b.clear || []).join(',')) + '">' + esc(b.label) + '</button>';   // 답은 두고 1쪽으로
     return '<a class="endbtn" href="' + esc(b.href) + '"' + (b.sameTab ? '' : ' target="_blank" rel="noopener"') + '>' + esc(b.label) + '</a>';
   }
   function showEnd(kind) {
@@ -230,16 +233,54 @@
       (c.html ? '<p>' + call(c.html) + '</p>' : '') + endButton(c.button) +
       (c.tail ? '<p>' + call(c.tail) + '</p>' : '');
     showEnd(kind);
+    if (kind === 'done' || kind === 'closed') clearDraft();     // 멈춤 화면은 남겨 둔다 — 「돌아가기」로 이어 쓴다
     window.scrollTo(0, 0);
   }
   /* 「처음으로」 — 답을 모두 비우고 1쪽부터. 링크의 유입경로는 다시 채운다 */
   function restart() {
-    form.reset();
+    form.reset(); clearDraft();
     Array.prototype.forEach.call(app.querySelectorAll('.q.bad'), function (q) { q.classList.remove('bad'); });
     applyLink();
     FIELDS.forEach(readField);
     cur = 0; showEnd('');
     showPage();
+  }
+  /* 「돌아가기」 — 쓴 답은 그대로 두고 1쪽으로. keys 에 적은 칸만 비워 다시 고르게 한다 */
+  function goBack(keys) {
+    keys.forEach(function (k) {
+      Array.prototype.forEach.call(app.querySelectorAll('[data-key="' + k + '"]'), function (el) {
+        if (el.type === 'radio' || el.type === 'checkbox') el.checked = false; else el.value = '';
+      });
+      if (byKey[k]) readField(byKey[k]);
+    });
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   // 비운 칸에 초점 테두리가 남지 않게
+    cur = 0; showEnd(''); saveDraft();
+    showPage();
+  }
+
+  /* ── 쓰던 답 남기기 (keepDraft) ─────────────────────────────────────── */
+  var DRAFT_KEY = 'bw_apply_' + (F.formId || 'form');
+  function saveDraft() {
+    if (!F.keepDraft || PREVIEW) return;
+    try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ A: A, cur: cur })); } catch (x) {}
+  }
+  function clearDraft() { try { sessionStorage.removeItem(DRAFT_KEY); } catch (x) {} }
+  function loadDraft() {
+    if (!F.keepDraft || PREVIEW) return false;
+    var d = null;
+    try { d = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null'); } catch (x) { return false; }
+    if (!d || !d.A) return false;
+    FIELDS.forEach(function (fd) {
+      var v = d.A[fd.key];
+      if (v == null || fd.type === 'info') return;
+      Array.prototype.forEach.call(app.querySelectorAll('[data-key="' + fd.key + '"]'), function (el) {
+        if (el.type === 'radio') el.checked = el.value === v;
+        else if (el.type === 'checkbox') el.checked = fd.type === 'multi' ? (Object.prototype.toString.call(v) === '[object Array]' && v.indexOf(el.value) >= 0) : !!v;
+        else el.value = v;
+      });
+    });
+    cur = Math.max(0, Math.min(PAGES.length - 1, d.cur | 0));
+    return true;
   }
   function closedNow() { return !!F.deadline && Date.now() > new Date(F.deadline).getTime(); }
 
@@ -280,7 +321,7 @@
     FIELDS.forEach(function (fd) { if (fd._page === cur) readField(fd); });
     if (!validatePage()) return;
     if (F.stopIf && F.stopIf(A)) { end('stop'); return; }
-    if (cur < PAGES.length - 1) { cur++; showPage(); return; }
+    if (cur < PAGES.length - 1) { cur++; saveDraft(); showPage(); return; }
     send();
   }
 
@@ -293,14 +334,19 @@
     readField(fd);
     var q = e.target.closest('.q'); if (q) q.classList.remove('bad');
     if (fd.type === 'source') { var pk = app.querySelector('[data-picked="' + k + '"]'); if (pk) pk.style.display = 'none'; }
-    refresh(); stepsRender();
+    refresh(); stepsRender(); saveDraft();
     if (F.stopIf && F.stopIf(A)) end('stop');                    // 고르는 순간 — 나머지 칸을 쓰기 전에 멈춤 화면으로
   }
   app.addEventListener('input', onChange);
   app.addEventListener('change', onChange);
-  back.addEventListener('click', function () { if (cur > 0) { cur--; showPage(); } });
+  back.addEventListener('click', function () { if (cur > 0) { cur--; saveDraft(); showPage(); } });
   form.addEventListener('submit', function (e) { e.preventDefault(); next(); });
-  app.addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('[data-restart]') : null; if (t) restart(); });
+  app.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('[data-restart]')) { restart(); return; }
+    var bk = e.target.closest('[data-back]');
+    if (bk) goBack((bk.getAttribute('data-back') || '').split(',').filter(function (x) { return x; }));
+  });
 
   /* ── 링크에서 유입경로 ──────────────────────────────────────────────── */
   var raw = (qs.get('src') || qs.get('utm_source') || '').trim(), LINK = { src: '', ref: '' };
@@ -317,6 +363,7 @@
     if (byKey.ref && LINK.ref) { var re = app.querySelector('input[data-key="ref"]'); if (re) re.value = LINK.ref; }
   }
   applyLink();
+  loadDraft();                                                  // 새로고침 전에 쓰던 답 (keepDraft 일 때만)
 
   FIELDS.forEach(readField);
   if (JUMP) {
@@ -324,7 +371,8 @@
     FIELDS.forEach(function (fd) { if (qs.has(fd.key)) A[fd.key] = qs.get(fd.key); });
     end(JUMP, { ok: true, id: F.previewId || 'PREVIEW', preview: true });
   } else if (!PREVIEW && closedNow()) end('closed');
+  else if (F.stopIf && F.stopIf(A)) end('stop');                // 멈춤 화면에서 새로고침한 경우
   else showPage();
 
-  window.__FORM_DEBUG = { A: A, next: next, end: end, refresh: refresh, restart: restart, go: function (p) { cur = p; showPage(); } };   // 시험용
+  window.__FORM_DEBUG = { A: A, next: next, end: end, refresh: refresh, restart: restart, goBack: goBack, draftKey: DRAFT_KEY, go: function (p) { cur = p; showPage(); } };   // 시험용
 })();
