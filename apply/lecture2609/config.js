@@ -69,6 +69,13 @@ function payAmountOf(a) {                                                       
   return a.member === '예' ? (회차.payAmountMember || Math.round(회차.feeMember * (1 + surcharge()))) : 회차.cardAmountNonmember;
 }
 function bankTotal(a) { return Math.round(feeOf(a) * (a.receipt ? 1 + surcharge() : 1)); }        // 입금하실 금액
+function mailNote(a, res) {                                                                         // 끝 화면 한 줄 — 서버가 메일을 보냈을 때만(미리보기는 늘)
+  if (res && res.mail === 'queued') return '오늘 신청이 많이 몰려서, 확인 메일은 내일 아침에 보내 드려요.';   // 한도 초과 — 다음 날 다시 보내기가 살아 있을 때만 서버가 queued 로 답한다
+  if (!(res && (res.mail === 'sent' || res.preview))) return '';
+  var addr = String(a.email || '').replace(/[&<>"']/g, '');
+  return addr ? '신청 내용을 <b>' + addr + '</b> 주소로 보내 드렸어요. 메일이 안 보이면 스팸함도 봐 주세요.'
+              : '신청 내용을 적어 주신 이메일 주소로 보내 드렸어요. 메일이 안 보이면 스팸함도 봐 주세요.';
+}
 var 멈춤 = 스위치.memberOnlineStop;
 
 /* 멈춤 스위치를 켜면 1쪽 맨 앞으로 오는 두 문항 */
@@ -111,6 +118,9 @@ window.FORM = {
       스위치.phoneOnceConfirm ? null :
         { key: 'phone2', type: 'tel', label: '휴대폰 번호가 틀리면 안내가 불가하니 한 번 더 적어주세요.', required: true, mustEqual: 'phone', noSubmit: true,
           err: '위에 적은 번호와 똑같이 적어 주세요' },
+      /* 이메일(필수) — 제출하면 신청 내용을 이 주소로 보낸다(9/12 오너: 구글 로그인 대신) */
+      { key: 'email', type: 'email', label: '이메일 주소를 적어주세요.', hint: '신청 내용을 이 주소로 보내 드려요.', required: true, maxlength: 120,
+        autocomplete: 'email', err: '이메일 주소를 다시 확인해 주세요' },
       멈춤 ? null : 멤버십문항,
       스위치.sourceQuestion ? { key: 'src', type: 'source', label: '어떻게 알고 오셨나요?', required: true, err: '어떻게 알고 오셨는지 골라 주세요' } : null,
       스위치.sourceQuestion ? { key: 'ref', type: 'text', label: '추천해 주신 분 닉네임', maxlength: 40,
@@ -123,7 +133,7 @@ window.FORM = {
                  ['2. 수집하려는 개인정보의 항목 :', '성함, 휴대폰 번호, 이메일'],
                  ['3. 개인 정보의 보유 및 이용 기간 :', '3년'],   // 비회원 3년 (9/12 오너). 회원 안내 한 줄은 1년 그대로
                  ['4. 개인 정보를 제공 받는 자 :', '부트니스 대표 및 스탭']] },
-      { type: 'info', html: '적어 주신 정보는 이번 특강 안내와 진행에만 쓰고, 1년 뒤 지웁니다.',
+      { type: 'info', html: '적어 주신 정보(이메일 포함)는 이번 특강 안내와 진행에만 쓰고, 1년 뒤 지웁니다.',
         showIf: function (a) { return a.member === '예'; } },
       스위치.marketingConsent ? { key: 'marketing', type: 'consent', label: '강의·특강 소식 받기',
         notice: '부트니스의 강의·특강 소식을 카카오톡·문자로 받겠습니다. 3년간 보관하고, 언제든 거부할 수 있습니다. 선택이라 동의하지 않아도 신청할 수 있어요.' } : null
@@ -196,14 +206,16 @@ window.FORM = {
       return {
         title: '결제만 남았어요',
         button: { label: '수강료 결제하기', href: url, sameTab: true },
-        tail: '결제 창을 닫으셨다면 이 버튼을 다시 눌러 주세요.<br><b>결제까지 마쳐야 신청이 완료됩니다.</b>'
+        tail: '결제 창을 닫으셨다면 이 버튼을 다시 눌러 주세요.<br><b>결제까지 마쳐야 신청이 완료됩니다.</b>',
+        note: mailNote(a, res)
       };
     }
     return {
       title: '신청서를 받았어요',
       html: '부트니스에서는 수강생의 귀한 비용과 시간이 아깝지 않은 강의 준비를 위해 최선을 다하고 있습니다.<br><br>부트니스의 다양한 강의 소식들을 가장 빨리 접하고 싶으시다면',
       button: { label: '카카오채널 추가하기', href: 회차.kakaoChannel },
-      tail: '카카오채널을 추가해주세요! 😄'
+      tail: '카카오채널을 추가해주세요! 😄',
+      note: mailNote(a, res)
     };
   },
   closed: {
