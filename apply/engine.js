@@ -228,10 +228,12 @@
   }
   function end(kind, res) {
     var c = F[kind] || {}; if (typeof c === 'function') c = c(A, res || {}) || {};
+    var note = typeof c.note === 'function' ? c.note(A, res || {}) : c.note;   // 끝 화면 맨 아래 작은 한 줄(예: 메일을 보냈어요)
     var s = document.getElementById(kind);
     s.innerHTML = '<h2>' + esc(call(c.title) || '') + '</h2>' +
       (c.html ? '<p>' + call(c.html) + '</p>' : '') + endButton(c.button) +
-      (c.tail ? '<p>' + call(c.tail) + '</p>' : '');
+      (c.tail ? '<p>' + call(c.tail) + '</p>' : '') +
+      (note ? '<p class="mail-note">' + note + '</p>' : '');
     showEnd(kind);
     if (kind === 'done' || kind === 'closed') clearDraft();     // 멈춤 화면은 남겨 둔다 — 「돌아가기」로 이어 쓴다
     window.scrollTo(0, 0);
