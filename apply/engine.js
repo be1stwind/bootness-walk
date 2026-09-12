@@ -179,7 +179,7 @@
     if (PAGES.length < 2) { s.innerHTML = ''; return; }
     s.innerHTML = '<div class="steps"><span><b>' + (cur + 1) + '</b> / ' + PAGES.length + '</span><div class="bar"><i style="width:' +
       Math.round((cur + 1) / PAGES.length * 100) + '%"></i></div></div>' +
-      (PAGES[cur].title ? '<h2 class="pagetitle">' + esc(PAGES[cur].title) + '</h2>' : '');
+      (call(PAGES[cur].title) ? '<h2 class="pagetitle">' + esc(call(PAGES[cur].title)) + '</h2>' : '');   // 쪽 제목도 답에 따라 바뀔 수 있다
   }
   function setErr(m) { var e = document.getElementById('formErr'); e.textContent = m || ''; e.style.display = m ? 'block' : 'none'; }
   function showPage() {
@@ -293,7 +293,7 @@
     readField(fd);
     var q = e.target.closest('.q'); if (q) q.classList.remove('bad');
     if (fd.type === 'source') { var pk = app.querySelector('[data-picked="' + k + '"]'); if (pk) pk.style.display = 'none'; }
-    refresh();
+    refresh(); stepsRender();
     if (F.stopIf && F.stopIf(A)) end('stop');                    // 고르는 순간 — 나머지 칸을 쓰기 전에 멈춤 화면으로
   }
   app.addEventListener('input', onChange);
