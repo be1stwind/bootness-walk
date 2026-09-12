@@ -45,6 +45,13 @@
     });
   });
   var cur = 0, sending = false;
+  /* 결제 참조값(그로블 ?ref=) — 추측할 수 없는 무작위 16바이트를 base64url 로. 순번·전화·이메일은 넣지 않는다(그로블 권고).
+     페이지를 열 때 한 번 만들어 두 번 눌러도 같은 값이 가고, 다시 신청하면(새로 열면) 새 값이 된다. */
+  var REF = (function () {
+    var b = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(b);
+    var s = btoa(String.fromCharCode.apply(null, b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return (F.formId || 'bw') + '_' + s;
+  })();
 
   document.documentElement.style.setProperty('--accent', F.accent || '#383839');
   document.title = F.docTitle || (F.title + ' · 신청 · 부트니스');
@@ -63,6 +70,7 @@
     return (call(fd.options) || []).map(function (o) { return typeof o === 'string' ? { label: o, value: o } : o; });
   }
   function tag(fd) { return '<span data-tag="' + fd.key + '"></span>'; }
+  function lab(fd) { return '<span data-label="' + fd.key + '">' + (call(fd.label) || '') + '</span>'; }   // label 이 함수면 refresh 가 다시 쓴다
   function errP(fd, style) { return '<p class="err"' + (style ? ' style="' + style + '"' : '') + '>' + esc(fd.err || defaultErr(fd)) + '</p>'; }
 
   function fieldHTML(fd) {
@@ -73,32 +81,32 @@
       case 'info':
         return open + '<div class="infobox' + (fd.warn ? ' warn' : '') + '" data-html="' + k + '"></div></div>';
       case 'text': case 'tel': case 'email':
-        return open + '<label for="' + id + '">' + fd.label + tag(fd) + '</label>' + hint +
+        return open + '<label for="' + id + '">' + lab(fd) + tag(fd) + '</label>' + hint +
           '<input type="' + fd.type + '" id="' + id + '" data-key="' + k + '"' +
           (fd.type === 'tel' ? ' inputmode="numeric" maxlength="13"' : ' maxlength="' + (fd.maxlength || 80) + '"') +
           (fd.autocomplete ? ' autocomplete="' + fd.autocomplete + '"' : '') +
           (fd.placeholder ? ' placeholder="' + esc(fd.placeholder) + '"' : '') + '>' +
           (fd.confirmLine ? '<p class="confirm" data-confirm="' + k + '"></p>' : '') + errP(fd) + '</div>';
       case 'textarea':
-        return open + '<label for="' + id + '">' + fd.label + tag(fd) + '</label>' + hint +
+        return open + '<label for="' + id + '">' + lab(fd) + tag(fd) + '</label>' + hint +
           '<textarea id="' + id + '" data-key="' + k + '" rows="3" maxlength="' + (fd.maxlength || 500) + '"></textarea>' + errP(fd) + '</div>';
       case 'choice': case 'source': case 'multi':
         var t = fd.type === 'multi' ? 'checkbox' : 'radio';
-        return open + '<span class="lbl" id="l_' + k + '">' + fd.label + tag(fd) + '</span>' + hint +
+        return open + '<span class="lbl" id="l_' + k + '">' + lab(fd) + tag(fd) + '</span>' + hint +
           (fd.type === 'source' ? '<p class="picked" data-picked="' + k + '"></p>' : '') +
           '<div class="chips" role="' + (t === 'radio' ? 'radiogroup' : 'group') + '" aria-labelledby="l_' + k + '">' +
           options(fd).map(function (o) {
             return '<label class="chip"><input type="' + t + '" name="' + k + '" value="' + esc(o.value) + '" data-key="' + k + '"><span>' + esc(o.label) + '</span></label>';
           }).join('') + '</div>' + errP(fd) + '</div>';
       case 'ack':
-        return open + '<span class="lbl">' + fd.label + tag(fd) + '</span>' + hint +
+        return open + '<span class="lbl">' + lab(fd) + tag(fd) + '</span>' + hint +
           '<div class="chips"><label class="chip"><input type="checkbox" data-key="' + k + '"><span>' + esc(fd.checkLabel || '예') + '</span></label></div>' + errP(fd) + '</div>';
       case 'consent':
         var note = !fd.notice ? '' : (Object.prototype.toString.call(fd.notice) === '[object Array]'
           ? '<dl class="agree-note">' + fd.notice.map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt> <dd>' + esc(r[1]) + '</dd></div>'; }).join('') + '</dl>'
           : '<p class="agree-note">' + fd.notice + '</p>');
         return open + (fd.question ? '<span class="lbl">' + fd.question + tag(fd) + '</span>' : '') +
-          '<label class="consent" for="' + id + '"><input type="checkbox" id="' + id + '" data-key="' + k + '"><span><b>' + fd.label + '</b>' +
+          '<label class="consent" for="' + id + '"><input type="checkbox" id="' + id + '" data-key="' + k + '"><span><b>' + lab(fd) + '</b>' +
           (fd.question ? '' : tag(fd)) + '</span></label>' + note + errP(fd, 'margin-left:32px') + '</div>';
     }
     return '';
@@ -156,6 +164,7 @@
       if (on && fd.type !== 'info') lastVis = q;
       var t = app.querySelector('[data-tag="' + fd.key + '"]');
       if (t) { var r = required(fd); t.className = r ? 'req' : 'opt'; t.textContent = r ? '*' : '선택'; }
+      if (typeof fd.label === 'function') { var le = app.querySelector('[data-label="' + fd.key + '"]'); if (le) le.innerHTML = call(fd.label) || ''; }
       if (fd.confirmLine) {
         var cf = app.querySelector('[data-confirm="' + fd.key + '"]'), v = A[fd.key] || '';
         cf.textContent = PHONE_RE.test(v) ? '이 번호로 안내가 갑니다: ' + fmtPhone(v) : '';
@@ -202,11 +211,13 @@
   }
 
   /* ── 끝 화면 (done · closed · stop) ────────────────────────────────── */
-  function end(kind) {
-    var c = F[kind] || {}, s = document.getElementById(kind);
+  function end(kind, res) {
+    var r = res || {}; if (!r.payRef) r.payRef = REF;
+    var c = F[kind] || {}; if (typeof c === 'function') c = c(A, r) || {};
+    var s = document.getElementById(kind);
     s.innerHTML = '<h2>' + esc(call(c.title) || '') + '</h2>' +
       (c.html ? '<p>' + call(c.html) + '</p>' : '') +
-      (c.button ? '<a class="endbtn" href="' + esc(c.button.href) + '" target="_blank" rel="noopener">' + esc(c.button.label) + '</a>' : '') +
+      (c.button ? '<a class="endbtn" href="' + esc(c.button.href) + '"' + (c.button.sameTab ? '' : ' target="_blank" rel="noopener"') + '>' + esc(c.button.label) + '</a>' : '') +
       (c.tail ? '<p>' + call(c.tail) + '</p>' : '');
     form.hidden = true;
     ['done', 'closed', 'stop'].forEach(function (x) { document.getElementById(x).hidden = x !== kind; });
@@ -224,7 +235,7 @@
     });
     if (!byKey.src) answers.src = LINK.src;                    // 문항이 없으면 링크 값만 숨겨서 보낸다
     if (!byKey.ref && LINK.ref) answers.ref = LINK.ref;
-    if (F.computed) { var extra = F.computed(A); for (var x in extra) answers[x] = extra[x]; }
+    if (F.computed) { var extra = F.computed(A, REF); for (var x in extra) answers[x] = extra[x]; }
     var body = {
       form: F.formId, answers: answers,
       consentPrivacy: A.privacy === true, consentMarketing: A.marketing === true,
@@ -235,7 +246,7 @@
     fetch(F.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        if (j && j.ok) { end('done'); return; }
+        if (j && j.ok) { end('done', j); return; }
         if (j && j.error === 'closed') { end('closed'); return; }
         throw new Error((j && j.error) || 'fail');
       })
@@ -286,5 +297,5 @@
   FIELDS.forEach(readField);
   if (closedNow()) end('closed'); else showPage();
 
-  window.__FORM_DEBUG = { A: A, next: next, end: end, refresh: refresh, go: function (p) { cur = p; showPage(); } };   // 시험용
+  window.__FORM_DEBUG = { A: A, ref: REF, next: next, end: end, refresh: refresh, go: function (p) { cur = p; showPage(); } };   // 시험용
 })();
