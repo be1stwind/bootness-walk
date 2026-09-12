@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 /* 부트니스 자체 신청 폼 — 2026-09-12 뚝딱이 · MacminiM4
+   클래스 이름은 흔한 것(.notice 등)을 피한다 — 브라우저 확장이 끼워 넣는 CSS 와 부딪힌다(9/12 실측).
    색은 브랜드 둘(노랑·진회색)이 주인이고, 강의별 색(--accent)은 머리띠 한 줄에만 쓴다. */
 :root{
   --paper:#faf7ef; --card:#ffffff; --ink:#383839; --sub:#6e6a60; --line:#e6dfcc;
@@ -51,10 +52,10 @@ input:focus{border-color:var(--ink)}
 .consent{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 .consent input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--ink)}
 .consent b{font-size:15px}
-.notice{margin:8px 0 0 32px;font-size:13px;color:var(--sub);background:#fbf8f0;border:1px solid #efe8d6;border-radius:10px;padding:10px 12px}
-.notice dt{font-weight:700;color:var(--ink);display:inline}
-.notice dd{display:inline;margin:0}
-.notice div{margin:1px 0}
+.agree-note{display:block;text-align:left;margin:8px 0 0 32px;font-size:13px;color:var(--sub);background:#fbf8f0;border:1px solid #efe8d6;border-radius:10px;padding:10px 12px}
+.agree-note dt{font-weight:700;color:var(--ink);display:inline}
+.agree-note dd{display:inline;margin:0}
+.agree-note div{margin:1px 0}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .submit{display:block;width:100%;margin:6px 0 12px;font:inherit;font-size:17px;font-weight:800;
   color:var(--onyellow);background:var(--yellow);border:0;border-radius:14px;padding:15px 0;cursor:pointer}
@@ -129,7 +130,7 @@ input:focus{border-color:var(--ink)}
         <input type="checkbox" id="privacy" name="privacy">
         <span><b>개인정보 수집·이용에 동의합니다</b><span class="req">*</span></span>
       </label>
-      <dl class="notice" id="privNotice"></dl>
+      <dl class="agree-note" id="privNotice"></dl>
       <p class="err" style="margin-left:32px">개인정보 수집·이용에 동의해야 신청할 수 있어요</p>
     </div>
     <div class="q" data-k="marketing">
@@ -137,7 +138,7 @@ input:focus{border-color:var(--ink)}
         <input type="checkbox" id="marketing" name="marketing">
         <span><b>강의·특강 소식 받기</b><span class="opt">선택</span></span>
       </label>
-      <p class="notice" id="mktNotice"></p>
+      <p class="agree-note" id="mktNotice"></p>
     </div>
     <!-- 사람 눈에는 안 보이는 칸. 봇만 채운다 -->
     <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" id="website" tabindex="-1" autocomplete="off"></label></div>
