@@ -96,4 +96,34 @@ input:focus,textarea:focus{border-color:var(--ink)}
   background:var(--yellow);border-radius:14px;padding:15px 0;margin:4px 0 16px}
 button.endbtn{width:100%;border:0;font-family:inherit;cursor:pointer}
 .foot{text-align:center;font-size:12.5px;color:var(--sub);margin-top:18px}
+/* PC — 넓은 화면(900px 이상)에서는 본문 폭을 520 → 760px 로 넓히고 글자·칩·입력칸을 한 단계 키운다(9/12 오너). 휴대폰은 그대로 */
+@media (min-width:900px){
+  body{font-size:17px}
+  .wrap{max-width:760px;padding-top:36px}
+  .hero .in{padding:28px 32px 22px}
+  .hero h1{font-size:27px}
+  .eyebrow{font-size:14px}
+  .meta{font-size:15.5px}
+  .lead-box{padding:18px 28px;font-size:16px}
+  .lead-box b{font-size:17px}
+  .card{padding:26px 32px 10px}
+  .steps{font-size:14px}
+  .pagetitle{font-size:19px;margin-bottom:20px}
+  .q{padding-bottom:22px;margin-bottom:20px}
+  .q>label,.q>.lbl{font-size:16.5px;margin-bottom:10px}
+  .hint{font-size:14px}
+  input[type=text],input[type=tel],input[type=email],textarea{font-size:17px;padding:14px 16px}
+  .chips{gap:10px}
+  .chip span{font-size:16px;padding:11px 20px}
+  .infobox{font-size:15.5px;padding:14px 18px}
+  .infobox .big{font-size:20px}
+  .consent b{font-size:16px}
+  .consent>span{line-height:1.4}
+  .agree-note{font-size:14px}
+  .nav button{font-size:18px;padding:17px 0}
+  .end{padding:40px 36px}
+  .end h2{font-size:26px}
+  .end p{font-size:16.5px}
+  .endbtn{font-size:18px;padding:17px 0}
+}
 @media (prefers-reduced-motion:no-preference){.submit,.chip span,.back{transition:background .15s,border-color .15s,color .15s}}
