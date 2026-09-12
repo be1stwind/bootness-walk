@@ -2,17 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f4d017">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
 <title>신청 · 부트니스</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="../engine.css?v=8">
+<link rel="canonical" href="https://apply.btns.kr/lifejob2/">
+<script>
+/* 신청서가 apply.btns.kr 로 옮겨 갔다(2026-09-12). ?src= ?preview= 같은 뒤쪽 값과 # 도 그대로 넘긴다. */
+location.replace('https://apply.btns.kr/lifejob2/' + location.search + location.hash);
+</script>
+<noscript><meta http-equiv="refresh" content="0;url=https://apply.btns.kr/lifejob2/"></noscript>
+<style>body{margin:0;padding:48px 20px;text-align:center;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;color:#333;background:#fffdf5}a{color:#333;font-weight:700}</style>
 </head>
 <body>
-<!-- 모든 신청 페이지가 이 파일을 똑같이 쓴다. 바뀌는 건 같은 폴더의 config.js 뿐이다. -->
-<main class="wrap" id="app"><p class="loaderr">신청서를 불러오는 중이에요…</p></main>
-<script src="config.js?v=8"></script>
-<script src="../engine.js?v=8"></script>
+<p>신청서 주소가 바뀌었어요.<br><a id="go" href="https://apply.btns.kr/lifejob2/">새 주소로 가기</a></p>
+<script>document.getElementById('go').href = 'https://apply.btns.kr/lifejob2/' + location.search + location.hash;</script>
 </body>
 </html>
