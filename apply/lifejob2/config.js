@@ -3,7 +3,7 @@
    formId 는 백엔드(신청폼_백엔드.gs) FORMS 의 키와 같아야 한다 → 그 탭에 적힌다. */
 window.FORM = {
   formId:   'lifejob2',
-  endpoint: '',                                  // ⬜ 오너가 Apps Script 배포 후 받은 /exec 주소 (모든 폼 공통)
+  endpoint: 'https://script.google.com/macros/s/AKfycbxjd7-hFlao-hi2A-kB4Rg1OC1NbCBneBieqWA9lCkKUWk3c1Gv7D3hNlpKf6VloYnF/exec',                                  // ⬜ 오너가 Apps Script 배포 후 받은 /exec 주소 (모든 폼 공통)
   deadline: '2026-10-02T09:00:00+09:00',         // ⬜ 마감 시각 오너 확인 중 — 백엔드 FORMS.lifejob2.deadline 과 같게
   accent:   '#6b4c9a',                           // 인생업 색 — 머리띠 한 줄에만
   eyebrow:  '인생업 2기 · 무료특강',
