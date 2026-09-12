@@ -6,9 +6,12 @@
      링크가 있으면 3쪽에서 계좌·현금영수증·입금자명이 사라지고, 신청서를 낸 뒤 「수강료 결제하기」로 그로블 결제창에 간다.
      결제창 주소 뒤에 ?ref=<신청번호> 가 붙고, 그 값이 그로블 웹훅 sellerReference 로 돌아와 시트 「신청번호」와 이어진다.
    ▣ 멤버십 회원은 개인정보 동의 체크 없이 안내 한 줄만 본다(9/12 오너 결정). 시트 동의 칸에는 서버가 「회원(계약 이행)」으로 적는다.
+   ▣ 비회원은 3쪽에서 [카드로 결제] / [계좌로 입금] 을 고른다(9/12 오너). 금액은 「회차」의 cardAmountNonmember ·
+     transferAmountNonmember · receiptSurcharge 세 칸 — 오너 결정이 오면 여기만 바꾼다.
    ▣ 미리보기(시트에 아무것도 안 적힌다)
-       ?preview=done&member=아니오  비회원 끝 화면(결제 버튼)   ?preview=done&member=예  회원 끝 화면(계좌 안내)
-       ?preview=stop  멤버십·온라인 멈춤 화면                   ?preview=1  처음부터 끝까지 써 보기(제출해도 안 보낸다) */
+       ?preview=done&member=아니오&payWith=카드  비회원 카드 끝 화면(결제 버튼)
+       ?preview=done&member=아니오&payWith=계좌  비회원 계좌 끝 화면      ?preview=done&member=예  회원 끝 화면
+       ?preview=stop  멤버십·온라인 멈춤 화면      ?preview=1  처음부터 끝까지 써 보기(제출해도 안 보낸다) */
 
 var 회차 = {
   formId:   'lecture2609',                          // 백엔드 FORMS 키 → 「정기특강_신청명단」 시트의 탭 「2609_전해청」
@@ -20,10 +23,12 @@ var 회차 = {
   online:   true,                                   // ⬜ 온라인 라이브 동시 진행이면 true, 오프라인만이면 false
   replay:   '온오프라인 참여자 모두 다시보기 3일간 제공됩니다.',   // ⬜ 온라인일 때만 보인다
   feeMember: 10000,                                 // 계좌 입금 — 멤버십 회원 (강의실 비용). 회원은 계좌 입금으로 간다(9/12 오너 결정)
-  feeNonmember: 50000,                              // 계좌 입금 — 비회원 (카드 링크를 비우면 이 값으로 안내)
   /* 카드 결제 — 그로블 결제 링크. 상품 하나에 가격이 하나라 회원·비회원 링크가 따로다. 비워 두면 계좌 입금 */
   payUrlNonmember: 'https://groble.im/payment/nSC2PJ', // 그로블 상품 nSC2PJ (55,000원) — 판매 시작은 오너 샘플 확인 뒤
-  payAmountNonmember: 55000,                        // 부가세 포함 (오너 확정 9/12)
+  /* 비회원 금액 — 3쪽에서 고른 방법대로 안내하고 시트 「안내금액」에 적는다. ⬜ 오너 결정이 오면 바꾼다 */
+  cardAmountNonmember: 55000,                       // 카드 결제(그로블) — 부가세 포함. 그로블 상품 가격과 같아야 한다
+  transferAmountNonmember: 50000,                   // 계좌 입금
+  receiptSurcharge: 0.1,                            // 현금영수증을 고르면 더하는 비율(0.1 = 10%). 0 이면 현금영수증 칸만 받고 금액은 그대로
   payUrlMember: '',                                 // 비워 둠 = 회원은 계좌 10,000원 (9/12 오너 결정)
   payAmountMember: null,
   deadline: '2026-09-19T12:00:00+09:00',            // 9/19(토) 낮 12시 (9/12 오너 결정). 백엔드 FORMS.lecture2609.deadline · 그로블 판매 마감과 같다
@@ -45,14 +50,22 @@ var 스위치 = {
 
 /* ── 여기부터는 회차가 바뀌어도 그대로 둔다 ─────────────────────────── */
 function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
-function feeOf(a) { return a.member === '예' ? 회차.feeMember : 회차.feeNonmember; }
+function surcharge() { return 회차.receiptSurcharge || 0; }
+function pct() { return Math.round(surcharge() * 100); }
+function feeOf(a) { return a.member === '예' ? 회차.feeMember : 회차.transferAmountNonmember; }       // 계좌 입금 기본 금액
 function useCoupon(a) { return 스위치.couponField && /^BW-[A-Z0-9]{4}$/.test(a.coupon || ''); }
 function payUrlOf(a) { return a.member === '예' ? 회차.payUrlMember : 회차.payUrlNonmember; }
-function cardPay(a) { return !useCoupon(a) && !!payUrlOf(a); }            // 쿠폰이 확인되면 카드도 계좌도 없다
-function payAmountOf(a) {
-  var v = a.member === '예' ? 회차.payAmountMember : 회차.payAmountNonmember;
-  return v || Math.round(feeOf(a) * 1.1);                                  // 금액을 안 적었으면 부가세 10% 를 붙인 값
+function payChoice(a) { return a.member === '아니오' && !useCoupon(a) && !!회차.payUrlNonmember; }  // 비회원이 카드·계좌를 고르는 경우
+function payPending(a) { return payChoice(a) && !a.payWith; }                                        // 아직 안 고름
+function cardPay(a) {                                                                               // 쿠폰이 확인되면 카드도 계좌도 없다
+  if (useCoupon(a)) return false;
+  return a.member === '예' ? !!회차.payUrlMember : payChoice(a) && a.payWith === '카드';
 }
+function bankPay(a) { return !useCoupon(a) && !cardPay(a) && !payPending(a); }
+function payAmountOf(a) {                                                                           // 카드 금액
+  return a.member === '예' ? (회차.payAmountMember || Math.round(회차.feeMember * (1 + surcharge()))) : 회차.cardAmountNonmember;
+}
+function bankTotal(a) { return Math.round(feeOf(a) * (a.receipt ? 1 + surcharge() : 1)); }        // 입금하실 금액
 var 멈춤 = 스위치.memberOnlineStop;
 
 /* 멈춤 스위치를 켜면 1쪽 맨 앞으로 오는 두 문항 */
@@ -66,6 +79,7 @@ window.FORM = {
   endpoint: 회차.endpoint,
   deadline: 회차.deadline,
   previewId: 회차.previewId,
+  keepDraft: true,                                    // 새로고침해도 쓰던 답이 남는다(이 기기·이 탭에만). 제출·마감 때 지운다
   accent: '#383839',
   eyebrow: '부트니스 정기특강',
   title: 회차.title,
@@ -101,7 +115,7 @@ window.FORM = {
         err: '개인 정보 수집·이용에 동의해야 신청할 수 있어요',
         notice: [['1. 개인 정보 수집·이용 목적 :', '강의 진행 및 안내, 자료배포 등'],
                  ['2. 수집하려는 개인정보의 항목 :', '성함, 휴대폰 번호, 이메일'],
-                 ['3. 개인 정보의 보유 및 이용 기간 :', '1년'],
+                 ['3. 개인 정보의 보유 및 이용 기간 :', '3년'],   // 비회원 3년 (9/12 오너). 회원 안내 한 줄은 1년 그대로
                  ['4. 개인 정보를 제공 받는 자 :', '부트니스 대표 및 스탭']] },
       { type: 'info', html: '적어 주신 정보는 이번 특강 안내와 진행에만 쓰고, 1년 뒤 지웁니다.',
         showIf: function (a) { return a.member === '예'; } },
@@ -118,32 +132,39 @@ window.FORM = {
         options: ['AI생산성', '부동산투자', '경매', '재개발재건축', '공유숙박', '리셀', '이커머스', '유튜브', 'SNS', '글쓰기', '부업사업', '세금', '주식코인'] } : null
     ] },
 
-    /* 쪽 제목 — 카드로 내는 사람은 「결제」, 계좌로 내는 사람은 Tally 그대로 「입금」 (9/12 오너) */
-    { title: function (a) { return cardPay(a) ? '결제 정보 및 환불 관련 안내' : '입금 정보 및 환불 관련 안내'; }, fields: [
+    /* 쪽 제목 — 카드로 내는 사람(아직 안 고른 비회원 포함)은 「결제」, 계좌로 내는 사람은 Tally 그대로 「입금」 (9/12 오너) */
+    { title: function (a) { return cardPay(a) || payPending(a) ? '결제 정보 및 환불 관련 안내' : '입금 정보 및 환불 관련 안내'; }, fields: [
       { type: 'info', warn: true, html: '⚠️ 강의수강 방법 및 강의진행 관련 안내는 카카오톡으로 발송됩니다.' },
       스위치.couponField ? { key: 'coupon', type: 'text', label: '정기특강 참석권 쿠폰번호가 있으시면 적어주세요.', upper: true, maxlength: 7,
         hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
+      /* 비회원 결제 방법 (9/12 오너) — 고른 쪽에 맞는 문항만 보이고, 숨은 문항은 필수 검사도 안 한다 */
+      { key: 'payWith', type: 'choice', label: '결제 방법을 골라 주세요.', required: true,
+        options: [{ label: '카드로 결제', value: '카드' }, { label: '계좌로 입금', value: '계좌' }],
+        showIf: payChoice, err: '카드와 계좌 가운데 하나를 골라 주세요' },
       { type: 'info', html: function (a) {
           if (useCoupon(a)) return '<b>쿠폰으로 참석</b> — 쿠폰이 확인되면 입금 없이 참석하실 수 있어요. 확인 결과는 카카오톡으로 알려 드려요.';
+          if (payPending(a)) return '';
           if (cardPay(a)) return '수강료 <span class="big">' + won(payAmountOf(a)) + '</span> (부가세 포함) — 신청서를 내면 다음 화면에서 카드로 결제합니다. <b>결제까지 마쳐야 신청이 완료됩니다.</b>';
-          var fee = feeOf(a), total = a.receipt ? fee * 1.1 : fee;
           return '입금계좌 : <b>' + 회차.account + '</b><br>' +
             (a.member === '예' ? '수강료 : 멤버십 회원 <b>' + won(회차.feeMember) + '</b> (강의실 비용)'
-                               : '수강료 : 비회원 <b>' + won(회차.feeNonmember) + '</b>') +
-            '<br><span class="big">입금하실 금액 ' + won(total) + '</span>' + (a.receipt ? ' <span style="color:#6e6a60">(현금영수증 10% 포함)</span>' : '');
+                               : '수강료 : 비회원 <b>' + won(회차.transferAmountNonmember) + '</b>') +
+            '<br><span class="big">입금하실 금액 ' + won(bankTotal(a)) + '</span>' +
+            (a.receipt && surcharge() ? ' <span style="color:#6e6a60">(현금영수증 ' + pct() + '% 포함)</span>' : '');
         } },
-      /* 카드로 내는 사람에게는 현금영수증·입금자명이 필요 없다 — 카드 전표가 지출 증빙이다 */
-      { key: 'receipt', type: 'ack', label: '소득공제 혹은 지출증빙을 위해 현금영수증 발급을 원하실 경우 강의비의 10%(부가세)를 추가 입금해주세요.', checkLabel: '예',
-        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } },
-      { key: 'receiptNo', type: 'text', label: '현금영수증 발급을 원하는 휴대폰 번호 또는 사업자 번호를 적어주세요.', maxlength: 20,
-        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } },
+      /* 계좌로 내는 사람만 — 카드 전표가 지출 증빙이라 카드는 현금영수증·입금자명이 필요 없다 */
+      { key: 'receipt', type: 'ack', checkLabel: '예', showIf: bankPay,
+        label: function () {
+          return surcharge() ? '소득공제 혹은 지출증빙을 위해 현금영수증 발급을 원하실 경우 강의비의 ' + pct() + '%(부가세)를 추가 입금해주세요.'
+                             : '소득공제 혹은 지출증빙을 위해 현금영수증 발급을 원하시면 「예」를 눌러 주세요.';
+        } },
+      { key: 'receiptNo', type: 'text', label: '현금영수증 발급을 원하는 휴대폰 번호 또는 사업자 번호를 적어주세요.', maxlength: 20, showIf: bankPay },
       { key: 'depositAck', type: 'ack', checkLabel: '예', required: true, err: '확인하고 「예」를 눌러 주세요',
+        showIf: function (a) { return !payPending(a); },
         label: function (a) {
           return cardPay(a) ? '결제까지 마쳐야 신청이 완료된다는 것을 확인하셨나요?'
                             : '본 신청서를 제출하시면 계좌조회가 불가하며 입금이 완료되어야 신청이 완료된 것으로 봅니다. 숙지하셨나요?';
         } },
-      { key: 'depositor', type: 'text', label: '입금자명이 앞서 적은 성함과 다르면 입금자명을 적어주세요.', maxlength: 30,
-        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } }
+      { key: 'depositor', type: 'text', label: '입금자명이 앞서 적은 성함과 다르면 입금자명을 적어주세요.', maxlength: 30, showIf: bankPay }
     ] }
   ],
 
@@ -151,7 +172,7 @@ window.FORM = {
   computed: function (a) {
     if (useCoupon(a)) return { amount: '쿠폰', payMethod: '쿠폰' };
     if (cardPay(a)) return { amount: won(payAmountOf(a)), payMethod: '카드' };
-    return { amount: won(a.receipt ? feeOf(a) * 1.1 : feeOf(a)), payMethod: '계좌' };
+    return { amount: won(bankTotal(a)), payMethod: '계좌' };
   },
 
   stopIf: 멈춤 ? function (a) { return a.member === '예' && a.mode === '온라인'; } : null,
@@ -183,6 +204,6 @@ window.FORM = {
   stop: {
     title: '멤버십 회원은 온라인 신청이 필요 없어요',
     html: '라이브 링크는 멤버십 공지방에서 드려요. 그날 뵐게요!',
-    button: { label: '잘못 골랐어요, 처음으로', restart: true }
+    button: { label: '잘못 골랐어요, 돌아가기', back: true, clear: ['mode'] }   // 쓴 답은 두고 온오프라인만 다시 고르게 (9/12 오너)
   }
 };
