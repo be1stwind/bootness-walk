@@ -12,7 +12,7 @@
 
 var 회차 = {
   formId:   'lecture2609',                          // 백엔드 FORMS 키 → 「정기특강_신청명단」 시트의 탭 「2609_전해청」
-  endpoint: '',                                     // ⬜ Apps Script /exec 주소 (인생업 무료특강과 같은 주소)
+  endpoint: 'https://script.google.com/macros/s/AKfycbxjd7-hFlao-hi2A-kB4Rg1OC1NbCBneBieqWA9lCkKUWk3c1Gv7D3hNlpKf6VloYnF/exec',                                     // ⬜ Apps Script /exec 주소 (인생업 무료특강과 같은 주소)
   title:    '전해청 변호사님의 9월 정기특강',          // ⬜ 정식 제목이 정해지면 '전해청 변호사님의 『제목』' 으로
   when:     '9월 19일 (토) 오후 3시 ~ 6시',
   place:    '',                                     // ⬜ 예: '강남 10번 출구 라이지움'. 비어 있으면 「📍 장소」 줄이 안 보인다(9/12)
