@@ -22,7 +22,7 @@ var 회차 = {
   place:    '',                                     // ⬜ 예: '강남 10번 출구 라이지움'. 비어 있으면 「📍 장소」 줄이 안 보인다(9/12)
   placeUrl: '',                                     // ⬜ 지도 링크 (naver.me/…)
   online:   true,                                   // ⬜ 온라인 라이브 동시 진행이면 true, 오프라인만이면 false
-  replay:   '온오프라인 참여자 모두 다시보기 3일간 제공됩니다.',   // ⬜ 온라인일 때만 보인다
+  replay:   '온오프라인 참여자 모두 <b>다시보기 3일간</b> 제공됩니다.',   // ⬜ 온라인일 때만 보인다. <b> 는 굵게
   feeMember: 10000,                                 // 계좌 입금 — 멤버십 회원 (강의실 비용). 회원은 계좌 입금으로 간다(9/12 오너 결정)
   /* 카드 결제 — 그로블 결제 링크. 상품 하나에 가격이 하나라 회원·비회원 링크가 따로다. 비워 두면 계좌 입금 */
   cardOpen: true,                                   // 켬 — 그로블 nSC2PJ 판매 시작(9/12 오너 승인, 한결 전달). false 면 카드는 어디에도 안 보이고 모두 계좌 입금
@@ -34,7 +34,7 @@ var 회차 = {
   payUrlMember: '',                                 // 비워 둠 = 회원은 계좌 10,000원 (9/12 오너 결정)
   payAmountMember: null,
   deadline: '2026-09-19T12:00:00+09:00',            // 9/19(토) 낮 12시 (9/12 오너 결정). 백엔드 FORMS.lecture2609.deadline · 그로블 판매 마감과 같다
-  deadlineText: '9월 19일(토) 낮 12시까지 신청 가능합니다.', // deadline 과 같은 말이어야 한다
+  deadlineText: '<b>9월 19일(토) 낮 12시까지</b> 신청 가능합니다.', // deadline 과 같은 말이어야 한다. <b> 는 굵게
   previewId: 'RL2609-SAMPLE00',                     // 미리보기 끝 화면에 쓰는 샘플 신청번호 (진짜 번호는 서버가 RL2609-XXXXXXXX 로 만든다)
   account:  '카카오뱅크 3333-17-0228060 · 예금주 이진규',
   kakaoChannel: 'https://pf.kakao.com/_xmHxgNT'
@@ -87,14 +87,17 @@ window.FORM = {
   eyebrow: '부트니스 정기특강',
   title: 회차.title,
   heroLines: [
-    '📅 일정 : ' + 회차.when,
-    회차.place ? '📍 장소 : ' + 회차.place + (회차.placeUrl ? ' <a href="' + 회차.placeUrl + '" target="_blank" rel="noopener">지도 보기</a>' : '') : null,
-    회차.online ? '🖥️ 온라인 라이브도 동시에 진행됩니다.' : '🛑 오프라인으로만 진행되며 다시보기 제공되지 않습니다.',
+    /* 중요한 말은 굵게(9/12 오너) — heroLines 는 HTML 을 그대로 받는다 */
+    '📅 일정 : <b>' + 회차.when + '</b>',
+    회차.place ? '📍 장소 : <b>' + 회차.place + '</b>' + (회차.placeUrl ? ' <a href="' + 회차.placeUrl + '" target="_blank" rel="noopener">지도 보기</a>' : '') : null,
+    회차.online ? '🖥️ <b>온라인 라이브</b>도 동시에 진행됩니다.' : '🛑 <b>오프라인으로만</b> 진행되며 다시보기 제공되지 않습니다.',
     회차.online && 회차.replay ? '📼 ' + 회차.replay : null,
     '⚠️ ' + 회차.deadlineText
   ].filter(function (x) { return x; }),
   /* 히어로 아래 노랑 상자 (문구: 한결 · 오너, 문구검사 통과 — 고치지 않는다) */
-  banner: 멈춤 && 회차.online ? '<b>멤버십 회원이신가요?</b><br>온라인으로 들으실 거면 신청서를 쓰지 않으셔도 돼요. 라이브 링크는 멤버십 공지방에서 드려요.<br>오프라인으로 오실 분만 신청해 주세요.' : '',
+  /* + 멤버십 혜택(9/12 오너, 문구검사 통과 — 고치지 않는다). 비회원 금액은 여기 적지 않는다(결제 방법을 고른 뒤에만 보인다) */
+  banner: 멈춤 && 회차.online ? '<b>멤버십 회원이신가요?</b><br>온라인으로 들으실 거면 <b>신청서를 쓰지 않으셔도 돼요.</b> 라이브 링크는 멤버십 공지방에서 드려요.<br>오프라인으로 오실 분만 신청해 주세요.' +
+    '<div class="lead-perk"><span class="perk-t">💛 멤버십 혜택 — 정기특강 온라인 수강 무료</span>멤버십 회원은 매달 열리는 정기특강을 온라인으로 무료로 듣습니다. 오프라인으로 오셔도 <b>강의실 비용 1만 원</b>이면 됩니다.</div>' : '',
   submitLabel: '신청서 제출',
 
   pages: [
@@ -137,23 +140,26 @@ window.FORM = {
 
     /* 쪽 제목 — 카드로 내는 사람(아직 안 고른 비회원 포함)은 「결제」, 계좌로 내는 사람은 Tally 그대로 「입금」 (9/12 오너) */
     { title: function (a) { return cardPay(a) || payPending(a) ? '결제 정보 및 환불 관련 안내' : '입금 정보 및 환불 관련 안내'; }, fields: [
-      /* 비회원 결제 방법 — 3쪽 맨 위, 칩에는 금액을 안 적는다. 고른 뒤에만 그 방법의 금액이 크게 나온다(9/12 오너).
+      /* 3쪽 맨 위 — 카톡 안내를 크게(9/12 오너: 눈에 잘 안 띈다) */
+      { type: 'info', cls: 'kakao-note', html: '📱 <b>수강 방법과 강의 진행 안내는 카카오톡으로 보내 드려요.</b><br>신청서에 적은 휴대폰 번호로 갑니다. 번호가 틀리면 안내를 받을 수 없어요.' },
+      /* 비회원 결제 방법 — 카톡 안내 바로 아래, 칩에는 금액을 안 적는다. 고른 뒤에만 그 방법의 금액이 크게 나온다(9/12 오너).
          cardOpen 이 꺼져 있으면 이 칸은 없고 계좌만. 숨은 문항은 필수 검사도 안 한다 */
       { key: 'payWith', type: 'choice', label: '결제 방법을 골라 주세요.', required: true,
         options: [{ label: '카드로 결제', value: '카드' }, { label: '계좌로 입금', value: '계좌' }],
         showIf: payChoice, err: '카드와 계좌 가운데 하나를 골라 주세요' },
-      { type: 'info', warn: true, html: '⚠️ 강의수강 방법 및 강의진행 관련 안내는 카카오톡으로 발송됩니다.' },
       스위치.couponField ? { key: 'coupon', type: 'text', label: '정기특강 참석권 쿠폰번호가 있으시면 적어주세요.', upper: true, maxlength: 7,
         hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
       { type: 'info', html: function (a) {
           if (useCoupon(a)) return '<b>쿠폰으로 참석</b> — 쿠폰이 확인되면 입금 없이 참석하실 수 있어요. 확인 결과는 카카오톡으로 알려 드려요.';
           if (payPending(a)) return '';
           if (cardPay(a)) return '수강료 <span class="big">' + won(payAmountOf(a)) + '</span> (부가세 포함) — 신청서를 내면 다음 화면에서 카드로 결제합니다. <b>결제까지 마쳐야 신청이 완료됩니다.</b>';
+          /* 금액은 한 번만(9/12 오너) — 「입금하실 금액」 하나만 크게, 현금영수증을 고르면 이 숫자가 바뀐다 */
+          var tags = [];
+          if (a.member === '예') tags.push('멤버십 회원 · 강의실 비용');
+          if (a.receipt && surcharge()) tags.push('현금영수증 ' + pct() + '% 포함');
           return '입금계좌 : <b>' + 회차.account + '</b><br>' +
-            (a.member === '예' ? '수강료 : 멤버십 회원 <b>' + won(회차.feeMember) + '</b> (강의실 비용)'
-                               : '수강료 : 비회원 <b>' + won(회차.transferAmountNonmember) + '</b>') +
-            '<br><span class="big">입금하실 금액 ' + won(bankTotal(a)) + '</span>' +
-            (a.receipt && surcharge() ? ' <span style="color:#6e6a60">(현금영수증 ' + pct() + '% 포함)</span>' : '');
+            '<span class="big">입금하실 금액 ' + won(bankTotal(a)) + '</span>' +
+            (tags.length ? ' <span class="sub">(' + tags.join(' · ') + ')</span>' : '');
         } },
       /* 계좌로 내는 사람만 — 카드 전표가 지출 증빙이라 카드는 현금영수증·입금자명이 필요 없다 */
       { key: 'receipt', type: 'ack', checkLabel: '예', showIf: bankPay,
