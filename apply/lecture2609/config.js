@@ -2,7 +2,9 @@
    설계: 03_01_정기특강_신청페이지_설계.md · 문구: Tally 폼 mOx9Wp 블록 65개 원문 (2026-09-12 읽음)
    ▣ 회차마다 바꾸는 곳은 맨 위 「회차」 한 덩어리뿐이다. 다음 달엔 이 폴더를 복사해 그것만 바꾼다.
    ▣ 「스위치」 여섯 개는 설계 문서 2장의 바꿀 점이다. 오너 확인 전이라 전부 꺼 두었다 = Tally 와 똑같이 동작.
-     true 로 바꾸면 그 자리에서 켜진다. 문항·문구는 아래 pages 에 있다. */
+   ▣ 카드 결제(그로블, 2026-09-12 오너 지시): 결제 링크 칸이 **비어 있으면 그 사람은 지금처럼 계좌 입금 안내**를 본다.
+     링크가 있으면 3쪽에서 계좌·현금영수증·입금자명이 사라지고, 신청서를 낸 뒤 「수강료 결제하기」로 그로블 결제창에 간다.
+     결제창 주소 뒤에 ?ref=<결제참조> 가 붙고, 그 값이 시트 「결제참조」 칸과 그로블 웹훅 sellerReference 로 이어진다. */
 
 var 회차 = {
   formId:   'lecture2609',                          // 백엔드 FORMS 키 → 탭 「정기특강_전해청_2609」
@@ -13,10 +15,15 @@ var 회차 = {
   placeUrl: '',                                     // ⬜ 지도 링크 (naver.me/…)
   online:   true,                                   // ⬜ 온라인 라이브 동시 진행이면 true, 오프라인만이면 false
   replay:   '온오프라인 참여자 모두 다시보기 3일간 제공됩니다.',   // ⬜ 온라인일 때만 보인다
-  feeMember: 10000,                                 // ⬜ 멤버십 회원 (강의실 비용) — Tally 와 같다고 가정
-  feeNonmember: 50000,                              // ⬜ 비회원
-  deadline: '2026-09-19T00:00:00+09:00',            // ⬜ 오너 확인 중 — 백엔드 FORMS.lecture2609.deadline 과 같게
-  deadlineText: '9월 18일 자정까지 신청 가능합니다.', // ⬜ deadline 과 같은 말이어야 한다
+  feeMember: 10000,                                 // 계좌 입금 — 멤버십 회원 (강의실 비용)
+  feeNonmember: 50000,                              // 계좌 입금 — 비회원
+  /* 카드 결제 — 그로블 결제 링크. 상품 하나에 가격이 하나라 회원·비회원 링크가 따로다. 비워 두면 계좌 입금 */
+  payUrlNonmember: 'https://groble.im/payment/nSC2PJ', // 그로블 상품 nSC2PJ (55,000원) — 판매 시작은 오너 미리보기 확인 뒤
+  payAmountNonmember: 55000,                        // 부가세 포함 (오너 확정 9/12)
+  payUrlMember: '',                                 // ⬜ 멤버십 회원 카드 결제 — 할지 말지 미정
+  payAmountMember: null,                            // ⬜ 회원 링크를 넣을 때 금액도 같이
+  deadline: '2026-09-18T23:59:00+09:00',            // ⬜ 오너 확인 중 — 그로블 판매 마감(9/18 23:59)과 같게. 백엔드 FORMS.lecture2609.deadline 도
+  deadlineText: '9월 18일(금) 밤 11시 59분까지 신청 가능합니다.', // ⬜ deadline 과 같은 말이어야 한다
   account:  '카카오뱅크 3333-17-0228060 · 예금주 이진규',
   kakaoChannel: 'https://pf.kakao.com/_xmHxgNT'
 };
@@ -34,6 +41,12 @@ var 스위치 = {
 function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
 function feeOf(a) { return a.member === '예' ? 회차.feeMember : 회차.feeNonmember; }
 function useCoupon(a) { return 스위치.couponField && /^BW-[A-Z0-9]{4}$/.test(a.coupon || ''); }
+function payUrlOf(a) { return a.member === '예' ? 회차.payUrlMember : 회차.payUrlNonmember; }
+function cardPay(a) { return !useCoupon(a) && !!payUrlOf(a); }            // 쿠폰이 확인되면 카드도 계좌도 없다
+function payAmountOf(a) {
+  var v = a.member === '예' ? 회차.payAmountMember : 회차.payAmountNonmember;
+  return v || Math.round(feeOf(a) * 1.1);                                  // 금액을 안 적었으면 부가세 10% 를 붙인 값
+}
 
 window.FORM = {
   formId: 회차.formId,
@@ -91,35 +104,55 @@ window.FORM = {
         hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
       { type: 'info', html: function (a) {
           if (useCoupon(a)) return '<b>쿠폰으로 참석</b> — 쿠폰이 확인되면 입금 없이 참석하실 수 있어요. 확인 결과는 카카오톡으로 알려 드려요.';
+          if (cardPay(a)) return '수강료 <span class="big">' + won(payAmountOf(a)) + '</span> (부가세 포함) — 신청서를 내면 다음 화면에서 카드로 결제합니다. <b>결제까지 마쳐야 신청이 완료됩니다.</b>';
           var fee = feeOf(a), total = a.receipt ? fee * 1.1 : fee;
           return '입금계좌 : <b>' + 회차.account + '</b><br>' +
             (a.member === '예' ? '수강료 : 멤버십 회원 <b>' + won(회차.feeMember) + '</b> (강의실 비용)'
                                : '수강료 : 비회원 <b>' + won(회차.feeNonmember) + '</b>') +
             '<br><span class="big">입금하실 금액 ' + won(total) + '</span>' + (a.receipt ? ' <span style="color:#6e6a60">(현금영수증 10% 포함)</span>' : '');
         } },
+      /* 카드로 내는 사람에게는 현금영수증·입금자명이 필요 없다 — 카드 전표가 지출 증빙이다 */
       { key: 'receipt', type: 'ack', label: '소득공제 혹은 지출증빙을 위해 현금영수증 발급을 원하실 경우 강의비의 10%(부가세)를 추가 입금해주세요.', checkLabel: '예',
-        showIf: function (a) { return !useCoupon(a); } },
+        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } },
       { key: 'receiptNo', type: 'text', label: '현금영수증 발급을 원하는 휴대폰 번호 또는 사업자 번호를 적어주세요.', maxlength: 20,
-        showIf: function (a) { return !useCoupon(a); } },
-      { key: 'depositAck', type: 'ack', label: '본 신청서를 제출하시면 계좌조회가 불가하며 입금이 완료되어야 신청이 완료된 것으로 봅니다. 숙지하셨나요?',
-        checkLabel: '예', required: true, err: '확인하고 「예」를 눌러 주세요' },
+        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } },
+      { key: 'depositAck', type: 'ack', checkLabel: '예', required: true, err: '확인하고 「예」를 눌러 주세요',
+        label: function (a) {
+          return cardPay(a) ? '결제까지 마쳐야 신청이 완료된다는 것을 확인하셨나요?'
+                            : '본 신청서를 제출하시면 계좌조회가 불가하며 입금이 완료되어야 신청이 완료된 것으로 봅니다. 숙지하셨나요?';
+        } },
       { key: 'depositor', type: 'text', label: '입금자명이 앞서 적은 성함과 다르면 입금자명을 적어주세요.', maxlength: 30,
-        showIf: function (a) { return !useCoupon(a); } }
+        showIf: function (a) { return !useCoupon(a) && !cardPay(a); } }
     ] }
   ],
 
-  /* 시트 「안내금액」 열 — 입금 대조용. 계좌 조회 없이도 누가 얼마를 넣어야 하는지 바로 보인다 */
-  computed: function (a) {
-    return { amount: useCoupon(a) ? '쿠폰' : won(a.receipt ? feeOf(a) * 1.1 : feeOf(a)) };
+  /* 시트 「안내금액」·「결제방식」·「결제참조」 — 입금·결제 대조용 */
+  computed: function (a, ref) {
+    if (useCoupon(a)) return { amount: '쿠폰', payMethod: '쿠폰', payRef: '' };
+    if (cardPay(a)) return { amount: won(payAmountOf(a)), payMethod: '카드', payRef: ref };
+    return { amount: won(a.receipt ? feeOf(a) * 1.1 : feeOf(a)), payMethod: '계좌', payRef: '' };
   },
 
   stopIf: 스위치.memberOnlineStop ? function (a) { return a.member === '예' && a.mode === '온라인'; } : null,
 
-  done: {
-    title: '신청서를 받았어요',
-    html: '부트니스에서는 수강생의 귀한 비용과 시간이 아깝지 않은 강의 준비를 위해 최선을 다하고 있습니다.<br><br>부트니스의 다양한 강의 소식들을 가장 빨리 접하고 싶으시다면',
-    button: { label: '카카오채널 추가하기', href: 회차.kakaoChannel },
-    tail: '카카오채널을 추가해주세요! 😄'
+  /* 끝 화면 — 카드로 낼 사람은 결제 버튼이 제일 먼저. 같은 탭에서 연다(카톡 인앱 브라우저가 새 탭을 막는다).
+     결제가 끝나면 그로블이 카카오채널로 보낸다(상품에 설정). 계좌·쿠폰은 Tally 끝 화면 그대로 */
+  done: function (a, res) {
+    if (cardPay(a)) {
+      var url = payUrlOf(a);
+      url += (url.indexOf('?') >= 0 ? '&' : '?') + 'ref=' + encodeURIComponent(res.payRef);
+      return {
+        title: '결제만 남았어요',
+        button: { label: '수강료 결제하기', href: url, sameTab: true },
+        tail: '결제 창을 닫으셨다면 이 버튼을 다시 눌러 주세요.<br><b>결제까지 마쳐야 신청이 완료됩니다.</b>'
+      };
+    }
+    return {
+      title: '신청서를 받았어요',
+      html: '부트니스에서는 수강생의 귀한 비용과 시간이 아깝지 않은 강의 준비를 위해 최선을 다하고 있습니다.<br><br>부트니스의 다양한 강의 소식들을 가장 빨리 접하고 싶으시다면',
+      button: { label: '카카오채널 추가하기', href: 회차.kakaoChannel },
+      tail: '카카오채널을 추가해주세요! 😄'
+    };
   },
   closed: {
     title: '부트니스 특강 모집마감 안내',
