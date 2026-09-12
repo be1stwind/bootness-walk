@@ -16,7 +16,8 @@ window.FORM = {
       required: true, maxlength: 40, autocomplete: 'nickname', err: '닉네임을 적어 주세요' },
     { key: 'name', type: 'text', label: '성함', required: true, maxlength: 30, autocomplete: 'name', err: '성함을 적어 주세요' },
     { key: 'phone', type: 'tel', label: '휴대폰 번호', hint: '숫자만 적어 주세요 (예: 01012345678)', required: true, autocomplete: 'tel' },
-    { key: 'email', type: 'email', label: '이메일', autocomplete: 'email' },
+    { key: 'email', type: 'email', label: '이메일', hint: '신청 내용을 이 주소로 보내 드려요.', required: true, maxlength: 120,   // 필수 — 9/12 오너
+      autocomplete: 'email', err: '이메일 주소를 다시 확인해 주세요' },
     { key: 'src', type: 'source', label: '어떻게 알고 오셨나요?', required: true, err: '어떻게 알고 오셨는지 골라 주세요' },
     { key: 'ref', type: 'text', label: '추천해 주신 분 닉네임', maxlength: 40,
       requiredIf: function (a) { return a.src === 'ref'; }, err: '추천해 주신 분 닉네임을 적어 주세요' },
@@ -38,7 +39,15 @@ window.FORM = {
     title: '신청됐어요!',
     html: '무료특강 입장 링크는 <b>오픈채팅방</b>에서 드려요. 지금 들어와 주세요 👇',
     button: { label: '오픈채팅방 들어가기', href: 'https://open.kakao.com/o/gdQkKchh' },
-    tail: '10월 1일(목) 밤 9시에 뵙겠습니다.'
+    tail: '10월 1일(목) 밤 9시에 뵙겠습니다.',
+    /* 서버가 메일을 보냈을 때만 한 줄(미리보기는 늘) */
+    note: function (a, res) {
+      if (res && res.mail === 'queued') return '오늘 신청이 많이 몰려서, 확인 메일은 내일 아침에 보내 드려요.';   // 한도 초과 — 다음 날 다시 보내기가 살아 있을 때만 서버가 queued 로 답한다
+      if (!(res && (res.mail === 'sent' || res.preview))) return '';
+      var addr = String(a.email || '').replace(/[&<>"']/g, '');
+      return addr ? '신청 내용을 <b>' + addr + '</b> 주소로 보내 드렸어요. 메일이 안 보이면 스팸함도 봐 주세요.'
+                  : '신청 내용을 적어 주신 이메일 주소로 보내 드렸어요. 메일이 안 보이면 스팸함도 봐 주세요.';
+    }
   },
   closed: { title: '신청이 마감됐어요', html: '관심 가져 주셔서 고마워요. 다음 특강 소식은 부트니스 카페에서 알려 드릴게요.' }
 };
