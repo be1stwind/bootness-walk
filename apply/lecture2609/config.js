@@ -6,8 +6,9 @@
      링크가 있으면 3쪽에서 계좌·현금영수증·입금자명이 사라지고, 신청서를 낸 뒤 「수강료 결제하기」로 그로블 결제창에 간다.
      결제창 주소 뒤에 ?ref=<신청번호> 가 붙고, 그 값이 그로블 웹훅 sellerReference 로 돌아와 시트 「신청번호」와 이어진다.
    ▣ 멤버십 회원은 개인정보 동의 체크 없이 안내 한 줄만 본다(9/12 오너 결정). 시트 동의 칸에는 서버가 「회원(계약 이행)」으로 적는다.
-   ▣ 비회원은 3쪽에서 [카드로 결제] / [계좌로 입금] 을 고른다(9/12 오너). 금액은 「회차」의 cardAmountNonmember ·
-     transferAmountNonmember · receiptSurcharge 세 칸 — 오너 결정이 오면 여기만 바꾼다.
+   ▣ cardOpen(「회차」) 이 false 면 카드는 어디에도 안 보이고 모두 계좌 입금 — 그로블 판매 시작 전(9/12).
+     켜면 비회원은 3쪽 맨 위에서 [카드로 결제] / [계좌로 입금] 을 고르고, 고른 방법의 금액만 크게 본다.
+     금액: cardAmountNonmember 55,000 · transferAmountNonmember 50,000 · receiptSurcharge 0.1 (9/12 오너 확정).
    ▣ 미리보기(시트에 아무것도 안 적힌다)
        ?preview=done&member=아니오&payWith=카드  비회원 카드 끝 화면(결제 버튼)
        ?preview=done&member=아니오&payWith=계좌  비회원 계좌 끝 화면      ?preview=done&member=예  회원 끝 화면
@@ -24,8 +25,9 @@ var 회차 = {
   replay:   '온오프라인 참여자 모두 다시보기 3일간 제공됩니다.',   // ⬜ 온라인일 때만 보인다
   feeMember: 10000,                                 // 계좌 입금 — 멤버십 회원 (강의실 비용). 회원은 계좌 입금으로 간다(9/12 오너 결정)
   /* 카드 결제 — 그로블 결제 링크. 상품 하나에 가격이 하나라 회원·비회원 링크가 따로다. 비워 두면 계좌 입금 */
+  cardOpen: false,                                  // ⛔ 그로블 판매 시작 전 = false → 카드는 어디에도 안 보이고 모두 계좌 입금. 판매가 시작되면 한결이 켜 달라고 한다(9/12)
   payUrlNonmember: 'https://groble.im/payment/nSC2PJ', // 그로블 상품 nSC2PJ (55,000원) — 판매 시작은 오너 샘플 확인 뒤
-  /* 비회원 금액 — 3쪽에서 고른 방법대로 안내하고 시트 「안내금액」에 적는다. ⬜ 오너 결정이 오면 바꾼다 */
+  /* 비회원 금액 — 3쪽에서 고른 방법대로 안내하고 시트 「안내금액」에 적는다(9/12 오너 확정) */
   cardAmountNonmember: 55000,                       // 카드 결제(그로블) — 부가세 포함. 그로블 상품 가격과 같아야 한다
   transferAmountNonmember: 50000,                   // 계좌 입금
   receiptSurcharge: 0.1,                            // 현금영수증을 고르면 더하는 비율(0.1 = 10%). 0 이면 현금영수증 칸만 받고 금액은 그대로
@@ -55,10 +57,11 @@ function pct() { return Math.round(surcharge() * 100); }
 function feeOf(a) { return a.member === '예' ? 회차.feeMember : 회차.transferAmountNonmember; }       // 계좌 입금 기본 금액
 function useCoupon(a) { return 스위치.couponField && /^BW-[A-Z0-9]{4}$/.test(a.coupon || ''); }
 function payUrlOf(a) { return a.member === '예' ? 회차.payUrlMember : 회차.payUrlNonmember; }
-function payChoice(a) { return a.member === '아니오' && !useCoupon(a) && !!회차.payUrlNonmember; }  // 비회원이 카드·계좌를 고르는 경우
+function payChoice(a) { return 회차.cardOpen && a.member === '아니오' && !useCoupon(a) && !!회차.payUrlNonmember; }  // 비회원이 카드·계좌를 고르는 경우
 function payPending(a) { return payChoice(a) && !a.payWith; }                                        // 아직 안 고름
 function cardPay(a) {                                                                               // 쿠폰이 확인되면 카드도 계좌도 없다
   if (useCoupon(a)) return false;
+  if (!회차.cardOpen) return false;                                                                 // 판매 전 — 카드 없음
   return a.member === '예' ? !!회차.payUrlMember : payChoice(a) && a.payWith === '카드';
 }
 function bankPay(a) { return !useCoupon(a) && !cardPay(a) && !payPending(a); }
@@ -134,13 +137,14 @@ window.FORM = {
 
     /* 쪽 제목 — 카드로 내는 사람(아직 안 고른 비회원 포함)은 「결제」, 계좌로 내는 사람은 Tally 그대로 「입금」 (9/12 오너) */
     { title: function (a) { return cardPay(a) || payPending(a) ? '결제 정보 및 환불 관련 안내' : '입금 정보 및 환불 관련 안내'; }, fields: [
-      { type: 'info', warn: true, html: '⚠️ 강의수강 방법 및 강의진행 관련 안내는 카카오톡으로 발송됩니다.' },
-      스위치.couponField ? { key: 'coupon', type: 'text', label: '정기특강 참석권 쿠폰번호가 있으시면 적어주세요.', upper: true, maxlength: 7,
-        hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
-      /* 비회원 결제 방법 (9/12 오너) — 고른 쪽에 맞는 문항만 보이고, 숨은 문항은 필수 검사도 안 한다 */
+      /* 비회원 결제 방법 — 3쪽 맨 위, 칩에는 금액을 안 적는다. 고른 뒤에만 그 방법의 금액이 크게 나온다(9/12 오너).
+         cardOpen 이 꺼져 있으면 이 칸은 없고 계좌만. 숨은 문항은 필수 검사도 안 한다 */
       { key: 'payWith', type: 'choice', label: '결제 방법을 골라 주세요.', required: true,
         options: [{ label: '카드로 결제', value: '카드' }, { label: '계좌로 입금', value: '계좌' }],
         showIf: payChoice, err: '카드와 계좌 가운데 하나를 골라 주세요' },
+      { type: 'info', warn: true, html: '⚠️ 강의수강 방법 및 강의진행 관련 안내는 카카오톡으로 발송됩니다.' },
+      스위치.couponField ? { key: 'coupon', type: 'text', label: '정기특강 참석권 쿠폰번호가 있으시면 적어주세요.', upper: true, maxlength: 7,
+        hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
       { type: 'info', html: function (a) {
           if (useCoupon(a)) return '<b>쿠폰으로 참석</b> — 쿠폰이 확인되면 입금 없이 참석하실 수 있어요. 확인 결과는 카카오톡으로 알려 드려요.';
           if (payPending(a)) return '';
