@@ -6,10 +6,13 @@
  * 되는 것
  *  - 여러 쪽(pages) · 쪽마다 확인하고 넘어감
  *  - 조건부 문항(showIf) · 조건부 필수(requiredIf) · 답에 따라 바뀌는 안내(info 의 html 을 함수로)
- *  - 멈춤 조건(stopIf) — 예: 멤버십 + 온라인이면 신청 없이 안내 화면
+ *  - 멈춤 조건(stopIf) — 예: 멤버십 + 온라인이면 신청 없이 안내 화면. 고르는 순간 바로 본다
  *  - 유입경로: 링크 ?src=코드 (Tally 시절 ?utm_source= 도 받는다). 문항이 있으면 미리 고르고, 없으면 숨겨서 보낸다
  *  - 휴대폰: 숫자만 남기기 · 두 번 적기(mustEqual) 또는 한 번 적고 크게 보여 주기(confirmLine)
  *  - 마감: 페이지가 마감 화면을 띄우고, 서버(신청폼_백엔드.gs)도 따로 막는다
+ *  - 미리보기(시트에 아무것도 안 적힌다): ?preview=done|stop|closed 는 그 끝 화면을 바로 띄운다. &member=예 처럼 답을 붙이면 그 답으로.
+ *    ?preview=1 은 처음부터 끝까지 써 볼 수 있고, 제출해도 서버로 보내지 않는다
+ *  - 신청번호: 서버가 만들어 돌려준다(j.id). 끝 화면 설정이 함수면 두 번째 인자 res.id 로 받는다
  *
  * 오래된 안드로이드 카톡 웹뷰를 위해 ?. 와 ?? 는 쓰지 않는다.
  */
@@ -45,13 +48,9 @@
     });
   });
   var cur = 0, sending = false;
-  /* 결제 참조값(그로블 ?ref=) — 추측할 수 없는 무작위 16바이트를 base64url 로. 순번·전화·이메일은 넣지 않는다(그로블 권고).
-     페이지를 열 때 한 번 만들어 두 번 눌러도 같은 값이 가고, 다시 신청하면(새로 열면) 새 값이 된다. */
-  var REF = (function () {
-    var b = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(b);
-    var s = btoa(String.fromCharCode.apply(null, b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    return (F.formId || 'bw') + '_' + s;
-  })();
+  var qs = new URLSearchParams(location.search);
+  var PREVIEW = (qs.get('preview') || '').toLowerCase();            // 미리보기 — 서버로 아무것도 보내지 않는다
+  var JUMP = ['done', 'stop', 'closed'].indexOf(PREVIEW) >= 0 ? PREVIEW : '';
 
   document.documentElement.style.setProperty('--accent', F.accent || '#383839');
   document.title = F.docTitle || (F.title + ' · 신청 · 부트니스');
@@ -112,12 +111,15 @@
     return '';
   }
 
+  var BANNER = call(F.banner);
   app.innerHTML =
+    (PREVIEW ? '<p class="preview-strip">미리보기 화면이에요. 여기서 낸 신청은 접수되지 않아요.</p>' : '') +
     '<header class="hero"><div class="band" aria-hidden="true"></div><div class="in">' +
       (F.eyebrow ? '<p class="eyebrow">' + esc(F.eyebrow) + '</p>' : '') +
       '<h1>' + esc(F.title) + '</h1>' +
       (call(F.heroLines) || []).map(function (l) { return '<p class="meta">' + l + '</p>'; }).join('') +
     '</div></header>' +
+    (BANNER ? '<div class="lead-box" id="leadBox">' + BANNER + '</div>' : '') +
     '<form id="f" class="card" novalidate>' +
       '<div id="steps"></div>' +
       FIELDS.map(fieldHTML).join('') +
@@ -211,22 +213,40 @@
   }
 
   /* ── 끝 화면 (done · closed · stop) ────────────────────────────────── */
+  function endButton(b) {
+    if (!b) return '';
+    if (b.restart) return '<button type="button" class="endbtn" data-restart="1">' + esc(b.label) + '</button>';   // 답을 비우고 1쪽으로
+    return '<a class="endbtn" href="' + esc(b.href) + '"' + (b.sameTab ? '' : ' target="_blank" rel="noopener"') + '>' + esc(b.label) + '</a>';
+  }
+  function showEnd(kind) {
+    form.hidden = !!kind;
+    ['done', 'closed', 'stop'].forEach(function (x) { document.getElementById(x).hidden = x !== kind; });
+    var lb = document.getElementById('leadBox'); if (lb) lb.hidden = !!kind;   // 맨 위 강조 상자는 신청서를 쓰는 동안만
+  }
   function end(kind, res) {
-    var r = res || {}; if (!r.payRef) r.payRef = REF;
-    var c = F[kind] || {}; if (typeof c === 'function') c = c(A, r) || {};
+    var c = F[kind] || {}; if (typeof c === 'function') c = c(A, res || {}) || {};
     var s = document.getElementById(kind);
     s.innerHTML = '<h2>' + esc(call(c.title) || '') + '</h2>' +
-      (c.html ? '<p>' + call(c.html) + '</p>' : '') +
-      (c.button ? '<a class="endbtn" href="' + esc(c.button.href) + '"' + (c.button.sameTab ? '' : ' target="_blank" rel="noopener"') + '>' + esc(c.button.label) + '</a>' : '') +
+      (c.html ? '<p>' + call(c.html) + '</p>' : '') + endButton(c.button) +
       (c.tail ? '<p>' + call(c.tail) + '</p>' : '');
-    form.hidden = true;
-    ['done', 'closed', 'stop'].forEach(function (x) { document.getElementById(x).hidden = x !== kind; });
+    showEnd(kind);
     window.scrollTo(0, 0);
+  }
+  /* 「처음으로」 — 답을 모두 비우고 1쪽부터. 링크의 유입경로는 다시 채운다 */
+  function restart() {
+    form.reset();
+    Array.prototype.forEach.call(app.querySelectorAll('.q.bad'), function (q) { q.classList.remove('bad'); });
+    applyLink();
+    FIELDS.forEach(readField);
+    cur = 0; showEnd('');
+    showPage();
   }
   function closedNow() { return !!F.deadline && Date.now() > new Date(F.deadline).getTime(); }
 
   /* ── 보내기 ─────────────────────────────────────────────────────────── */
+  function agreed(k) { var fd = byKey[k]; return !!fd && visible(fd) && A[k] === true; }   // 숨은 동의 칸(예: 회원)은 체크가 남아 있어도 안 보낸다
   function send() {
+    if (PREVIEW) { end('done', { ok: true, id: F.previewId || 'PREVIEW', preview: true }); return; }   // 미리보기 — 보내지 않는다
     if (!F.endpoint) { setErr('신청 받기를 준비하고 있어요. 조금 뒤에 다시 와 주세요.'); return; }
     var answers = {};
     FIELDS.forEach(function (fd) {
@@ -235,10 +255,10 @@
     });
     if (!byKey.src) answers.src = LINK.src;                    // 문항이 없으면 링크 값만 숨겨서 보낸다
     if (!byKey.ref && LINK.ref) answers.ref = LINK.ref;
-    if (F.computed) { var extra = F.computed(A, REF); for (var x in extra) answers[x] = extra[x]; }
+    if (F.computed) { var extra = F.computed(A); for (var x in extra) answers[x] = extra[x]; }
     var body = {
       form: F.formId, answers: answers,
-      consentPrivacy: A.privacy === true, consentMarketing: A.marketing === true,
+      consentPrivacy: agreed('privacy'), consentMarketing: agreed('marketing'),
       website: document.getElementById('website').value
     };
     sending = true; go.disabled = true; go.textContent = '보내는 중…';
@@ -256,7 +276,7 @@
 
   function next() {
     if (sending) return;
-    if (closedNow()) { end('closed'); return; }
+    if (!PREVIEW && closedNow()) { end('closed'); return; }
     FIELDS.forEach(function (fd) { if (fd._page === cur) readField(fd); });
     if (!validatePage()) return;
     if (F.stopIf && F.stopIf(A)) { end('stop'); return; }
@@ -274,28 +294,37 @@
     var q = e.target.closest('.q'); if (q) q.classList.remove('bad');
     if (fd.type === 'source') { var pk = app.querySelector('[data-picked="' + k + '"]'); if (pk) pk.style.display = 'none'; }
     refresh();
+    if (F.stopIf && F.stopIf(A)) end('stop');                    // 고르는 순간 — 나머지 칸을 쓰기 전에 멈춤 화면으로
   }
   app.addEventListener('input', onChange);
   app.addEventListener('change', onChange);
   back.addEventListener('click', function () { if (cur > 0) { cur--; showPage(); } });
   form.addEventListener('submit', function (e) { e.preventDefault(); next(); });
+  app.addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('[data-restart]') : null; if (t) restart(); });
 
   /* ── 링크에서 유입경로 ──────────────────────────────────────────────── */
-  var qs = new URLSearchParams(location.search);
   var raw = (qs.get('src') || qs.get('utm_source') || '').trim(), LINK = { src: '', ref: '' };
   if (/^ref_/i.test(raw)) { LINK.ref = raw.slice(4); raw = 'ref'; }
   if (SOURCES.some(function (s) { return s.code === raw.toLowerCase(); })) LINK.src = raw.toLowerCase();
-  if (byKey.src && LINK.src) {
-    var r = app.querySelector('input[data-key="src"][value="' + LINK.src + '"]');
-    if (r) r.checked = true;
-    var hit = SOURCES.filter(function (s) { return s.code === LINK.src; })[0];
-    var pk = app.querySelector('[data-picked="src"]');
-    if (pk && hit) { pk.textContent = '「' + hit.label + '」에서 오셨군요 — 맞지 않으면 다시 골라 주세요'; pk.style.display = 'block'; }
+  function applyLink() {
+    if (byKey.src && LINK.src) {
+      var r = app.querySelector('input[data-key="src"][value="' + LINK.src + '"]');
+      if (r) r.checked = true;
+      var hit = SOURCES.filter(function (s) { return s.code === LINK.src; })[0];
+      var pk = app.querySelector('[data-picked="src"]');
+      if (pk && hit) { pk.textContent = '「' + hit.label + '」에서 오셨군요 — 맞지 않으면 다시 골라 주세요'; pk.style.display = 'block'; }
+    }
+    if (byKey.ref && LINK.ref) { var re = app.querySelector('input[data-key="ref"]'); if (re) re.value = LINK.ref; }
   }
-  if (byKey.ref && LINK.ref) { var re = app.querySelector('input[data-key="ref"]'); if (re) re.value = LINK.ref; }
+  applyLink();
 
   FIELDS.forEach(readField);
-  if (closedNow()) end('closed'); else showPage();
+  if (JUMP) {
+    /* 미리보기로 끝 화면 바로 보기 — ?preview=done&member=예 처럼 붙인 답을 그 화면에 넘긴다 */
+    FIELDS.forEach(function (fd) { if (qs.has(fd.key)) A[fd.key] = qs.get(fd.key); });
+    end(JUMP, { ok: true, id: F.previewId || 'PREVIEW', preview: true });
+  } else if (!PREVIEW && closedNow()) end('closed');
+  else showPage();
 
-  window.__FORM_DEBUG = { A: A, ref: REF, next: next, end: end, refresh: refresh, go: function (p) { cur = p; showPage(); } };   // 시험용
+  window.__FORM_DEBUG = { A: A, next: next, end: end, refresh: refresh, restart: restart, go: function (p) { cur = p; showPage(); } };   // 시험용
 })();
