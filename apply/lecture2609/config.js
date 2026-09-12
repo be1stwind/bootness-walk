@@ -11,11 +11,11 @@
        ?preview=stop  멤버십·온라인 멈춤 화면                   ?preview=1  처음부터 끝까지 써 보기(제출해도 안 보낸다) */
 
 var 회차 = {
-  formId:   'lecture2609',                          // 백엔드 FORMS 키 → 탭 「정기특강_전해청_2609」
+  formId:   'lecture2609',                          // 백엔드 FORMS 키 → 「정기특강_신청명단」 시트의 탭 「2609_전해청」
   endpoint: '',                                     // ⬜ Apps Script /exec 주소 (인생업 무료특강과 같은 주소)
   title:    '전해청 변호사님의 9월 정기특강',          // ⬜ 정식 제목이 정해지면 '전해청 변호사님의 『제목』' 으로
   when:     '9월 19일 (토) 오후 3시 ~ 6시',
-  place:    '⬜ 장소',                               // ⬜ 예: '강남 10번 출구 라이지움'
+  place:    '',                                     // ⬜ 예: '강남 10번 출구 라이지움'. 비어 있으면 「📍 장소」 줄이 안 보인다(9/12)
   placeUrl: '',                                     // ⬜ 지도 링크 (naver.me/…)
   online:   true,                                   // ⬜ 온라인 라이브 동시 진행이면 true, 오프라인만이면 false
   replay:   '온오프라인 참여자 모두 다시보기 3일간 제공됩니다.',   // ⬜ 온라인일 때만 보인다
@@ -71,7 +71,7 @@ window.FORM = {
   title: 회차.title,
   heroLines: [
     '📅 일정 : ' + 회차.when,
-    '📍 장소 : ' + 회차.place + (회차.placeUrl ? ' <a href="' + 회차.placeUrl + '" target="_blank" rel="noopener">지도 보기</a>' : ''),
+    회차.place ? '📍 장소 : ' + 회차.place + (회차.placeUrl ? ' <a href="' + 회차.placeUrl + '" target="_blank" rel="noopener">지도 보기</a>' : '') : null,
     회차.online ? '🖥️ 온라인 라이브도 동시에 진행됩니다.' : '🛑 오프라인으로만 진행되며 다시보기 제공되지 않습니다.',
     회차.online && 회차.replay ? '📼 ' + 회차.replay : null,
     '⚠️ ' + 회차.deadlineText
@@ -118,7 +118,8 @@ window.FORM = {
         options: ['AI생산성', '부동산투자', '경매', '재개발재건축', '공유숙박', '리셀', '이커머스', '유튜브', 'SNS', '글쓰기', '부업사업', '세금', '주식코인'] } : null
     ] },
 
-    { title: '입금 정보 및 환불 관련 안내', fields: [
+    /* 쪽 제목 — 카드로 내는 사람은 「결제」, 계좌로 내는 사람은 Tally 그대로 「입금」 (9/12 오너) */
+    { title: function (a) { return cardPay(a) ? '결제 정보 및 환불 관련 안내' : '입금 정보 및 환불 관련 안내'; }, fields: [
       { type: 'info', warn: true, html: '⚠️ 강의수강 방법 및 강의진행 관련 안내는 카카오톡으로 발송됩니다.' },
       스위치.couponField ? { key: 'coupon', type: 'text', label: '정기특강 참석권 쿠폰번호가 있으시면 적어주세요.', upper: true, maxlength: 7,
         hint: '함께 걷는 일주일 12걸음 완주 쿠폰 (예: BW-7F3K)', pattern: '^BW-[A-Z0-9]{4}$', err: '쿠폰번호를 BW-7F3K 처럼 적어 주세요' } : null,
