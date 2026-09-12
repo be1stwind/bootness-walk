@@ -74,8 +74,16 @@ input:focus,textarea:focus{border-color:var(--ink)}
 .agree-note div{margin:1px 0}
 
 /* 맨 위 강조 상자(히어로 아래, 신청서 위) — 브랜드 노랑 연한 바탕 */
-.lead-box{background:#fdf3c0;border:1px solid #f4d017;color:var(--ink);border-radius:18px;padding:14px 18px;margin-bottom:14px;font-size:15px;line-height:1.65}
-.lead-box b{font-size:16px;font-weight:800}
+.lead-box{background:#fdf0ad;border:2px solid #f4d017;color:var(--ink);border-radius:18px;padding:16px 18px;margin-bottom:14px;font-size:15px;line-height:1.65}
+.lead-box b{font-weight:800}
+.lead-box>b:first-child{font-size:16.5px}
+/* 멤버십 혜택 — 구분선 아래 한 단계 크게(9/12 오너: 멤버십이 아닌 사람도 혜택을 확 알게) */
+.lead-perk{margin-top:12px;padding-top:12px;border-top:1.5px dashed #e0bf2e;font-size:15.5px}
+.perk-t{display:block;font-size:17px;font-weight:800;margin-bottom:2px}
+/* 3쪽 맨 위 카톡 안내 — 굵은 첫 줄, 한 단계 큰 글자, 노란 상자 */
+.infobox.kakao-note{font-size:15.5px;padding:14px 16px;border-width:2px;border-color:#f4d017;background:#fff5c9}
+.infobox.kakao-note b{font-size:16.5px}
+.infobox .sub{color:var(--sub);font-size:13.5px;font-weight:500}
 .preview-strip{margin:0 0 12px;padding:8px 12px;border-radius:10px;background:var(--ink);color:#fff;font-size:13px;font-weight:700;text-align:center}
 
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -105,7 +113,11 @@ button.endbtn{width:100%;border:0;font-family:inherit;cursor:pointer}
   .eyebrow{font-size:14px}
   .meta{font-size:15.5px}
   .lead-box{padding:18px 28px;font-size:16px}
-  .lead-box b{font-size:17px}
+  .lead-box>b:first-child{font-size:17.5px}
+  .lead-perk{font-size:16.5px}
+  .perk-t{font-size:18.5px}
+  .infobox.kakao-note{font-size:16.5px;padding:16px 20px}
+  .infobox.kakao-note b{font-size:17.5px}
   .card{padding:26px 32px 10px}
   .steps{font-size:14px}
   .pagetitle{font-size:19px;margin-bottom:20px}
