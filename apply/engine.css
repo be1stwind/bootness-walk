@@ -100,6 +100,8 @@ input:focus,textarea:focus{border-color:var(--ink)}
 .end p{margin:0 0 16px;color:var(--sub);font-size:15.5px}
 .end p b{color:var(--ink)}
 .end a:not(.endbtn){color:var(--ink)}
+.end p.mail-note{margin:4px 0 0;padding:10px 12px;border-radius:10px;background:#f4f1e8;font-size:14px;line-height:1.6;color:var(--sub)}
+.end p.mail-note b{color:var(--ink);word-break:break-all}
 .endbtn{display:block;text-decoration:none;font-weight:800;font-size:17px;color:var(--onyellow);
   background:var(--yellow);border-radius:14px;padding:15px 0;margin:4px 0 16px}
 button.endbtn{width:100%;border:0;font-family:inherit;cursor:pointer}
