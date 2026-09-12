@@ -80,7 +80,7 @@
     var open = '<div class="q' + (fd.type === 'info' ? ' info' : '') + '" data-k="' + k + '">';
     switch (fd.type) {
       case 'info':
-        return open + '<div class="infobox' + (fd.warn ? ' warn' : '') + '" data-html="' + k + '"></div></div>';
+        return open + '<div class="infobox' + (fd.warn ? ' warn' : '') + (fd.cls ? ' ' + fd.cls : '') + '" data-html="' + k + '"></div></div>';   // cls: 상자 모양을 하나 더
       case 'text': case 'tel': case 'email':
         return open + '<label for="' + id + '">' + lab(fd) + tag(fd) + '</label>' + hint +
           '<input type="' + fd.type + '" id="' + id + '" data-key="' + k + '"' +
