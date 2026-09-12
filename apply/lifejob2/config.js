@@ -4,6 +4,7 @@
 window.FORM = {
   formId:   'lifejob2',
   endpoint: 'https://script.google.com/macros/s/AKfycbxjd7-hFlao-hi2A-kB4Rg1OC1NbCBneBieqWA9lCkKUWk3c1Gv7D3hNlpKf6VloYnF/exec',                                  // ⬜ 오너가 Apps Script 배포 후 받은 /exec 주소 (모든 폼 공통)
+  keepDraft: true,          // 새로고침해도 쓰던 답이 남는다(이 기기·이 탭에만). 제출·마감 때 지운다 — 9/12 한결
   deadline: '2026-10-02T09:00:00+09:00',         // ⬜ 마감 시각 오너 확인 중 — 백엔드 FORMS.lifejob2.deadline 과 같게
   accent:   '#6b4c9a',                           // 인생업 색 — 머리띠 한 줄에만
   eyebrow:  '인생업 2기 · 무료특강',
