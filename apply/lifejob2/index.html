@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4d017">
+<title>무료특강 신청 · 부트니스</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 부트니스 자체 신청 폼 — 2026-09-12 뚝딱이 · MacminiM4
+   색은 브랜드 둘(노랑·진회색)이 주인이고, 강의별 색(--accent)은 머리띠 한 줄에만 쓴다. */
+:root{
+  --paper:#faf7ef; --card:#ffffff; --ink:#383839; --sub:#6e6a60; --line:#e6dfcc;
+  --yellow:#f4d017; --onyellow:#1e2a33; --accent:#6b4c9a; --err:#c0392b; --ok:#2f7d4f;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);
+  font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px calc(40px + env(safe-area-inset-bottom))}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}
+.hero .band{height:6px;background:var(--accent)}
+.hero .in{padding:20px 20px 18px}
+.eyebrow{margin:0 0 6px;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.hero h1{margin:0 0 8px;font-size:22px;line-height:1.35;font-weight:800;text-wrap:balance}
+.meta{margin:0;font-size:14.5px;color:var(--sub)}
+.meta b{color:var(--ink);font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 18px 6px}
+.q{padding:0 0 18px;margin:0 0 16px;border-bottom:1px solid #f0ead9}
+.q:last-of-type{border-bottom:0}
+.q>label,.q>.lbl{display:block;font-weight:700;font-size:15px;margin:0 0 8px}
+.req{color:var(--err);margin-left:2px}
+.opt{color:var(--sub);font-weight:500;font-size:13px;margin-left:4px}
+.hint{display:block;font-size:13px;color:var(--sub);font-weight:500;margin:-4px 0 8px}
+input[type=text],input[type=tel],input[type=email]{width:100%;font:inherit;font-size:16px;color:var(--ink);
+  background:#fffdf8;border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;outline:none;-webkit-appearance:none;appearance:none}
+input:focus{border-color:var(--ink)}
+.q.bad input[type=text],.q.bad input[type=tel],.q.bad input[type=email]{border-color:var(--err)}
+.err{display:none;color:var(--err);font-size:13px;margin:6px 2px 0}
+.q.bad .err{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:1px;height:1px}
+.chip span{display:inline-block;padding:9px 13px;border:1.5px solid var(--line);border-radius:999px;
+  font-size:14.5px;background:#fffdf8;cursor:pointer;user-select:none;-webkit-user-select:none}
+.chip input:checked+span{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.picked{display:none;margin:0 0 8px;font-size:13.5px;color:var(--ok);font-weight:600}
+.consent{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.consent input{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:var(--ink)}
+.consent b{font-size:15px}
+.notice{margin:8px 0 0 32px;font-size:13px;color:var(--sub);background:#fbf8f0;border:1px solid #efe8d6;border-radius:10px;padding:10px 12px}
+.notice dt{font-weight:700;color:var(--ink);display:inline}
+.notice dd{display:inline;margin:0}
+.notice div{margin:1px 0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.submit{display:block;width:100%;margin:6px 0 12px;font:inherit;font-size:17px;font-weight:800;
+  color:var(--onyellow);background:var(--yellow);border:0;border-radius:14px;padding:15px 0;cursor:pointer}
+.submit:disabled{opacity:.6;cursor:default}
+.submit:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.formerr{display:none;color:var(--err);font-size:14px;text-align:center;margin:0 0 12px}
+.end{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 20px;text-align:center}
+.end h2{margin:0 0 10px;font-size:22px;font-weight:800}
+.end p{margin:0 0 16px;color:var(--sub);font-size:15.5px}
+.end p b{color:var(--ink)}
+.kakao{display:block;text-decoration:none;font-weight:800;font-size:17px;color:var(--onyellow);
+  background:var(--yellow);border-radius:14px;padding:15px 0;margin:4px 0 16px}
+.foot{text-align:center;font-size:12.5px;color:var(--sub);margin-top:18px}
+@media (prefers-reduced-motion:no-preference){.submit,.chip span{transition:background .15s,border-color .15s,color .15s}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <div class="band" aria-hidden="true"></div>
+    <div class="in">
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="title"></h1>
+      <p class="meta" id="meta"></p>
+    </div>
+  </header>
+
+  <form id="f" class="card" novalidate>
+    <div class="q" data-k="nick">
+      <label for="nick">부트니스 카페 닉네임<span class="req">*</span></label>
+      <span class="hint">카페 닉네임이 없으시면 불러 드릴 이름을 적어 주세요</span>
+      <input type="text" id="nick" name="nick" autocomplete="nickname" maxlength="40">
+      <p class="err">닉네임을 적어 주세요</p>
+    </div>
+    <div class="q" data-k="name">
+      <label for="name">성함<span class="req">*</span></label>
+      <input type="text" id="name" name="name" autocomplete="name" maxlength="30">
+      <p class="err">성함을 적어 주세요</p>
+    </div>
+    <div class="q" data-k="phone">
+      <label for="phone">휴대폰 번호<span class="req">*</span></label>
+      <span class="hint">숫자만 적어 주세요 (예: 01012345678)</span>
+      <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="13">
+      <p class="err">휴대폰 번호를 숫자로만 적어 주세요 (예: 01012345678)</p>
+    </div>
+    <div class="q" data-k="email">
+      <label for="email">이메일<span class="opt">선택</span></label>
+      <input type="email" id="email" name="email" autocomplete="email" maxlength="80">
+      <p class="err">이메일 주소를 다시 확인해 주세요</p>
+    </div>
+    <div class="q" data-k="src">
+      <span class="lbl" id="srcLbl">어떻게 알고 오셨나요?<span class="req">*</span></span>
+      <p class="picked" id="picked"></p>
+      <div class="chips" id="srcBox" role="radiogroup" aria-labelledby="srcLbl"></div>
+      <p class="err">어떻게 알고 오셨는지 골라 주세요</p>
+    </div>
+    <div class="q" data-k="ref">
+      <label for="ref">추천해 주신 분 닉네임<span class="opt" id="refOpt">선택</span></label>
+      <input type="text" id="ref" name="ref" maxlength="40">
+      <p class="err">추천해 주신 분 닉네임을 적어 주세요</p>
+    </div>
+    <div class="q" data-k="topics">
+      <span class="lbl" id="topLbl">관심 있는 주제<span class="opt">여러 개 골라도 돼요 · 선택</span></span>
+      <div class="chips" id="topBox" role="group" aria-labelledby="topLbl"></div>
+    </div>
+    <div class="q" data-k="busy">
+      <span class="lbl" id="busyLbl">요즘 제일 시간을 뺏는 일<span class="opt">선택</span></span>
+      <div class="chips" id="busyBox" role="radiogroup" aria-labelledby="busyLbl"></div>
+    </div>
+    <div class="q" data-k="privacy">
+      <label class="consent" for="privacy">
+        <input type="checkbox" id="privacy" name="privacy">
+        <span><b>개인정보 수집·이용에 동의합니다</b><span class="req">*</span></span>
+      </label>
+      <dl class="notice" id="privNotice"></dl>
+      <p class="err" style="margin-left:32px">개인정보 수집·이용에 동의해야 신청할 수 있어요</p>
+    </div>
+    <div class="q" data-k="marketing">
+      <label class="consent" for="marketing">
+        <input type="checkbox" id="marketing" name="marketing">
+        <span><b>강의·특강 소식 받기</b><span class="opt">선택</span></span>
+      </label>
+      <p class="notice" id="mktNotice"></p>
+    </div>
+    <!-- 사람 눈에는 안 보이는 칸. 봇만 채운다 -->
+    <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" id="website" tabindex="-1" autocomplete="off"></label></div>
+    <p class="formerr" id="formErr" role="alert"></p>
+    <button class="submit" type="submit" id="go">신청하기</button>
+  </form>
+
+  <section class="end" id="done" hidden>
+    <h2>신청됐어요!</h2>
+    <p id="doneLead"></p>
+    <a class="kakao" id="kakao" href="#" target="_blank" rel="noopener">오픈채팅방 들어가기</a>
+    <p id="doneLine"></p>
+  </section>
+
+  <section class="end" id="closed" hidden>
+    <h2>신청이 마감됐어요</h2>
+    <p id="closedLine"></p>
+  </section>
+
+  <p class="foot">부트니스 · BOOTNESS</p>
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   설정 — 다른 특강에 다시 쓸 때는 이 블록만 바꾼다 (10월 말 재개발·재건축 등)
+   ① formId 는 백엔드(신청폼_백엔드.gs)의 FORMS 키와 같아야 한다 → 그 탭에 적힌다
+   ② deadline 은 백엔드 FORMS[formId].deadline 과 같게. 서버가 최종 판정한다
+   ③ endpoint 는 Apps Script 웹앱 /exec 주소 — 한 번 배포하면 모든 폼이 같이 쓴다
+   ═══════════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  formId:   'lifejob2',
+  endpoint: '',                                  // ⬜ 오너가 Apps Script 배포 후 받은 /exec 주소
+  deadline: '2026-10-02T09:00:00+09:00',         // ⬜ 마감 시각 오너 확인 중 (지금은 10/2 오전 9시로 가정)
+  accent:   '#6b4c9a',                           // 인생업 색 — 머리띠 한 줄에만
+  eyebrow:  '인생업 2기 · 무료특강',
+  title:    '내 컴퓨터를 AI에게 맡기는 법',
+  meta:     '<b>10월 1일(목) 밤 9시</b> · 라이브 · 강사 이모카',
+  kakao:    'https://open.kakao.com/o/gdQkKchh',
+  doneLead: '무료특강 입장 링크는 <b>오픈채팅방</b>에서 드려요. 지금 들어와 주세요 👇',
+  doneLine: '10월 1일(목) 밤 9시에 뵙겠습니다.',
+  closedLine: '관심 가져 주셔서 고마워요. 다음 특강 소식은 부트니스 카페에서 알려 드릴게요.',
+  // 유입경로 — 화면에 보이는 말 → 시트에 남는 코드 (마케팅_측정체계 2장). 링크 ?src=코드 로 미리 골라진다
+  sources: [
+    {label:'부트니스 카페', code:'cafe'},
+    {label:'네이버 블로그', code:'blog'},
+    {label:'인스타그램', code:'insta'},
+    {label:'스레드', code:'threads'},
+    {label:'유튜브', code:'youtube'},
+    {label:'카카오톡 오픈채팅방', code:'kakaoopen'},
+    {label:'부트니스에서 보낸 카카오톡·문자', code:'db'},
+    {label:'인스타·페이스북 광고', code:'meta'},
+    {label:'지인 추천', code:'ref'},
+    {label:'기타', code:'direct'}
+  ],
+  topics: ['AI생산성','부동산투자','경매','재개발재건축','공유숙박','리셀','이커머스','유튜브','SNS','글쓰기','부업사업','세금','주식코인'],
+  busy:   ['본업 서류·보고','부업 운영','공부·자료 정리','집안일·아이 챙기기','기타'],
+  // 개인정보 수집·이용 고지 — ⬜ 보관 기간은 오너 확인 필요 (지금은 초안)
+  privacy: [
+    ['수집 항목', '카페 닉네임, 성함, 휴대폰 번호, 이메일'],
+    ['이용 목적', '무료특강 안내와 입장 링크 보내기'],
+    ['보관 기간', '특강이 끝난 뒤 1년, 그 뒤 파기'],
+    ['동의 거부', '동의하지 않으실 수 있지만, 그러면 신청이 되지 않아요']
+  ],
+  marketing: '부트니스의 강의·특강 소식을 카카오톡·문자로 받겠습니다. 3년간 보관하고, 언제든 거부할 수 있습니다. 선택이라 동의하지 않아도 신청할 수 있어요.'
+};
+
+/* ── 이 아래는 손대지 않아도 된다 ───────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.documentElement.style.setProperty('--accent', CONFIG.accent);
+document.title = CONFIG.title + ' · 무료특강 신청 · 부트니스';
+$('eyebrow').textContent = CONFIG.eyebrow;
+$('title').textContent = CONFIG.title;
+$('meta').innerHTML = CONFIG.meta;
+$('doneLead').innerHTML = CONFIG.doneLead;
+$('doneLine').textContent = CONFIG.doneLine;
+$('closedLine').textContent = CONFIG.closedLine;
+$('kakao').href = CONFIG.kakao;
+$('mktNotice').textContent = CONFIG.marketing;
+$('privNotice').innerHTML = CONFIG.privacy.map(([k,v]) => `<div><dt>${esc(k)}</dt> <dd>${esc(v)}</dd></div>`).join('');
+
+const chip = (name, type, label, value) =>
+  `<label class="chip"><input type="${type}" name="${name}" value="${esc(value)}"><span>${esc(label)}</span></label>`;
+$('srcBox').innerHTML  = CONFIG.sources.map(s => chip('src', 'radio', s.label, s.code)).join('');
+$('topBox').innerHTML  = CONFIG.topics.map(t => chip('topics', 'checkbox', t, t)).join('');
+$('busyBox').innerHTML = CONFIG.busy.map(t => chip('busy', 'radio', t, t)).join('');
+
+/* 마감이 지났으면 폼 대신 마감 화면 — 서버도 한 번 더 막는다 */
+function closedNow(){ return Date.now() > new Date(CONFIG.deadline).getTime(); }
+function showClosed(){ $('f').hidden = true; $('done').hidden = true; $('closed').hidden = false; }
+if (closedNow()) showClosed();
+
+/* 유입경로 자동 선택 — ?src=blog 처럼. 지인 추천은 ?src=ref_닉네임 */
+const qs = new URLSearchParams(location.search);
+let src = (qs.get('src') || '').trim();
+let refFromLink = '';
+if (/^ref_/i.test(src)) { refFromLink = src.slice(4); src = 'ref'; }
+const srcHit = CONFIG.sources.find(s => s.code === src.toLowerCase());
+if (srcHit) {
+  const r = document.querySelector(`input[name=src][value="${srcHit.code}"]`);
+  if (r) r.checked = true;
+  $('picked').textContent = `「${srcHit.label}」에서 오셨군요 — 맞지 않으면 다시 골라 주세요`;
+  $('picked').style.display = 'block';
+}
+if (refFromLink) $('ref').value = refFromLink;
+
+function srcVal(){ const r = document.querySelector('input[name=src]:checked'); return r ? r.value : ''; }
+function syncRef(){ $('refOpt').textContent = srcVal() === 'ref' ? '필수' : '선택'; }
+document.querySelectorAll('input[name=src]').forEach(r => r.addEventListener('change', () => {
+  syncRef(); $('picked').style.display = 'none';
+}));
+syncRef();
+
+/* 휴대폰 — 하이픈·공백을 쳐도 숫자만 남긴다 */
+$('phone').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^\d]/g, '').slice(0, 11); });
+
+function mark(k, bad){ const q = document.querySelector(`.q[data-k="${k}"]`); if (q) q.classList.toggle('bad', bad); return !bad; }
+document.querySelectorAll('.q input').forEach(i => i.addEventListener('input', () => i.closest('.q').classList.remove('bad')));
+document.querySelectorAll('.q input[type=radio],.q input[type=checkbox]').forEach(i =>
+  i.addEventListener('change', () => i.closest('.q').classList.remove('bad')));
+
+function validate(){
+  const phone = $('phone').value.replace(/\D/g, '');
+  const email = $('email').value.trim();
+  let ok = true;
+  ok = mark('nick',    !$('nick').value.trim()) && ok;
+  ok = mark('name',    !$('name').value.trim()) && ok;
+  ok = mark('phone',   !/^01\d{8,9}$/.test(phone)) && ok;
+  ok = mark('email',   !!email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && ok;
+  ok = mark('src',     !srcVal()) && ok;
+  ok = mark('ref',     srcVal() === 'ref' && !$('ref').value.trim()) && ok;
+  ok = mark('privacy', !$('privacy').checked) && ok;
+  return ok;
+}
+
+let sending = false;
+$('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('formErr').style.display = 'none';
+  if (sending) return;
+  if (closedNow()) { showClosed(); return; }
+  if (!validate()) {
+    const first = document.querySelector('.q.bad');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  if (!CONFIG.endpoint) { $('formErr').textContent = '신청 받기를 준비하고 있어요. 조금 뒤에 다시 와 주세요.'; $('formErr').style.display = 'block'; return; }
+  sending = true; $('go').disabled = true; $('go').textContent = '보내는 중…';
+  const body = {
+    form: CONFIG.formId,
+    nick: $('nick').value.trim(),
+    name: $('name').value.trim(),
+    phone: $('phone').value.replace(/\D/g, ''),
+    email: $('email').value.trim(),
+    src: srcVal(),
+    ref: $('ref').value.trim(),
+    topics: [...document.querySelectorAll('input[name=topics]:checked')].map(i => i.value),
+    busy: (document.querySelector('input[name=busy]:checked') || {}).value || '',
+    consentPrivacy: $('privacy').checked,
+    consentMarketing: $('marketing').checked,
+    website: $('website').value
+  };
+  try {
+    // text/plain 으로 보내야 브라우저가 사전 확인(preflight) 없이 바로 보낸다 — 다이어리 백엔드와 같은 방식
+    const r = await fetch(CONFIG.endpoint, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body)});
+    const j = await r.json();
+    if (j && j.ok) { $('f').hidden = true; $('done').hidden = false; window.scrollTo(0, 0); return; }
+    if (j && j.error === 'closed') { showClosed(); return; }
+    throw new Error((j && j.error) || 'fail');
+  } catch (err) {
+    $('formErr').textContent = '잠깐 연결이 불안정해요. 다시 눌러 주세요.';
+    $('formErr').style.display = 'block';
+  } finally {
+    sending = false; $('go').disabled = false; $('go').textContent = '신청하기';
+  }
+});
+</script>
+</body>
+</html>
